@@ -2,7 +2,7 @@
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
     <Identity Id="36b8e40e-ceaa-4305-bdb7-1a68a0d84067" Version="1.0" Language="en-US" Publisher="David Gardiner" />
-    <DisplayName>Gardiner.VsShowMissing</DisplayName>
+    <DisplayName>Show Missing Files</DisplayName>
     <Description>Find files references in project files that don't exist on disk</Description>
   </Metadata>
   <Installation InstalledByMsi="false">

@@ -1,8 +1,11 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
 using EnvDTE;
+using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -72,6 +75,36 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _buildEvents = events.BuildEvents;
 
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
+            _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
+        }
+
+        private void BuildEventsOnOnBuildBegin(vsBuildScope scope, vsBuildAction action)
+        {
+            Debug.WriteLine("BuildEventsOnOnBuildBegin {0} {1}", scope, action);
+
+            if (scope != vsBuildScope.vsBuildScopeSolution)
+                return;
+
+            if (_errorListProvider == null)
+                _errorListProvider = new ErrorListProvider(this);
+
+            _errorListProvider.Tasks.Clear();
+
+            var projects = Projects();
+            foreach (Project proj in projects)
+            {
+                Debug.WriteLine(proj.Name);
+
+                NavigateProjectItems(proj.ProjectItems);
+
+                /*                foreach (ProjectItem item in proj.ProjectItems)
+                                {
+
+                                }*/
+            }
+
+            if (_errorListProvider.Tasks.Count > 0)
+                _errorListProvider.Show();
         }
 
         protected override void Dispose(bool disposing)
@@ -82,49 +115,105 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 _solutionCookie = 0;
             }
 
+            if (disposing)
+            {
+                _errorListProvider.Dispose();
+            }
+
             base.Dispose(disposing);
         }
 
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
         {
-            if (_errorListProvider == null)
-            _errorListProvider = new ErrorListProvider(this);
+            Debug.WriteLine(string.Format("BuildEventsOnOnBuildProjConfigBegin {0}", project));
+            var proj = _dte.Solution.Item(project);
+        }
 
-            _errorListProvider.Tasks.Clear();
+        private void NavigateProjectItems(ProjectItems projectItems)
+        {
+            if (projectItems == null)
+                return;
 
-            foreach (Project proj in _dte.Solution.Projects)
+            foreach (ProjectItem item in projectItems)
             {
-                foreach (ProjectItem item in proj.ProjectItems)
+                if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}")
+                    continue;
+
+                NavigateProjectItems(item.ProjectItems);
+
+                for (short i = 0; i < item.FileCount; i++)
                 {
-                    if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}")
-                        continue;
-
-                    for (short i = 0; i < item.FileCount; i++)
+                    var path = item.FileNames[i];
+                    if (!File.Exists(path))
                     {
-                        var path = item.FileNames[i];
-                        if (!File.Exists(path))
+                        // WriteToBuildWindow(string.Format("Missing file: {0} in project {1}", path, proj.Name));
+                        IVsHierarchy heirarchyItem;
+                        _solution.GetProjectOfUniqueName(item.ContainingProject.FileName, out heirarchyItem);
+
+                        var newError = new ErrorTask()
                         {
-                            // WriteToBuildWindow(string.Format("Missing file: {0} in project {1}", path, proj.Name));
-                            IVsHierarchy heirarchyItem;
-                            _solution.GetProjectOfUniqueName(proj.FileName, out heirarchyItem);
+                            ErrorCategory = TaskErrorCategory.Error,
+                            Category = TaskCategory.BuildCompile,
+                            Text = "File referenced in project does not exist",
+                            Document = path,
+                            HierarchyItem = heirarchyItem
+                        };
 
-                            var newError = new ErrorTask()
-                            {
-                                ErrorCategory = TaskErrorCategory.Error,
-                                Category = TaskCategory.BuildCompile,
-                                Text = "File referenced in project does not exist",
-                                Document = path,
-                                HierarchyItem = heirarchyItem
-                            };
-
-                            _errorListProvider.Tasks.Add(newError);
-                        }
+                        _errorListProvider.Tasks.Add(newError);
                     }
+                }
+
+            }
+        }
+
+        private IList<Project> Projects()
+        {
+            Projects projects = _dte.Solution.Projects;
+            List<Project> list = new List<Project>();
+            var item = projects.GetEnumerator();
+            while (item.MoveNext())
+            {
+                var project = item.Current as Project;
+                if (project == null)
+                {
+                    continue;
+                }
+
+                if (project.Kind == ProjectKinds.vsProjectKindSolutionFolder)
+                {
+                    list.AddRange(GetSolutionFolderProjects(project));
+                }
+                else
+                {
+                    list.Add(project);
                 }
             }
 
-            if (_errorListProvider.Tasks.Count > 0)
-                _errorListProvider.Show();
+            return list;
+        }
+
+        private static IEnumerable<Project> GetSolutionFolderProjects(Project solutionFolder)
+        {
+            List<Project> list = new List<Project>();
+            for (var i = 1; i <= solutionFolder.ProjectItems.Count; i++)
+            {
+                var subProject = solutionFolder.ProjectItems.Item(i).SubProject;
+                if (subProject == null)
+                {
+                    continue;
+                }
+
+                // If this is another solution folder, do a recursive call, otherwise add
+                if (subProject.Kind == ProjectKinds.vsProjectKindSolutionFolder)
+                {
+                    list.AddRange(GetSolutionFolderProjects(subProject));
+                }
+                else
+                {
+                    list.Add(subProject);
+                }
+            }
+            return list;
         }
 
         public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
