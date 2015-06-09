@@ -1,16 +1,11 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Globalization;
-using System.Runtime.InteropServices;
-using System.ComponentModel.Design;
 using System.IO;
+using System.Runtime.InteropServices;
 using EnvDTE;
-using EnvDTE80;
-using Microsoft.Win32;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
@@ -39,6 +34,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private DTE _dte;
         private uint _solutionCookie;
         private IVsSolution _solution;
+        private ErrorListProvider _errorListProvider;
+        private BuildEvents _buildEvents;
 
         /// <summary>
         /// Default constructor of the package.
@@ -56,7 +53,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         /////////////////////////////////////////////////////////////////////////////
         // Overridden Package Implementation
-        #region Package Members
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -67,25 +63,15 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
             base.Initialize();
 
-            // Add our command handlers for menu (commands must exist in the .vsct file)
-/*            OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-            if (null != mcs)
-            {
-                // Create the command for the menu item.
-                CommandID menuCommandID = new CommandID(GuidList.guidGardiner_VsShowMissingCmdSet, (int)PkgCmdIDList.cmdidFindMissingFiles);
-                MenuCommand menuItem = new MenuCommand(MenuItemCallback, menuCommandID);
-                mcs.AddCommand(menuItem);
-            }*/
-
             // listen for solution events
             _solution = (IVsSolution)GetService(typeof(SVsSolution));
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
 
             _dte = (DTE)GetService(typeof(SDTE));
             var events = _dte.Events;
-            var buildEvents = events.BuildEvents;
+            _buildEvents = events.BuildEvents;
 
-            buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
+            _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
         }
 
         protected override void Dispose(bool disposing)
@@ -101,9 +87,10 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
         {
-            var errorListProvider = new ErrorListProvider(this);
+            if (_errorListProvider == null)
+            _errorListProvider = new ErrorListProvider(this);
 
-            errorListProvider.Tasks.Clear();
+            _errorListProvider.Tasks.Clear();
 
             foreach (Project proj in _dte.Solution.Projects)
             {
@@ -125,50 +112,19 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             {
                                 ErrorCategory = TaskErrorCategory.Error,
                                 Category = TaskCategory.BuildCompile,
-                                Text = "Missing file",
+                                Text = "File referenced in project does not exist",
                                 Document = path,
                                 HierarchyItem = heirarchyItem
                             };
 
-                            errorListProvider.Tasks.Add(newError);
+                            _errorListProvider.Tasks.Add(newError);
                         }
                     }
                 }
             }
-        }
 
-        private void WriteToBuildWindow(string message)
-        {
-            var outputWindow = (OutputWindow)_dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput).Object;
-            var build = outputWindow.OutputWindowPanes.Item("Build");
-            build.OutputString(message + Environment.NewLine);
-        }
-
-        #endregion
-
-        /// <summary>
-        /// This function is the callback used to execute a command when the a menu item is clicked.
-        /// See the Initialize method to see how the menu item is associated to this function using
-        /// the OleMenuCommandService service and the MenuCommand class.
-        /// </summary>
-        private void MenuItemCallback(object sender, EventArgs e)
-        {
-            // Show a Message Box to prove we were here
-            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            Guid clsid = Guid.Empty;
-            int result;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(uiShell.ShowMessageBox(
-                       0,
-                       ref clsid,
-                       "Gardiner.VsShowMissing",
-                       string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.ToString()),
-                       string.Empty,
-                       0,
-                       OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                       OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-                       OLEMSGICON.OLEMSGICON_INFO,
-                       0,        // false
-                       out result));
+            if (_errorListProvider.Tasks.Count > 0)
+                _errorListProvider.Show();
         }
 
         public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
