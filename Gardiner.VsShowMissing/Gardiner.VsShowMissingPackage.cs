@@ -74,21 +74,34 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
 
+            if (_errorListProvider == null)
+                _errorListProvider = new ErrorListProvider(this);
+
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
             _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
+            _buildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
+        }
+
+        private void BuildEventsOnOnBuildDone(vsBuildScope scope, vsBuildAction action)
+        {
+            Debug.WriteLine("BuildEventsOnOnBuildDone {0} {1}", scope, action);
+
+            if (_errorListProvider.Tasks.Count > 0)
+                _errorListProvider.Show();
         }
 
         private void BuildEventsOnOnBuildBegin(vsBuildScope scope, vsBuildAction action)
         {
             Debug.WriteLine("BuildEventsOnOnBuildBegin {0} {1}", scope, action);
 
+            _errorListProvider.Tasks.Clear();
+
+            return;
+
             if (scope != vsBuildScope.vsBuildScopeSolution)
                 return;
 
-            if (_errorListProvider == null)
-                _errorListProvider = new ErrorListProvider(this);
 
-            _errorListProvider.Tasks.Clear();
 
             var projects = Projects();
             foreach (Project proj in projects)
@@ -96,15 +109,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 Debug.WriteLine(proj.Name);
 
                 NavigateProjectItems(proj.ProjectItems);
-
-                /*                foreach (ProjectItem item in proj.ProjectItems)
-                                {
-
-                                }*/
             }
 
-            if (_errorListProvider.Tasks.Count > 0)
-                _errorListProvider.Show();
         }
 
         protected override void Dispose(bool disposing)
@@ -127,6 +133,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             Debug.WriteLine(string.Format("BuildEventsOnOnBuildProjConfigBegin {0}", project));
             var proj = _dte.Solution.Item(project);
+
+            NavigateProjectItems(proj.ProjectItems);
         }
 
         private void NavigateProjectItems(ProjectItems projectItems)
@@ -136,17 +144,18 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             foreach (ProjectItem item in projectItems)
             {
-                if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}")
+                NavigateProjectItems(item.ProjectItems);
+
+                if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}") // VSConstants.GUID_ItemType_PhysicalFile
                     continue;
 
-                NavigateProjectItems(item.ProjectItems);
+                Debug.WriteLine("\t" + item.Name);
 
                 for (short i = 0; i < item.FileCount; i++)
                 {
                     var path = item.FileNames[i];
                     if (!File.Exists(path))
                     {
-                        // WriteToBuildWindow(string.Format("Missing file: {0} in project {1}", path, proj.Name));
                         IVsHierarchy heirarchyItem;
                         _solution.GetProjectOfUniqueName(item.ContainingProject.FileName, out heirarchyItem);
 
@@ -158,6 +167,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             Document = path,
                             HierarchyItem = heirarchyItem
                         };
+
+                        Debug.WriteLine("\t\t** Missing");
 
                         _errorListProvider.Tasks.Add(newError);
                     }
