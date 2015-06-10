@@ -7,6 +7,7 @@
     <MoreInfo>https://github.com/flcdrg/VsShowMissing</MoreInfo>
     <License>LICENSE.txt</License>
     <Icon>Resources\BrokenlinktoFile_431_24.ico</Icon>
+    <PreviewImage>VS2015 Screenshot.png</PreviewImage>
   </Metadata>
   <Installation InstalledByMsi="false">
     <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0,14.0]" />

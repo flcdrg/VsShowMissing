@@ -299,6 +299,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         public int OnAfterCloseSolution(object pUnkReserved)
         {
+            _errorListProvider.Tasks.Clear();
+
             return VSConstants.S_OK;
         }
     }
