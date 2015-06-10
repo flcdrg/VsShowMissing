@@ -52,8 +52,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
         }
 
-
-
         /////////////////////////////////////////////////////////////////////////////
         // Overridden Package Implementation
 
@@ -103,7 +101,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                 NavigateProjectItems(proj.ProjectItems);
             }
-
         }
 
         protected override void Dispose(bool disposing)
@@ -165,7 +162,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         _errorListProvider.Tasks.Add(newError);
                     }
                 }
-
             }
         }
 
@@ -174,37 +170,26 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine(sender);
             var error = (ErrorTask) sender;
 
-            var item = error.HierarchyItem as IVsUIHierarchy;
-
-            //error.HierarchyItem.GetCanonicalName((uint) VSConstants.VSITEMID.Selection, out name);
-
             var sln = _dte.Solution.FullName;
             sln = sln.Substring(sln.LastIndexOf(@"\") + 1);
             sln = sln.Substring(0, sln.Length - 4);
 
-            var endString = "Microsoft Visual Studio";
+            const string endString = "Microsoft Visual Studio";
 
             dynamic pi = _dte.Solution.FindProjectItem(error.Document);
 
-            //string path = string.Empty;
             var parts = new List<string>();
 
             while (pi.Name != endString)
             {
                 parts.Add(pi.Name);
 
-                //path = @"\" + pi.Name + path;
                 pi = pi.Collection.Parent;
             }
 
-            //parts.Add(sln);
-
             parts.Reverse();
 
-            //path = sln + path;
-
             var uih = (UIHierarchy) _dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
-
 
             UIHierarchyItem node = uih.UIHierarchyItems.Item(sln);
 
