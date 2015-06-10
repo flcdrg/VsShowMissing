@@ -96,13 +96,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             _errorListProvider.Tasks.Clear();
 
-            return;
-
-            if (scope != vsBuildScope.vsBuildScopeSolution)
-                return;
-
-
-
             var projects = Projects();
             foreach (Project proj in projects)
             {
@@ -132,9 +125,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
         {
             Debug.WriteLine(string.Format("BuildEventsOnOnBuildProjConfigBegin {0}", project));
-            var proj = _dte.Solution.Item(project);
-
-            NavigateProjectItems(proj.ProjectItems);
         }
 
         private void NavigateProjectItems(ProjectItems projectItems)
