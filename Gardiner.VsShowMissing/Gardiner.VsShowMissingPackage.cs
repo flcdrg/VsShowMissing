@@ -146,8 +146,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     var path = item.FileNames[i];
                     if (!File.Exists(path))
                     {
-                        IVsHierarchy heirarchyItem;
-                        _solution.GetProjectOfUniqueName(item.ContainingProject.FileName, out heirarchyItem);
+                        IVsHierarchy hierarchyItem;
+                        _solution.GetProjectOfUniqueName(item.ContainingProject.FileName, out hierarchyItem);
 
                         var newError = new ErrorTask()
                         {
@@ -155,7 +155,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             Category = TaskCategory.BuildCompile,
                             Text = "File referenced in project does not exist",
                             Document = path,
-                            HierarchyItem = heirarchyItem
+                            HierarchyItem = hierarchyItem
                         };
 
                         Debug.WriteLine("\t\t** Missing");
