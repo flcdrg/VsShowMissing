@@ -155,9 +155,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             Category = TaskCategory.BuildCompile,
                             Text = "File referenced in project does not exist",
                             Document = path,
-                            HierarchyItem = hierarchyItem
+                            HierarchyItem = hierarchyItem,
+                            CanDelete = true,
                         };
 
+                        newError.Navigate += NewErrorOnNavigate;
                         Debug.WriteLine("\t\t** Missing");
 
                         _errorListProvider.Tasks.Add(newError);
@@ -165,6 +167,54 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 }
 
             }
+        }
+
+        private void NewErrorOnNavigate(object sender, EventArgs eventArgs)
+        {
+            Debug.WriteLine(sender);
+            var error = (ErrorTask) sender;
+
+            var item = error.HierarchyItem as IVsUIHierarchy;
+
+            //error.HierarchyItem.GetCanonicalName((uint) VSConstants.VSITEMID.Selection, out name);
+
+            var sln = _dte.Solution.FullName;
+            sln = sln.Substring(sln.LastIndexOf(@"\") + 1);
+            sln = sln.Substring(0, sln.Length - 4);
+
+            var endString = "Microsoft Visual Studio";
+
+            dynamic pi = _dte.Solution.FindProjectItem(error.Document);
+
+            //string path = string.Empty;
+            var parts = new List<string>();
+
+            while (pi.Name != endString)
+            {
+                parts.Add(pi.Name);
+
+                //path = @"\" + pi.Name + path;
+                pi = pi.Collection.Parent;
+            }
+
+            //parts.Add(sln);
+
+            parts.Reverse();
+
+            //path = sln + path;
+
+            var uih = (UIHierarchy) _dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
+
+
+            UIHierarchyItem node = uih.UIHierarchyItems.Item(sln);
+
+            foreach (var path in parts)
+            {
+                node = node.UIHierarchyItems.Item(path);
+                node.UIHierarchyItems.Expanded = true;
+            }
+
+            node.Select(vsUISelectionType.vsUISelectionTypeSelect);
         }
 
         private IList<Project> Projects()
