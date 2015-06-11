@@ -1,0 +1,7 @@
+﻿v1.1
+
+* Fixed navigating to missing item in Solution Explorer.
+
+v1.0
+
+* Initial release

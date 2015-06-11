@@ -168,38 +168,13 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private void NewErrorOnNavigate(object sender, EventArgs eventArgs)
         {
             Debug.WriteLine(sender);
-            var error = (ErrorTask) sender;
+            var error = (ErrorTask)sender;
 
-            var sln = _dte.Solution.FullName;
-            sln = sln.Substring(sln.LastIndexOf(@"\") + 1);
-            sln = sln.Substring(0, sln.Length - 4);
+            var projectItem = _dte.Solution.FindProjectItem(error.Document);
+            var uih = (UIHierarchy)_dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
+            var uiHierarchyItem = uih.FindHierarchyItem(projectItem);
 
-            const string endString = "Microsoft Visual Studio";
-
-            dynamic pi = _dte.Solution.FindProjectItem(error.Document);
-
-            var parts = new List<string>();
-
-            while (pi.Name != endString)
-            {
-                parts.Add(pi.Name);
-
-                pi = pi.Collection.Parent;
-            }
-
-            parts.Reverse();
-
-            var uih = (UIHierarchy) _dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
-
-            UIHierarchyItem node = uih.UIHierarchyItems.Item(sln);
-
-            foreach (var path in parts)
-            {
-                node = node.UIHierarchyItems.Item(path);
-                node.UIHierarchyItems.Expanded = true;
-            }
-
-            node.Select(vsUISelectionType.vsUISelectionTypeSelect);
+            uiHierarchyItem.Select(vsUISelectionType.vsUISelectionTypeSelect);
         }
 
         private IList<Project> Projects()
