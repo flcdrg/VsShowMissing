@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Windows.Threading;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
@@ -32,6 +33,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     //[ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(GuidList.guidGardiner_VsShowMissingPkgString)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
+    [ProvideOptionPage(typeof(ShowMissingOptions), "Show Missing", "General", 101, 100, true, new[] { "File Nesting in Solution Explorer" })]
     public sealed class Gardiner_VsShowMissingPackage : Package, IVsSolutionEvents
     {
         private DTE _dte;
@@ -75,23 +77,36 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             if (_errorListProvider == null)
                 _errorListProvider = new ErrorListProvider(this);
 
+            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => 
+             { 
+                 Options = (ShowMissingOptions)GetDialogPage(typeof(ShowMissingOptions)); 
+             }), DispatcherPriority.ApplicationIdle, null); 
+
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
             _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
             _buildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
         }
 
+        public static ShowMissingOptions Options { get; private set; }
+
         private void BuildEventsOnOnBuildDone(vsBuildScope scope, vsBuildAction action)
         {
             Debug.WriteLine("BuildEventsOnOnBuildDone {0} {1}", scope, action);
 
-            if (_errorListProvider.Tasks.Count > 0)
-                _errorListProvider.Show();
+            if (Options.Timing == RunWhen.AfterBuild)
+                FindMissingFiles();
         }
 
         private void BuildEventsOnOnBuildBegin(vsBuildScope scope, vsBuildAction action)
         {
             Debug.WriteLine("BuildEventsOnOnBuildBegin {0} {1}", scope, action);
 
+            if (Options.Timing == RunWhen.BeforeBuild)
+                FindMissingFiles();
+        }
+
+        private void FindMissingFiles()
+        {
             _errorListProvider.Tasks.Clear();
 
             var projects = Projects();
@@ -100,6 +115,16 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 Debug.WriteLine(proj.Name);
 
                 NavigateProjectItems(proj.ProjectItems);
+            }
+
+            if (_errorListProvider.Tasks.Count > 0)
+            {
+                _errorListProvider.Show();
+
+                if (Options.FailBuildOnError && Options.Timing == RunWhen.BeforeBuild)
+                {
+                    _dte.ExecuteCommand("Build.Cancel");
+                }
             }
         }
 
@@ -129,6 +154,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             if (projectItems == null)
                 return;
 
+            var errorCategory = Options.MessageLevel;
+
             foreach (ProjectItem item in projectItems)
             {
                 NavigateProjectItems(item.ProjectItems);
@@ -148,7 +175,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                         var newError = new ErrorTask()
                         {
-                            ErrorCategory = TaskErrorCategory.Error,
+                            ErrorCategory = errorCategory,
                             Category = TaskCategory.BuildCompile,
                             Text = "File referenced in project does not exist",
                             Document = path,
