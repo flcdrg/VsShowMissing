@@ -5,15 +5,7 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gardiner.VsShowMissing", "Gardiner.VsShowMissing\Gardiner.VsShowMissing.csproj", "{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gardiner.VsShowMissing_IntegrationTests", "Gardiner.VsShowMissing\Gardiner.VsShowMissing_IntegrationTests\Gardiner.VsShowMissing_IntegrationTests.csproj", "{941C8850-7437-433D-95B4-33BB3B9B0FE3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{50E5A04C-D428-404C-BE02-7DFBCBFD9F4B}"
-	ProjectSection(SolutionItems) = preProject
-		IntegrationTests.testsettings = IntegrationTests.testsettings
-		UnitTests.testsettings = UnitTests.testsettings
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gardiner.VsShowMissing_UnitTests", "Gardiner.VsShowMissing\Gardiner.VsShowMissing_UnitTests\Gardiner.VsShowMissing_UnitTests.csproj", "{2E6A42E7-0757-4913-981E-0FEDCE025143}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +17,6 @@ Global
 		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{941C8850-7437-433D-95B4-33BB3B9B0FE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{941C8850-7437-433D-95B4-33BB3B9B0FE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{941C8850-7437-433D-95B4-33BB3B9B0FE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{941C8850-7437-433D-95B4-33BB3B9B0FE3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E6A42E7-0757-4913-981E-0FEDCE025143}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E6A42E7-0757-4913-981E-0FEDCE025143}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E6A42E7-0757-4913-981E-0FEDCE025143}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E6A42E7-0757-4913-981E-0FEDCE025143}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
