@@ -1,4 +1,8 @@
-﻿v1.2
+﻿v1.3
+
+* Check Condition="" to not flag missing files if they are conditionally excluded
+
+v1.2
 
 * Tools | Options settings
 

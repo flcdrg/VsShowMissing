@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Threading;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using Project = EnvDTE.Project;
+using ProjectItem = EnvDTE.ProjectItem;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
@@ -51,7 +55,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         /// </summary>
         public Gardiner_VsShowMissingPackage()
         {
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", ToString()));
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -63,7 +67,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         /// </summary>
         protected override void Initialize()
         {
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
+            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", ToString()));
             base.Initialize();
 
             // listen for solution events
@@ -114,7 +118,14 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             {
                 Debug.WriteLine(proj.Name);
 
-                NavigateProjectItems(proj.ProjectItems);
+                IDictionary<string, string> dict = new Dictionary<string, string>();
+                dict.Add("Configuration", proj.ConfigurationManager.ActiveConfiguration.ConfigurationName);
+                using (var projectCollection = new ProjectCollection(dict))
+                {
+                    var buildProject = projectCollection.LoadProject(proj.FullName);
+
+                    NavigateProjectItems(proj.ProjectItems, buildProject);
+                }
             }
 
             if (_errorListProvider.Tasks.Count > 0)
@@ -146,10 +157,10 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
         {
-            Debug.WriteLine(string.Format("BuildEventsOnOnBuildProjConfigBegin {0}", project));
+            Debug.WriteLine($"BuildEventsOnOnBuildProjConfigBegin {project}");
         }
 
-        private void NavigateProjectItems(ProjectItems projectItems)
+        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject)
         {
             if (projectItems == null)
                 return;
@@ -158,7 +169,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             foreach (ProjectItem item in projectItems)
             {
-                NavigateProjectItems(item.ProjectItems);
+                NavigateProjectItems(item.ProjectItems, buildProject);
 
                 if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}") // VSConstants.GUID_ItemType_PhysicalFile
                     continue;
@@ -170,6 +181,17 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     var path = item.FileNames[i];
                     if (!File.Exists(path))
                     {
+
+                        var relativePath = path.Replace(buildProject.DirectoryPath + @"\", "");
+
+                        var found = buildProject.Items.Any(x => x.EvaluatedInclude == relativePath);
+
+                        if (!found)
+                        {
+                            Debug.WriteLine("\t\tFile excluded due to Condition evaluation");
+                            return;
+                        }
+
                         IVsHierarchy hierarchyItem;
                         _solution.GetProjectOfUniqueName(item.ContainingProject.FileName, out hierarchyItem);
 
@@ -201,7 +223,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             var uih = (UIHierarchy)_dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
             var uiHierarchyItem = uih.FindHierarchyItem(projectItem);
 
-            uiHierarchyItem.Select(vsUISelectionType.vsUISelectionTypeSelect);
+            uiHierarchyItem?.Select(vsUISelectionType.vsUISelectionTypeSelect);
         }
 
         private IList<Project> Projects()
