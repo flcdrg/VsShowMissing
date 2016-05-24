@@ -24,5 +24,17 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         [Category("Show Missing")]
         [DefaultValue(RunWhen.BeforeBuild)]
         public RunWhen Timing { get; set; }
+
+        [LocDisplayName("Non-included files")]
+        [Description("Generate warnings/errors for files on disk that are not included in the project")]
+        [Category("Show Missing")]
+        [DefaultValue(true)]
+        public bool NotIncludedFiles { get; set; }
+
+        [LocDisplayName("Ignore Pattern")]
+        [Description("Semicolon-separated list of filename patterns to ignore when checking physical files")]
+        [Category("Show Missing")]
+        [DefaultValue("*.*proj;*.user")]
+        public string IgnorePhysicalFiles { get; set; }
     }
 }

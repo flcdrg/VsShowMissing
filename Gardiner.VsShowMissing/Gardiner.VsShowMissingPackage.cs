@@ -129,11 +129,31 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     var logicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
                     NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles, new HashSet<string>());
 
-                    physicalFiles.ExceptWith(logicalFiles);
-
-                    foreach (var file in physicalFiles)
+                    if (Options.NotIncludedFiles)
                     {
-                        Debug.WriteLine($"Physical file: {file}");
+                        var errorCategory = Options.MessageLevel;
+
+                        physicalFiles.ExceptWith(logicalFiles);
+
+                        foreach (var file in physicalFiles)
+                        {
+                            Debug.WriteLine($"Physical file: {file}");
+                            var newError = new ErrorTask()
+                            {
+                                ErrorCategory = errorCategory,
+                                Category = TaskCategory.BuildCompile,
+                                Text = "File on disk is not included in project",
+                                Document = file,
+                                //HierarchyItem = hierarchyItem,
+                                CanDelete = true,
+                            };
+
+                            //newError.Navigate += NewErrorOnNavigate;
+                            Debug.WriteLine("\t\t** Missing");
+
+                            _errorListProvider.Tasks.Add(newError);
+
+                        }
                     }
                 }
             }
