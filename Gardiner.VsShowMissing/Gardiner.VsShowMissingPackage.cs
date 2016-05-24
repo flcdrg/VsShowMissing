@@ -80,7 +80,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _buildEvents = events.BuildEvents;
 
             if (_errorListProvider == null)
-                _errorListProvider = new ErrorListProvider(this);
+                _errorListProvider = new TaskProvider(this);
 
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => 
              { 
@@ -134,6 +134,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                     if (Options.NotIncludedFiles)
                     {
+                        
                         var errorCategory = Options.MessageLevel;
 
                         physicalFiles.ExceptWith(logicalFiles);
@@ -143,23 +144,23 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             Debug.WriteLine($"Physical file: {file}");
 
                             IVsHierarchy hierarchyItem;
-                            _solution.GetProjectOfUniqueName(physicalFileProjectMap[file], out hierarchyItem);
+                            string physicalFileProject = physicalFileProjectMap[file];
+                            _solution.GetProjectOfUniqueName(physicalFileProject, out hierarchyItem);
 
-                            var newError = new ErrorTask()
+                            var newError = new MissingErrorTask()
                             {
                                 ErrorCategory = errorCategory,
                                 Category = TaskCategory.BuildCompile,
-                                Text = "File on disk is not included in project",
+                                Text = "MI0002 : File on disk is not included in project",
                                 Document = file,
                                 HierarchyItem = hierarchyItem,
-                                CanDelete = true,
+                                ProjectPath = physicalFileProject,
                             };
 
-                            //newError.Navigate += NewErrorOnNavigate;
+                            newError.Navigate += SelectParentProjectInSolution;
                             Debug.WriteLine("\t\t** Missing");
 
                             _errorListProvider.Tasks.Add(newError);
-
                         }
                     }
                 }
@@ -235,14 +236,13 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         IVsHierarchy hierarchyItem;
                         _solution.GetProjectOfUniqueName(projectFilename, out hierarchyItem);
 
-                        var newError = new ErrorTask()
+                        var newError = new MissingErrorTask()
                         {
                             ErrorCategory = errorCategory,
                             Category = TaskCategory.BuildCompile,
-                            Text = "File referenced in project does not exist",
+                            Text = "MI0001 : File referenced in project does not exist",
                             Document = filePath,
                             HierarchyItem = hierarchyItem,
-                            CanDelete = true,
                         };
 
                         newError.Navigate += NewErrorOnNavigate;
@@ -274,16 +274,32 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             }
         }
 
+        private void SelectParentProjectInSolution(object sender, EventArgs e)
+        {
+            var error = (MissingErrorTask)sender;
+
+            var projectItem = _dte.Solution.FindProjectItem(error.ProjectPath);
+            SelectItemInSolutionExplorer(projectItem);
+        }
+
         private void NewErrorOnNavigate(object sender, EventArgs eventArgs)
         {
             Debug.WriteLine(sender);
             var error = (ErrorTask)sender;
 
             var projectItem = _dte.Solution.FindProjectItem(error.Document);
-            var uih = (UIHierarchy)_dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
-            var uiHierarchyItem = uih.FindHierarchyItem(projectItem);
+            SelectItemInSolutionExplorer(projectItem);
+        }
 
-            uiHierarchyItem?.Select(vsUISelectionType.vsUISelectionTypeSelect);
+        private void SelectItemInSolutionExplorer(ProjectItem projectItem)
+        {
+            if (projectItem != null)
+            {
+                var uih = (UIHierarchy) _dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
+                UIHierarchyItem uiHierarchyItem = uih.FindHierarchyItem(projectItem);
+
+                uiHierarchyItem?.Select(vsUISelectionType.vsUISelectionTypeSelect);
+            }
         }
 
         private IList<Project> Projects()

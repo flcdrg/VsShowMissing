@@ -134,6 +134,7 @@
   <ItemGroup>
     <Compile Include="CaseInsensitiveEqualityComparer.cs" />
     <Compile Include="Guids.cs" />
+    <Compile Include="MissingErrorTask.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -147,6 +148,7 @@
     <Compile Include="ShowMissingOptions.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="TaskProvider.cs" />
     <Compile Include="UIHierarchyExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
