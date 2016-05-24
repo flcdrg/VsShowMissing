@@ -127,13 +127,13 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                     var physicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
                     var logicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
-                    NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles);
+                    NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles, new HashSet<string>());
 
                     physicalFiles.ExceptWith(logicalFiles);
 
                     foreach (var file in physicalFiles)
                     {
-                        Debug.WriteLine($"Physical file: {file}, {new FileInfo(file)}");
+                        Debug.WriteLine($"Physical file: {file}");
                     }
                 }
             }
@@ -170,7 +170,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine($"BuildEventsOnOnBuildProjConfigBegin {project}");
         }
 
-        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles )
+        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles, ISet<string> processedPhysicalDirectories )
         {
             if (projectItems == null)
                 return;
@@ -179,7 +179,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             foreach (ProjectItem item in projectItems)
             {
-                NavigateProjectItems(item.ProjectItems, buildProject, projectPhysicalFiles, projectLogicalFiles);
+                NavigateProjectItems(item.ProjectItems, buildProject, projectPhysicalFiles, projectLogicalFiles, processedPhysicalDirectories);
 
                 if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}") // VSConstants.GUID_ItemType_PhysicalFile
                     continue;
@@ -193,7 +193,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                     if (!File.Exists(path))
                     {
-
                         var relativePath = path.Replace(buildProject.DirectoryPath + @"\", "");
 
                         var found = buildProject.Items.Any(x => x.EvaluatedInclude == relativePath);
@@ -223,17 +222,21 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         _errorListProvider.Tasks.Add(newError);
                     }
 
-                    var projectDirectory = Path.GetDirectoryName(path);
-
-                    var physicalFiles =
-                        new DirectoryInfo(projectDirectory).GetFiles()
-                        .Where(f => f.Attributes != FileAttributes.Hidden && f.Attributes != FileAttributes.System)
-                            .Select(f => f.FullName)
-                            .ToList();
-                    
-                    foreach (var physicalFile in physicalFiles)
+                    // If we haven't seen this directory before, find the files inside it
+                    if (processedPhysicalDirectories.Add(path))
                     {
-                        projectPhysicalFiles.Add(physicalFile);
+                        var physicalFiles =
+                            new DirectoryInfo(Path.GetDirectoryName(path)).GetFiles()
+                                .Where(
+                                    f => f.Attributes != FileAttributes.Hidden && f.Attributes != FileAttributes.System)
+                                .Where(f => !f.Name.EndsWith(".user") && !f.Name.EndsWith("proj"))
+                                .Select(f => f.FullName)
+                                .ToList();
+
+                        foreach (var physicalFile in physicalFiles)
+                        {
+                            projectPhysicalFiles.Add(physicalFile);
+                        }
                     }
                 }
             }
@@ -351,19 +354,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _errorListProvider.Tasks.Clear();
 
             return VSConstants.S_OK;
-        }
-    }
-
-    internal class CaseInsensitiveEqualityComparer : IEqualityComparer<string>
-    {
-        public bool Equals(string x, string y)
-        {
-            return x.ToUpperInvariant().Equals(y.ToUpperInvariant());
-        }
-
-        public int GetHashCode(string obj)
-        {
-            return obj.ToUpperInvariant().GetHashCode();
         }
     }
 }
