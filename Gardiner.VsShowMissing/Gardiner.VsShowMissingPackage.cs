@@ -119,6 +119,10 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             {
                 Debug.WriteLine(proj.Name);
 
+                // Skip unloaded projects 
+                if (proj.ConfigurationManager == null)
+                    continue;
+
                 IDictionary<string, string> dict = new Dictionary<string, string>();
                 dict.Add("Configuration", proj.ConfigurationManager.ActiveConfiguration.ConfigurationName);
                 using (var projectCollection = new ProjectCollection(dict))
@@ -214,12 +218,15 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                 Debug.WriteLine("\t" + item.Name);
 
+                string projectFilename = item.ContainingProject.FileName;
+
                 for (short i = 0; i < item.FileCount; i++)
                 {
                     var filePath = item.FileNames[i];
+
                     projectLogicalFiles.Add(filePath);
 
-                    string projectFilename = item.ContainingProject.FileName;
+                    // Skip if this is a linked file
 
                     if (!File.Exists(filePath))
                     {
