@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -138,7 +137,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                     if (Options.NotIncludedFiles)
                     {
-                        
                         var errorCategory = Options.MessageLevel;
 
                         physicalFiles.ExceptWith(logicalFiles);
@@ -220,6 +218,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                 string projectFilename = item.ContainingProject.FileName;
 
+                string projectDirectory = Path.GetDirectoryName(projectFilename);
+
                 for (short i = 0; i < item.FileCount; i++)
                 {
                     var filePath = item.FileNames[i];
@@ -227,6 +227,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     projectLogicalFiles.Add(filePath);
 
                     // Skip if this is a linked file
+                    if (!filePath.StartsWith(projectDirectory, StringComparison.InvariantCultureIgnoreCase))
+                        continue;
 
                     if (!File.Exists(filePath))
                     {
