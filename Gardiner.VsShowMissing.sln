@@ -4,6 +4,10 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{50E5A04C-D428-404C-BE02-7DFBCBFD9F4B}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gardiner.VsShowMissing", "Gardiner.VsShowMissing\Gardiner.VsShowMissing.csproj", "{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}"
 EndProject
