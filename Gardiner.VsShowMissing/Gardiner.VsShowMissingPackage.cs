@@ -127,7 +127,10 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                     var physicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
                     var logicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
-                    NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles, new HashSet<string>());
+                    var physicalFileProjectMap = new Dictionary<string, string>();
+
+                    NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles,
+                        new HashSet<string>(), physicalFileProjectMap);
 
                     if (Options.NotIncludedFiles)
                     {
@@ -138,13 +141,17 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         foreach (var file in physicalFiles)
                         {
                             Debug.WriteLine($"Physical file: {file}");
+
+                            IVsHierarchy hierarchyItem;
+                            _solution.GetProjectOfUniqueName(physicalFileProjectMap[file], out hierarchyItem);
+
                             var newError = new ErrorTask()
                             {
                                 ErrorCategory = errorCategory,
                                 Category = TaskCategory.BuildCompile,
                                 Text = "File on disk is not included in project",
                                 Document = file,
-                                //HierarchyItem = hierarchyItem,
+                                HierarchyItem = hierarchyItem,
                                 CanDelete = true,
                             };
 
@@ -190,7 +197,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine($"BuildEventsOnOnBuildProjConfigBegin {project}");
         }
 
-        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles, ISet<string> processedPhysicalDirectories )
+        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles, ISet<string> processedPhysicalDirectories, IDictionary<string, string> physicalFileProjectMap  )
         {
             if (projectItems == null)
                 return;
@@ -199,7 +206,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             foreach (ProjectItem item in projectItems)
             {
-                NavigateProjectItems(item.ProjectItems, buildProject, projectPhysicalFiles, projectLogicalFiles, processedPhysicalDirectories);
+                NavigateProjectItems(item.ProjectItems, buildProject, projectPhysicalFiles, projectLogicalFiles, processedPhysicalDirectories, physicalFileProjectMap);
 
                 if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}") // VSConstants.GUID_ItemType_PhysicalFile
                     continue;
@@ -208,12 +215,14 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                 for (short i = 0; i < item.FileCount; i++)
                 {
-                    var path = item.FileNames[i];
-                    projectLogicalFiles.Add(path);
+                    var filePath = item.FileNames[i];
+                    projectLogicalFiles.Add(filePath);
 
-                    if (!File.Exists(path))
+                    string projectFilename = item.ContainingProject.FileName;
+
+                    if (!File.Exists(filePath))
                     {
-                        var relativePath = path.Replace(buildProject.DirectoryPath + @"\", "");
+                        var relativePath = filePath.Replace(buildProject.DirectoryPath + @"\", "");
 
                         var found = buildProject.Items.Any(x => x.EvaluatedInclude == relativePath);
 
@@ -224,14 +233,14 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         }
 
                         IVsHierarchy hierarchyItem;
-                        _solution.GetProjectOfUniqueName(item.ContainingProject.FileName, out hierarchyItem);
+                        _solution.GetProjectOfUniqueName(projectFilename, out hierarchyItem);
 
                         var newError = new ErrorTask()
                         {
                             ErrorCategory = errorCategory,
                             Category = TaskCategory.BuildCompile,
                             Text = "File referenced in project does not exist",
-                            Document = path,
+                            Document = filePath,
                             HierarchyItem = hierarchyItem,
                             CanDelete = true,
                         };
@@ -242,11 +251,13 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         _errorListProvider.Tasks.Add(newError);
                     }
 
+                    string directoryName = Path.GetDirectoryName(filePath);
+
                     // If we haven't seen this directory before, find the files inside it
-                    if (processedPhysicalDirectories.Add(path))
+                    if (processedPhysicalDirectories.Add(directoryName))
                     {
                         var physicalFiles =
-                            new DirectoryInfo(Path.GetDirectoryName(path)).GetFiles()
+                            new DirectoryInfo(directoryName).GetFiles()
                                 .Where(
                                     f => f.Attributes != FileAttributes.Hidden && f.Attributes != FileAttributes.System)
                                 .Where(f => !f.Name.EndsWith(".user") && !f.Name.EndsWith("proj"))
@@ -256,6 +267,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         foreach (var physicalFile in physicalFiles)
                         {
                             projectPhysicalFiles.Add(physicalFile);
+                            physicalFileProjectMap.Add(physicalFile, projectFilename);
                         }
                     }
                 }
