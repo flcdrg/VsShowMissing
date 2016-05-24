@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -105,7 +106,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             Debug.WriteLine("BuildEventsOnOnBuildBegin {0} {1}", scope, action);
 
-            if (Options.Timing == RunWhen.BeforeBuild)
+            if (Options != null && Options.Timing == RunWhen.BeforeBuild)
                 FindMissingFiles();
         }
 
@@ -124,7 +125,16 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 {
                     var buildProject = projectCollection.LoadProject(proj.FullName);
 
-                    NavigateProjectItems(proj.ProjectItems, buildProject);
+                    var physicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
+                    var logicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
+                    NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles);
+
+                    physicalFiles.ExceptWith(logicalFiles);
+
+                    foreach (var file in physicalFiles)
+                    {
+                        Debug.WriteLine($"Physical file: {file}, {new FileInfo(file)}");
+                    }
                 }
             }
 
@@ -160,7 +170,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine($"BuildEventsOnOnBuildProjConfigBegin {project}");
         }
 
-        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject)
+        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles )
         {
             if (projectItems == null)
                 return;
@@ -169,7 +179,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             foreach (ProjectItem item in projectItems)
             {
-                NavigateProjectItems(item.ProjectItems, buildProject);
+                NavigateProjectItems(item.ProjectItems, buildProject, projectPhysicalFiles, projectLogicalFiles);
 
                 if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}") // VSConstants.GUID_ItemType_PhysicalFile
                     continue;
@@ -179,6 +189,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 for (short i = 0; i < item.FileCount; i++)
                 {
                     var path = item.FileNames[i];
+                    projectLogicalFiles.Add(path);
+
                     if (!File.Exists(path))
                     {
 
@@ -209,6 +221,19 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         Debug.WriteLine("\t\t** Missing");
 
                         _errorListProvider.Tasks.Add(newError);
+                    }
+
+                    var projectDirectory = Path.GetDirectoryName(path);
+
+                    var physicalFiles =
+                        new DirectoryInfo(projectDirectory).GetFiles()
+                        .Where(f => f.Attributes != FileAttributes.Hidden && f.Attributes != FileAttributes.System)
+                            .Select(f => f.FullName)
+                            .ToList();
+                    
+                    foreach (var physicalFile in physicalFiles)
+                    {
+                        projectPhysicalFiles.Add(physicalFile);
                     }
                 }
             }
@@ -326,6 +351,19 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _errorListProvider.Tasks.Clear();
 
             return VSConstants.S_OK;
+        }
+    }
+
+    internal class CaseInsensitiveEqualityComparer : IEqualityComparer<string>
+    {
+        public bool Equals(string x, string y)
+        {
+            return x.ToUpperInvariant().Equals(y.ToUpperInvariant());
+        }
+
+        public int GetHashCode(string obj)
+        {
+            return obj.ToUpperInvariant().GetHashCode();
         }
     }
 }
