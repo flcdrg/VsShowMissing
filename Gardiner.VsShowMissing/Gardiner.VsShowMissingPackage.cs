@@ -77,6 +77,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _solution = (IVsSolution)GetService(typeof(SVsSolution));
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
 
+            // Commands
+            IncludeFileCommand.Initialize(this);
+
             _dte = (DTE)GetService(typeof(SDTE));
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;

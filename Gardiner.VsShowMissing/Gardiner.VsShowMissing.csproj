@@ -132,6 +132,7 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseCommand.cs" />
     <Compile Include="CaseInsensitiveEqualityComparer.cs" />
     <Compile Include="FindFilesPatternToRegex.cs" />
     <Compile Include="Gardiner.VsShowMissing.cs">
@@ -139,6 +140,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Gardiner.VsShowMissing.vsct</DependentUpon>
     </Compile>
+    <Compile Include="IncludeFileCommand.cs" />
     <Compile Include="MissingErrorTask.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gardiner.VsShowMissingPackage.cs" />
