@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Windows.Threading;
 using EnvDTE;
 using EnvDTE80;
@@ -137,6 +139,14 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                     if (Options.NotIncludedFiles)
                     {
+                        var filters = new List<Regex>();
+
+                        if (!string.IsNullOrEmpty(Options.IgnorePhysicalFiles))
+                        {
+                            filters.AddRange(Options.IgnorePhysicalFiles.Split(new[] {";"},
+                                StringSplitOptions.RemoveEmptyEntries).Select( p => FindFilesPatternToRegex.Convert(p.Trim())));
+                        }
+
                         var errorCategory = Options.MessageLevel;
 
                         physicalFiles.ExceptWith(logicalFiles);
@@ -144,6 +154,12 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         foreach (var file in physicalFiles)
                         {
                             Debug.WriteLine($"Physical file: {file}");
+
+                            if (filters.Any(f => f.IsMatch(file)))
+                            {
+                                Debug.WriteLine("\tIgnored by filter");
+                                continue;
+                            }
 
                             IVsHierarchy hierarchyItem;
                             string physicalFileProject = physicalFileProjectMap[file];
@@ -411,6 +427,16 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _errorListProvider.Tasks.Clear();
 
             return VSConstants.S_OK;
+        }
+    }
+
+    public class Stuff
+    {
+        private SqlCommand _command;
+
+        public Stuff()
+        {
+            _command = new SqlCommand();
         }
     }
 }

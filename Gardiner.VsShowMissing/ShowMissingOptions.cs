@@ -34,7 +34,12 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         [LocDisplayName("Ignore Pattern")]
         [Description("Semicolon-separated list of filename patterns to ignore when checking physical files")]
         [Category("Show Missing")]
-        [DefaultValue("*.*proj;*.user")]
+        [DefaultValue("*.*proj;*.user;.gitignore;*.ruleset;*.suo;*.licx;*.dotSettings")]
         public string IgnorePhysicalFiles { get; set; }
+
+        public ShowMissingOptions()
+        {
+            IgnorePhysicalFiles = "*.*proj;*.user;.gitignore;*.ruleset;*.suo;*.licx;*.dotSettings";
+        }
     }
 }

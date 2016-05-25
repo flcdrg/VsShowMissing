@@ -42,7 +42,9 @@
     <Groups>
 
       <Group guid="guidGardiner_VsShowMissingCmdSet" id="MyMenuGroup" priority="0x0600">
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
+        <!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>-->
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ERRORLIST"/>
+        
       </Group>
       
 
