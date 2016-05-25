@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -36,10 +37,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
-    //[ProvideMenuResource("Menus.ctmenu", 1)]
-    [Guid(GuidList.guidGardiner_VsShowMissingPkgString)]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [Guid(PackageGuids.guidGardiner_VsShowMissingPkgString)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-    [ProvideOptionPage(typeof(ShowMissingOptions), "Show Missing", "General", 101, 100, true, new[] { "File Nesting in Solution Explorer" })]
+    [ProvideOptionPage(typeof(ShowMissingOptions), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class Gardiner_VsShowMissingPackage : Package, IVsSolutionEvents
     {
         private DTE _dte;
@@ -62,7 +64,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         /////////////////////////////////////////////////////////////////////////////
         // Overridden Package Implementation
-
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.

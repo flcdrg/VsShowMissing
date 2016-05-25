@@ -42,12 +42,12 @@
     <Groups>
 
       <Group guid="guidGardiner_VsShowMissingCmdSet" id="MyMenuGroup" priority="0x0600">
-        <!--<Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>-->
-        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ERRORLIST"/>
-        
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
       </Group>
-      
 
+      <Group guid="guidGardiner_ErrorListCmdSet" id="MyErrorListMenuGroup" priority="0x0601">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ERRORLIST"/>
+      </Group>
 
     </Groups>
     
@@ -66,12 +66,28 @@
       <Button guid="guidGardiner_VsShowMissingCmdSet" id="cmdidFindMissingFiles" priority="0x0100" type="Button">
         <Parent guid="guidGardiner_VsShowMissingCmdSet" id="MyMenuGroup" />
         <Icon guid="guidImages" id="bmpPic1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Find Missing files</ButtonText>
         </Strings>
       </Button>
 
+      <Button guid="guidGardiner_ErrorListCmdSet" id="cmdidDeleteFileOnDisk" priority="0x0100" type="Button">
+        <Parent guid="guidGardiner_ErrorListCmdSet" id="MyErrorListMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Strings>
+          <ButtonText>Delete file on disk</ButtonText>
+        </Strings>
+      </Button>
 
+      <Button guid="guidGardiner_ErrorListCmdSet" id="cmdidIncludeFileInProject" priority="0x0101" type="Button">
+        <Parent guid="guidGardiner_ErrorListCmdSet" id="MyErrorListMenuGroup" />
+        <Strings>
+          <ButtonText>Include file in project</ButtonText>
+        </Strings>
+      </Button>
 
     </Buttons>
    
@@ -88,10 +104,6 @@
  
   </Commands>
 
-
-
-
-
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidGardiner_VsShowMissingPkg" value="{36b8e40e-ceaa-4305-bdb7-1a68a0d84067}" />
@@ -101,6 +113,13 @@
 
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="cmdidFindMissingFiles" value="0x0100" />
+    </GuidSymbol>
+    
+    <GuidSymbol name="guidGardiner_ErrorListCmdSet" value="{A4D9C40F-E108-425C-8C72-9F99C53E3643}">
+
+      <IDSymbol name="MyErrorListMenuGroup" value="0x1021" />
+      <IDSymbol name="cmdidDeleteFileOnDisk" value="0x0200" />
+      <IDSymbol name="cmdidIncludeFileInProject" value="0x0201" />
     </GuidSymbol>
     
     

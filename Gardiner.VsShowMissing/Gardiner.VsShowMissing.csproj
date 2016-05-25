@@ -134,17 +134,15 @@
   <ItemGroup>
     <Compile Include="CaseInsensitiveEqualityComparer.cs" />
     <Compile Include="FindFilesPatternToRegex.cs" />
-    <Compile Include="Guids.cs" />
-    <Compile Include="MissingErrorTask.cs" />
-    <Compile Include="Resources.Designer.cs">
+    <Compile Include="Gardiner.VsShowMissing.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
+      <DependentUpon>Gardiner.VsShowMissing.vsct</DependentUpon>
     </Compile>
+    <Compile Include="MissingErrorTask.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gardiner.VsShowMissingPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PkgCmdID.cs" />
     <Compile Include="RunWhen.cs" />
     <Compile Include="ShowMissingOptions.cs">
       <SubType>Component</SubType>
@@ -153,11 +151,6 @@
     <Compile Include="UIHierarchyExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="VSPackage.resx">
       <MergeWithCTO>true</MergeWithCTO>
       <ManifestResourceName>VSPackage</ManifestResourceName>
@@ -174,6 +167,8 @@
   <ItemGroup>
     <VSCTCompile Include="Gardiner.VsShowMissing.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <Generator>VsctGenerator</Generator>
+      <LastGenOutput>Gardiner.VsShowMissing.cs</LastGenOutput>
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
