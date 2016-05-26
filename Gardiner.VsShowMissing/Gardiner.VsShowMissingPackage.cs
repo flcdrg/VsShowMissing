@@ -78,7 +78,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
 
             // Commands
-            IncludeFileCommand.Initialize(this);
+            IncludeFileCommand.Initialize(this, _errorListProvider);
 
             _dte = (DTE)GetService(typeof(SDTE));
             var events = _dte.Events;

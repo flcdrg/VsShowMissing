@@ -11,22 +11,19 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 {
     internal class IncludeFileCommand : BaseCommand
     {
-        private ProjectItem _item;
+        private readonly ErrorListProvider _errorListProvider;
 
-        private IncludeFileCommand(IServiceProvider serviceProvider)
+        private IncludeFileCommand(IServiceProvider serviceProvider, ErrorListProvider errorListProvider)
             : base(serviceProvider)
         {
+            _errorListProvider = errorListProvider;
         }
 
-        public static IncludeFileCommand Instance
-        {
-            get;
-            private set;
-        }
+        public static IncludeFileCommand Instance { get; private set; }
 
-        public static void Initialize(IServiceProvider provider)
+        public static void Initialize(IServiceProvider provider, ErrorListProvider errorListProvider)
         {
-            Instance = new IncludeFileCommand(provider);
+            Instance = new IncludeFileCommand(provider, errorListProvider);
         }
 
         protected override void SetupCommands()
@@ -36,7 +33,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private void InvokeHandler(object sender, EventArgs eventArgs)
         {
-            
         }
 
         private void AddCustomToolItemBeforeQueryStatus(object sender, EventArgs e)
@@ -49,7 +45,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             button.Visible = true;
 
             OleMenuCommand menuItem = sender as OleMenuCommand;
-            using (ErrorListProvider errorListMenu = new TaskProvider(ServiceProvider))
             {
                 Window window = DTE.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
                 var myErrorList = (EnvDTE80.ErrorList)window.Object;
@@ -62,9 +57,12 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         for (int i = 1; i <= errorItems.Count; i++)
                         {
                             ErrorItem item = errorItems.Item(i);
+
+                            var targetProp = item.GetType().GetProperty("Target");
+
                             Debug.WriteLine(item);
-                            var missingErrorTask = item as MissingErrorTask;
-                            Debug.WriteLine(missingErrorTask);
+                            //var missingErrorTask = item as MissingErrorTask;
+                            //Debug.WriteLine(missingErrorTask);
                         }
 
                         menuItem.Enabled = true;
