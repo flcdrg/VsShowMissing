@@ -79,6 +79,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             // Commands
             IncludeFileCommand.Initialize(this);
+            DeleteFileCommand.Initialize(this);
 
             _dte = (DTE)GetService(typeof(SDTE));
             var events = _dte.Events;
@@ -174,7 +175,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                                 ErrorCategory = errorCategory,
                                 Category = TaskCategory.BuildCompile,
                                 Text = "File on disk is not included in project",
-                                Code = "MI002",
+                                Code = "MI0002",
                                 Document = file,
                                 HierarchyItem = hierarchyItem,
                                 ProjectPath = physicalFileProject,

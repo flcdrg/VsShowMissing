@@ -2,6 +2,7 @@
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
@@ -13,11 +14,12 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         }
 
         protected abstract void InvokeHandler(object sender, EventArgs eventArgs);
-        protected abstract void AddCustomToolItemBeforeQueryStatus(object sender, EventArgs e);
 
-        protected override void SetupCommands()
+        protected void AddCustomToolItemBeforeQueryStatus(object sender, EventArgs e)
         {
-            AddCommand(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidIncludeFileInProject, InvokeHandler, AddCustomToolItemBeforeQueryStatus);
+            OleMenuCommand menuItem = (OleMenuCommand) sender;
+
+            menuItem.Visible = CalculateVisible();
         }
 
         protected void ForEachTask(Action<object> action)
@@ -35,5 +37,27 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 action(items[0]);
             }
         }
+
+        protected abstract bool VisibleExpression(MissingErrorTask task);
+
+              private bool CalculateVisible()
+        {
+            int misMatched = 0;
+
+            ForEachTask(item =>
+            {
+                var task = item as MissingErrorTask;
+
+                // Visible if we've only selected this kind of item.
+                if (VisibleExpression(task))
+                {
+                    misMatched++;
+                }
+            });
+
+            var visible = misMatched == 0;
+            return visible;
+        }
+
     }
 }
