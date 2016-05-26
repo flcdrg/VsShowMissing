@@ -133,6 +133,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseCommand.cs" />
+    <Compile Include="BaseMissingCommand.cs" />
     <Compile Include="CaseInsensitiveEqualityComparer.cs" />
     <Compile Include="FindFilesPatternToRegex.cs" />
     <Compile Include="Gardiner.VsShowMissing.cs">

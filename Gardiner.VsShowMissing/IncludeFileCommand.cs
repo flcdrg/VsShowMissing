@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
-    internal class IncludeFileCommand : BaseCommand
+    internal class IncludeFileCommand : BaseMissingCommand
     {
         private IncludeFileCommand(IServiceProvider serviceProvider)
             : base(serviceProvider)
@@ -21,12 +21,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Instance = new IncludeFileCommand(provider);
         }
 
-        protected override void SetupCommands()
-        {
-            AddCommand(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidIncludeFileInProject, InvokeHandler, AddCustomToolItemBeforeQueryStatus);
-        }
-
-        private void InvokeHandler(object sender, EventArgs eventArgs)
+        protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
             Window window = DTE.Windows.Item(WindowKinds.vsWindowKindErrorList);
             var myErrorList = (IVsTaskList2)window.Object;
@@ -35,31 +30,30 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             myErrorList.GetSelectionCount(out count);
         }
 
-        private void AddCustomToolItemBeforeQueryStatus(object sender, EventArgs e)
+        protected override void AddCustomToolItemBeforeQueryStatus(object sender, EventArgs e)
         {
             OleMenuCommand menuItem = (OleMenuCommand) sender;
 
-            Window window = DTE.Windows.Item(WindowKinds.vsWindowKindErrorList);
-            var myErrorList = (IVsTaskList2) window.Object;
+            menuItem.Visible = CalculateVisible();
+        }
 
-            IVsEnumTaskItems itemEnumerator;
-            myErrorList.EnumSelectedItems(out itemEnumerator);
-
-            uint[] fetched = {0};
-            IVsTaskItem[] items = {null};
+        private bool CalculateVisible()
+        {
             int misMatched = 0;
-            for (itemEnumerator.Reset(); itemEnumerator.Next(1, items, fetched) == VSConstants.S_OK && fetched[0] == 1;)
+
+            ForEachTask(item =>
             {
-                var task = items[0] as MissingErrorTask;
+                var task = item as MissingErrorTask;
 
                 // Visible if we've only selected this kind of item.
                 if (task == null || task.Code != "MI002")
                 {
                     misMatched++;
                 }
-            }
+            });
 
-            menuItem.Visible = misMatched == 0;
+            var visible = misMatched == 0;
+            return visible;
         }
     }
 }
