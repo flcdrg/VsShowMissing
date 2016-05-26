@@ -76,7 +76,7 @@
       <Button guid="guidGardiner_ErrorListCmdSet" id="cmdidDeleteFileOnDisk" priority="0x0100" type="Button">
         <Parent guid="guidGardiner_ErrorListCmdSet" id="MyErrorListMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultDisabled</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Delete file on disk</ButtonText>
         </Strings>
@@ -84,6 +84,8 @@
 
       <Button guid="guidGardiner_ErrorListCmdSet" id="cmdidIncludeFileInProject" priority="0x0101" type="Button">
         <Parent guid="guidGardiner_ErrorListCmdSet" id="MyErrorListMenuGroup" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
           <ButtonText>Include file in project</ButtonText>
         </Strings>

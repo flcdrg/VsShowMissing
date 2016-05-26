@@ -78,7 +78,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
 
             // Commands
-            IncludeFileCommand.Initialize(this, _errorListProvider);
+            IncludeFileCommand.Initialize(this);
 
             _dte = (DTE)GetService(typeof(SDTE));
             var events = _dte.Events;
@@ -173,7 +173,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             {
                                 ErrorCategory = errorCategory,
                                 Category = TaskCategory.BuildCompile,
-                                Text = "MI0002 : File on disk is not included in project",
+                                Text = "File on disk is not included in project",
+                                Code = "MI002",
                                 Document = file,
                                 HierarchyItem = hierarchyItem,
                                 ProjectPath = physicalFileProject,
@@ -269,7 +270,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         {
                             ErrorCategory = errorCategory,
                             Category = TaskCategory.BuildCompile,
-                            Text = "MI0001 : File referenced in project does not exist",
+                            Text = "File referenced in project does not exist",
+                            Code = "MI0001",
                             Document = filePath,
                             HierarchyItem = hierarchyItem,
                         };
