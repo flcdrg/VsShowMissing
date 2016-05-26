@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using VSLangProj;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
@@ -33,49 +35,47 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private void InvokeHandler(object sender, EventArgs eventArgs)
         {
+            Window window = DTE.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
+            var myErrorList = (IVsTaskList2)window.Object;
+
+            int count;
+            myErrorList.GetSelectionCount(out count);
         }
 
         private void AddCustomToolItemBeforeQueryStatus(object sender, EventArgs e)
         {
-            OleMenuCommand button = (OleMenuCommand) sender;
-            button.Visible = false;
- 
+            OleMenuCommand menuItem = (OleMenuCommand) sender;
 
-            //button.Checked = _item.Properties.Item("CustomTool").Value.ToString() == CUSTOM_TOOL_NAME;
-            button.Visible = true;
+            // Visible if we've only selected this kind of item.
+            Window window = DTE.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
+            var myErrorList = (IVsTaskList2) window.Object;
 
-            OleMenuCommand menuItem = sender as OleMenuCommand;
+            IVsEnumTaskItems itemEnumerator;
+            myErrorList.EnumSelectedItems(out itemEnumerator);
+
+            uint[] fetched = {0};
+            IVsTaskItem[] items = {null};
+            int misMatched = 0;
+            for (itemEnumerator.Reset(); itemEnumerator.Next(1, items, fetched) == VSConstants.S_OK && fetched[0] == 1;)
             {
-                Window window = DTE.Windows.Item(EnvDTE80.WindowKinds.vsWindowKindErrorList);
-                var myErrorList = (EnvDTE80.ErrorList)window.Object;
-                var errorItems = myErrorList.ErrorItems;
-                if (errorItems != null)
+                Task task = items[0] as MissingErrorTask;
+
+                if (task == null)
                 {
-
-                    if (errorItems.Count > 0)
-                    {
-                        for (int i = 1; i <= errorItems.Count; i++)
-                        {
-                            ErrorItem item = errorItems.Item(i);
-
-                            var targetProp = item.GetType().GetProperty("Target");
-
-                            Debug.WriteLine(item);
-                            //var missingErrorTask = item as MissingErrorTask;
-                            //Debug.WriteLine(missingErrorTask);
-                        }
-
-                        menuItem.Enabled = true;
-                        menuItem.Visible = true;
-                    }
-                    else
-                    {
-                        menuItem.Enabled = false;
-                        menuItem.Visible = false;
-                    }
+                    misMatched++;
                 }
             }
+
+            if (misMatched == 0)
+            {
+                menuItem.Enabled = true;
+                menuItem.Visible = true;
+            }
+            else
+            {
+                menuItem.Enabled = false;
+                menuItem.Visible = false;
+            }
         }
-       
     }
 }
