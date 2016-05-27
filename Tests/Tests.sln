@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp", "ConsoleApp\Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary1", "ClassLibrary1\ClassLibrary1.csproj", "{3EBA292B-7398-4E25-BB47-626BD37F150C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder1", "NewFolder1", "{A528EE48-A11D-48DE-9BDE-0F3634EE7761}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NewFolder2", "NewFolder2", "{B9D673CF-480F-4F99-B4ED-BFBF29BAF989}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +34,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{37EF3FB5-9AAE-4495-9C6D-2071D8C12CD6} = {B9D673CF-480F-4F99-B4ED-BFBF29BAF989}
+		{3EBA292B-7398-4E25-BB47-626BD37F150C} = {A528EE48-A11D-48DE-9BDE-0F3634EE7761}
 	EndGlobalSection
 EndGlobal
