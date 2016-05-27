@@ -37,7 +37,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             var tasks = new List<MissingErrorTask>();
 
-                ForEachTask(task =>
+            ForEachTask(task =>
             {
                 var item = task as MissingErrorTask;
 
@@ -65,26 +65,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         protected override bool VisibleExpression(MissingErrorTask task)
         {
             return (task == null || task.Code != "MI0002");
-        }
-
-        private Project FindProject(Projects projects, string projectFile)
-        {
-            foreach (Project project in projects)
-            {
-                if (string.Equals(project.FullName, projectFile, StringComparison.InvariantCultureIgnoreCase))
-                    return project;
-            }
-
-            foreach (Project project in projects)
-            {
-                // find child projects
-                foreach (ProjectItem projectItem in project.ProjectItems)
-                {
-                    Debug.WriteLine(projectItem);
-                }
-            }
-
-            return null;
         }
     }
 }
