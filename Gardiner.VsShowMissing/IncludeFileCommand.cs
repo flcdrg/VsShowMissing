@@ -54,7 +54,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     projects.FirstOrDefault(
                         p => p.FullName.Equals(task.ProjectPath, StringComparison.InvariantCultureIgnoreCase));
 
-               project.
+                if (project != null)
+                {
+                    Debug.WriteLine($"Adding {task.Document} to {project.FullName}");
+                    project.ProjectItems.AddFromFile(task.Document);
+                }
             }
         }
   
