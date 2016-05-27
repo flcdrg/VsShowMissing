@@ -40,7 +40,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected abstract bool VisibleExpression(MissingErrorTask task);
 
-              private bool CalculateVisible()
+        private bool CalculateVisible()
         {
             int misMatched = 0;
 

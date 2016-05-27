@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell.Interop;
@@ -31,11 +34,53 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             int count;
             myErrorList.GetSelectionCount(out count);
+
+            var tasks = new List<MissingErrorTask>();
+
+                ForEachTask(task =>
+            {
+                var item = task as MissingErrorTask;
+
+                if (item != null)
+                {
+                    tasks.Add(item);
+                }
+            });
+
+            var projects = ((DTE) DTE).AllProjects();
+            foreach (var task in tasks)
+            {
+                var project =
+                    projects.FirstOrDefault(
+                        p => p.FullName.Equals(task.ProjectPath, StringComparison.InvariantCultureIgnoreCase));
+
+               project.
+            }
         }
   
         protected override bool VisibleExpression(MissingErrorTask task)
         {
             return (task == null || task.Code != "MI0002");
+        }
+
+        private Project FindProject(Projects projects, string projectFile)
+        {
+            foreach (Project project in projects)
+            {
+                if (string.Equals(project.FullName, projectFile, StringComparison.InvariantCultureIgnoreCase))
+                    return project;
+            }
+
+            foreach (Project project in projects)
+            {
+                // find child projects
+                foreach (ProjectItem projectItem in project.ProjectItems)
+                {
+                    Debug.WriteLine(projectItem);
+                }
+            }
+
+            return null;
         }
     }
 }

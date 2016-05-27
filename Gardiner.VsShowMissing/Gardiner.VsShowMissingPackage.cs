@@ -120,14 +120,10 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             _errorListProvider.Tasks.Clear();
 
-            var projects = Projects();
+            var projects = _dte.AllProjects();
             foreach (Project proj in projects)
             {
                 Debug.WriteLine(proj.Name);
-
-                // Skip unloaded projects 
-                if (proj.ConfigurationManager == null)
-                    continue;
 
                 IDictionary<string, string> dict = new Dictionary<string, string>();
                 dict.Add("Configuration", proj.ConfigurationManager.ActiveConfiguration.ConfigurationName);
@@ -334,56 +330,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             }
         }
 
-        private IList<Project> Projects()
-        {
-            Projects projects = _dte.Solution.Projects;
-            List<Project> list = new List<Project>();
-            var item = projects.GetEnumerator();
-            while (item.MoveNext())
-            {
-                var project = item.Current as Project;
-                if (project == null)
-                {
-                    continue;
-                }
-
-                if (project.Kind == ProjectKinds.vsProjectKindSolutionFolder)
-                {
-                    list.AddRange(GetSolutionFolderProjects(project));
-                }
-                else
-                {
-                    list.Add(project);
-                }
-            }
-
-            return list;
-        }
-
-        private static IEnumerable<Project> GetSolutionFolderProjects(Project solutionFolder)
-        {
-            List<Project> list = new List<Project>();
-            for (var i = 1; i <= solutionFolder.ProjectItems.Count; i++)
-            {
-                var subProject = solutionFolder.ProjectItems.Item(i).SubProject;
-                if (subProject == null)
-                {
-                    continue;
-                }
-
-                // If this is another solution folder, do a recursive call, otherwise add
-                if (subProject.Kind == ProjectKinds.vsProjectKindSolutionFolder)
-                {
-                    list.AddRange(GetSolutionFolderProjects(subProject));
-                }
-                else
-                {
-                    list.Add(subProject);
-                }
-            }
-            return list;
-        }
-
         public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)
         {
             return VSConstants.S_OK;
@@ -434,16 +380,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _errorListProvider.Tasks.Clear();
 
             return VSConstants.S_OK;
-        }
-    }
-
-    public class Stuff
-    {
-        private SqlCommand _command;
-
-        public Stuff()
-        {
-            _command = new SqlCommand();
         }
     }
 }
