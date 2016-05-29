@@ -4,22 +4,23 @@ using System.Diagnostics;
 using System.Linq;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
     internal class IncludeFileCommand : BaseMissingCommand
     {
-        private IncludeFileCommand(IServiceProvider serviceProvider)
-            : base(serviceProvider)
+        private IncludeFileCommand(IServiceProvider serviceProvider, ErrorListProvider errorListProvider)
+            : base(serviceProvider, errorListProvider)
         {
         }
 
         public static IncludeFileCommand Instance { get; private set; }
 
-        public static void Initialize(IServiceProvider provider)
+        public static void Initialize(IServiceProvider provider, ErrorListProvider errorListProvider)
         {
-            Instance = new IncludeFileCommand(provider);
+            Instance = new IncludeFileCommand(provider, errorListProvider);
         }
 
         protected override void SetupCommands()
@@ -29,23 +30,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
-            Window window = DTE.Windows.Item(WindowKinds.vsWindowKindErrorList);
-            var myErrorList = (IVsTaskList2)window.Object;
-
-            int count;
-            myErrorList.GetSelectionCount(out count);
-
-            var tasks = new List<MissingErrorTask>();
-
-            ForEachTask(task =>
-            {
-                var item = task as MissingErrorTask;
-
-                if (item != null)
-                {
-                    tasks.Add(item);
-                }
-            });
+            var tasks = MissingErrorTasks("MI0002");
 
             var projects = ((DTE) DTE).AllProjects();
             foreach (var task in tasks)
@@ -58,10 +43,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 {
                     Debug.WriteLine($"Adding {task.Document} to {project.FullName}");
                     project.ProjectItems.AddFromFile(task.Document);
+                    RemoveTask(task);
                 }
             }
         }
-  
+
         protected override bool VisibleExpression(MissingErrorTask task)
         {
             return (task == null || task.Code != "MI0002");

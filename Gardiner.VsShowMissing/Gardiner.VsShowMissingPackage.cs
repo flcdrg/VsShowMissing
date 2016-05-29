@@ -77,16 +77,16 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _solution = (IVsSolution)GetService(typeof(SVsSolution));
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
 
+            if (_errorListProvider == null)
+                _errorListProvider = new TaskProvider(this);
+
             // Commands
-            IncludeFileCommand.Initialize(this);
-            DeleteFileCommand.Initialize(this);
+            IncludeFileCommand.Initialize(this, _errorListProvider);
+            DeleteFileCommand.Initialize(this, _errorListProvider);
 
             _dte = (DTE)GetService(typeof(SDTE));
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
-
-            if (_errorListProvider == null)
-                _errorListProvider = new TaskProvider(this);
 
             Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => 
              { 

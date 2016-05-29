@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
@@ -9,8 +10,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 {
     internal abstract class BaseMissingCommand : BaseCommand
     {
-        protected BaseMissingCommand(IServiceProvider serviceProvider) : base(serviceProvider)
+        private readonly ErrorListProvider _errorListProvider;
+
+        protected BaseMissingCommand(IServiceProvider serviceProvider, ErrorListProvider errorListProvider) : base(serviceProvider)
         {
+            _errorListProvider = errorListProvider;
         }
 
         protected abstract void InvokeHandler(object sender, EventArgs eventArgs);
@@ -40,6 +44,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected abstract bool VisibleExpression(MissingErrorTask task);
 
+        protected void RemoveTask(Task task)
+        {
+            _errorListProvider.Tasks.Remove(task);
+        }
+
         private bool CalculateVisible()
         {
             int misMatched = 0;
@@ -59,5 +68,20 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             return visible;
         }
 
+        protected List<MissingErrorTask> MissingErrorTasks(string code)
+        {
+            var tasks = new List<MissingErrorTask>();
+
+            ForEachTask(task =>
+            {
+                var item = task as MissingErrorTask;
+
+                if (item != null && item.Code == code)
+                {
+                    tasks.Add(item);
+                }
+            });
+            return tasks;
+        }
     }
 }

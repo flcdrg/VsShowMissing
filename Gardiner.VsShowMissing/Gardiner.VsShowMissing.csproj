@@ -136,6 +136,7 @@
     <Compile Include="BaseMissingCommand.cs" />
     <Compile Include="CaseInsensitiveEqualityComparer.cs" />
     <Compile Include="DeleteFileCommand.cs" />
+    <Compile Include="ExcludeFileCommand.cs" />
     <Compile Include="FindFilesPatternToRegex.cs" />
     <Compile Include="Gardiner.VsShowMissing.cs">
       <AutoGen>True</AutoGen>

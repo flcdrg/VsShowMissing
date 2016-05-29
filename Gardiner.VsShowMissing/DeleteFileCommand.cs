@@ -1,18 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Windows.Forms;
+using Microsoft.VisualStudio.Shell;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
     internal class DeleteFileCommand : BaseMissingCommand
     {
-        public DeleteFileCommand(IServiceProvider serviceProvider) : base(serviceProvider)
+        public DeleteFileCommand(IServiceProvider serviceProvider, ErrorListProvider errorListProvider) 
+            : base(serviceProvider, errorListProvider)
         {
         }
         
         public static DeleteFileCommand Instance { get; private set; }
 
-        public static void Initialize(IServiceProvider provider)
+        public static void Initialize(IServiceProvider provider, ErrorListProvider errorListProvider)
         {
-            Instance = new DeleteFileCommand(provider);
+            Instance = new DeleteFileCommand(provider, errorListProvider);
         }
         
         protected override void SetupCommands()
@@ -27,6 +33,30 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
+            var tasks = MissingErrorTasks("MI0001");
+
+            var failedFiles = new List<string>();
+
+            foreach (var task in tasks)
+            {
+                Debug.WriteLine($"Deleting file {task.Document}");
+
+                try
+                {
+                    File.Delete(task.Document);
+                    RemoveTask(task);
+                }
+                catch (Exception)
+                {
+                    failedFiles.Add(task.Document);
+                }
+            }
+
+            if (failedFiles.Count > 0)
+            {
+                MessageBox.Show("Unable to delete these files:\n\n" + string.Join("\n", failedFiles), "Warning",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
     }

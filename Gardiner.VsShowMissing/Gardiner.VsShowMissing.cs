@@ -31,6 +31,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         public const int MyErrorListMenuGroup = 0x1021;
         public const int cmdidDeleteFileOnDisk = 0x0200;
         public const int cmdidIncludeFileInProject = 0x0201;
+        public const int cmdidExcludeFileFromProject = 0x0202;
         public const int bmpPic1 = 0x0001;
         public const int bmpPic2 = 0x0002;
         public const int bmpPicSearch = 0x0003;
