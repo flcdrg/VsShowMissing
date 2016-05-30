@@ -96,7 +96,7 @@
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>
         <Strings>
-          <ButtonText>Exclude non-existant file from project</ButtonText>
+          <ButtonText>Exclude missing file from project</ButtonText>
         </Strings>
       </Button>
 

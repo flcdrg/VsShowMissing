@@ -1,4 +1,9 @@
-﻿v1.3
+﻿v2.0
+
+* Warn about files on disk that are not in the project
+* Added commands to Error List context menu to fix warnings
+
+v1.3
 
 * Check Condition="" to not flag missing files if they are conditionally excluded
 
