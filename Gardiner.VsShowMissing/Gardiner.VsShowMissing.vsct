@@ -65,7 +65,6 @@
 
       <Button guid="guidGardiner_VsShowMissingCmdSet" id="cmdidFindMissingFiles" priority="0x0100" type="Button">
         <Parent guid="guidGardiner_VsShowMissingCmdSet" id="MyMenuGroup" />
-        <Icon guid="guidImages" id="bmpPic1" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -102,17 +101,6 @@
 
     </Buttons>
    
-    <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
-    <Bitmaps>
-      <!--  The bitmap id is defined in a way that is a little bit different from the others: 
-            the declaration starts with a guid for the bitmap strip, then there is the resource id of the 
-            bitmap strip containing the bitmaps and then there are the numeric ids of the elements used 
-            inside a button definition. An important aspect of this declaration is that the element id 
-            must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="Resources\Images.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows"/>
-      
-    </Bitmaps>
- 
   </Commands>
 
   <Symbols>
@@ -127,14 +115,11 @@
     </GuidSymbol>
     
     <GuidSymbol name="guidGardiner_ErrorListCmdSet" value="{A4D9C40F-E108-425C-8C72-9F99C53E3643}">
-
       <IDSymbol name="MyErrorListMenuGroup" value="0x1021" />
       <IDSymbol name="cmdidDeleteFileOnDisk" value="0x0200" />
       <IDSymbol name="cmdidIncludeFileInProject" value="0x0201" />
       <IDSymbol name="cmdidExcludeFileFromProject" value="0x0202" />
     </GuidSymbol>
-    
-    
     
     <GuidSymbol name="guidImages" value="{06666f0f-f64c-4155-bf46-9fe077a90109}" >
       <IDSymbol name="bmpPic1" value="1" />
