@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using EnvDTE;
-using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
@@ -30,7 +27,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
-            var tasks = MissingErrorTasks("MI0002");
+            var tasks = MissingErrorTasks(Constants.FileOnDiskNotInProject);
 
             var projects = ((DTE) DTE).AllProjects();
             foreach (var task in tasks)
@@ -50,7 +47,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override bool VisibleExpression(MissingErrorTask task)
         {
-            return (task == null || task.Code != "MI0002");
+            return (task != null && task.Code == Constants.FileOnDiskNotInProject);
         }
     }
 }

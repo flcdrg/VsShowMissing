@@ -172,7 +172,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                                 ErrorCategory = errorCategory,
                                 Category = TaskCategory.BuildCompile,
                                 Text = "File on disk is not included in project",
-                                Code = "MI0002",
+                                Code = Constants.FileOnDiskNotInProject,
                                 Document = file,
                                 HierarchyItem = hierarchyItem,
                                 ProjectPath = physicalFileProject,
@@ -308,8 +308,13 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             var error = (MissingErrorTask)sender;
 
-            var projectItem = _dte.Solution.FindProjectItem(error.ProjectPath);
-            SelectItemInSolutionExplorer(projectItem);
+            var project = _dte.AllProjects()
+                .FirstOrDefault(p => p.FullName.Equals(error.ProjectPath, StringComparison.InvariantCultureIgnoreCase));
+
+            
+            //var projectItem = _dte.Solution.FindProjectItem(error.ProjectPath);
+            if (project != null)
+                SelectItemInSolutionExplorer(project.ParentProjectItem);
         }
 
         private void NewErrorOnNavigate(object sender, EventArgs eventArgs)

@@ -135,6 +135,7 @@
     <Compile Include="BaseCommand.cs" />
     <Compile Include="BaseMissingCommand.cs" />
     <Compile Include="CaseInsensitiveEqualityComparer.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="DeleteFileCommand.cs" />
     <Compile Include="ExcludeFileCommand.cs" />
     <Compile Include="FindFilesPatternToRegex.cs" />

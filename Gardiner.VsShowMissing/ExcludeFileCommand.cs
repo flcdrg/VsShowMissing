@@ -21,7 +21,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
-            var tasks = MissingErrorTasks("MI0001");
+            var tasks = MissingErrorTasks(Constants.FileInProjectNotOnDisk);
             var physicalFile = VSConstants.GUID_ItemType_PhysicalFile.ToString("B").ToUpperInvariant();
 
             var projects = ((DTE) DTE).AllProjects();
@@ -36,9 +36,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     Debug.WriteLine($"Removing {task.Document} from {project.FullName}");
 
                     foreach (ProjectItem projectItem in project.ProjectItems)
-                    {
-                        
-                        if (projectItem.Kind == physicalFile && projectItem.FileNames[0].Equals(task.Document, StringComparison.InvariantCultureIgnoreCase))
+                    {                        
+                        if (projectItem.Kind.Equals(physicalFile, StringComparison.InvariantCultureIgnoreCase) && projectItem.FileNames[0].Equals(task.Document, StringComparison.InvariantCultureIgnoreCase))
                         {
                             projectItem.Remove();
                         }
@@ -51,7 +50,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override bool VisibleExpression(MissingErrorTask task)
         {
-            return (task == null || task.Code != "MI0001");
+            return (task != null && task.Code == Constants.FileInProjectNotOnDisk);
         }
 
         public static ExcludeFileCommand Instance { get; private set; }

@@ -58,7 +58,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 var task = item as MissingErrorTask;
 
                 // Visible if we've only selected this kind of item.
-                if (VisibleExpression(task))
+                if (!VisibleExpression(task))
                 {
                     misMatched++;
                 }

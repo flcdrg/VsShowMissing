@@ -28,12 +28,12 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override bool VisibleExpression(MissingErrorTask task)
         {
-            return (task == null || task.Code != "MI0001");
+            return (task != null && task.Code == Constants.FileOnDiskNotInProject);
         }
 
         protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
-            var tasks = MissingErrorTasks("MI0001");
+            var tasks = MissingErrorTasks(Constants.FileOnDiskNotInProject);
 
             var failedFiles = new List<string>();
 
@@ -58,6 +58,5 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
     }
 }
