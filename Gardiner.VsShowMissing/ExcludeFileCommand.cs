@@ -22,7 +22,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
             var tasks = MissingErrorTasks("MI0001");
-            var physicalFile = VSConstants.GUID_ItemType_PhysicalFile.ToString();
+            var physicalFile = VSConstants.GUID_ItemType_PhysicalFile.ToString("B").ToUpperInvariant();
 
             var projects = ((DTE) DTE).AllProjects();
             foreach (var task in tasks)
@@ -38,23 +38,27 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     foreach (ProjectItem projectItem in project.ProjectItems)
                     {
                         
-                        if (projectItem.Kind == physicalFile && projectItem.FileNames[0])
+                        if (projectItem.Kind == physicalFile && projectItem.FileNames[0].Equals(task.Document, StringComparison.InvariantCultureIgnoreCase))
                         {
-
+                            projectItem.Remove();
                         }
                     }
-                    project.ProjectItems.AddFromFile(task.Document);
+
                     RemoveTask(task);
                 }
             }
-
-
-
         }
 
         protected override bool VisibleExpression(MissingErrorTask task)
         {
             return (task == null || task.Code != "MI0001");
+        }
+
+        public static ExcludeFileCommand Instance { get; private set; }
+
+        public static void Initialize(IServiceProvider serviceProvider, ErrorListProvider errorListProvider)
+        {
+            Instance = new ExcludeFileCommand(serviceProvider, errorListProvider);
         }
     }
 }

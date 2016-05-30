@@ -83,6 +83,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             // Commands
             IncludeFileCommand.Initialize(this, _errorListProvider);
             DeleteFileCommand.Initialize(this, _errorListProvider);
+            ExcludeFileCommand.Initialize(this, _errorListProvider);
 
             _dte = (DTE)GetService(typeof(SDTE));
             var events = _dte.Events;
@@ -271,6 +272,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             Code = "MI0001",
                             Document = filePath,
                             HierarchyItem = hierarchyItem,
+                            ProjectPath = projectFilename
                         };
 
                         newError.Navigate += NewErrorOnNavigate;
