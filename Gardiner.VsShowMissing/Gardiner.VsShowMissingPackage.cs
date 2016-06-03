@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Threading;
+using DavidGardiner.Gardiner_VsShowMissing.Options;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.Build.Evaluation;
@@ -40,7 +41,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuids.guidGardiner_VsShowMissingPkgString)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-    [ProvideOptionPage(typeof(ShowMissingOptions), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
+    [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class Gardiner_VsShowMissingPackage : Package, IVsSolutionEvents
     {
@@ -89,17 +90,14 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
 
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => 
-             { 
-                 Options = (ShowMissingOptions)GetDialogPage(typeof(ShowMissingOptions)); 
-             }), DispatcherPriority.ApplicationIdle, null); 
+            Options = (OptionsDialogPage)GetDialogPage(typeof(OptionsDialogPage));
 
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
             _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
             _buildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
         }
 
-        public static ShowMissingOptions Options { get; private set; }
+        public static OptionsDialogPage Options { get; private set; }
 
         private void BuildEventsOnOnBuildDone(vsBuildScope scope, vsBuildAction action)
         {
