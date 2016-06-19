@@ -1,4 +1,10 @@
-﻿v1.3
+﻿v2.0
+
+* Warn about files on disk that are not in the project
+* Added commands to Error List context menu to fix warnings
+* Configure files to ignore via Options. A .gitignore file at the solution-level can also be used.
+
+v1.3
 
 * Check Condition="" to not flag missing files if they are conditionally excluded
 

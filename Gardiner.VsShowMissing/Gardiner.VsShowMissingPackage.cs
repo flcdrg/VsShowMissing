@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Windows.Threading;
+using DavidGardiner.Gardiner_VsShowMissing.Options;
 using EnvDTE;
 using EnvDTE80;
+using MAB.DotIgnore;
 using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -34,10 +39,12 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
     // This attribute is needed to let the shell know that this package exposes some menus.
-    //[ProvideMenuResource("Menus.ctmenu", 1)]
-    [Guid(GuidList.guidGardiner_VsShowMissingPkgString)]
+    [ProvideMenuResource("Menus.ctmenu", 1)]
+    [Guid(PackageGuids.guidGardiner_VsShowMissingPkgString)]
+    [ProvideBindingPath] // Allow assembly references to be located
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-    [ProvideOptionPage(typeof(ShowMissingOptions), "Show Missing", "General", 101, 100, true, new[] { "File Nesting in Solution Explorer" })]
+    [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
+    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class Gardiner_VsShowMissingPackage : Package, IVsSolutionEvents
     {
         private DTE _dte;
@@ -60,7 +67,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         /////////////////////////////////////////////////////////////////////////////
         // Overridden Package Implementation
-
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -74,24 +80,26 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _solution = (IVsSolution)GetService(typeof(SVsSolution));
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
 
+            if (_errorListProvider == null)
+                _errorListProvider = new TaskProvider(this);
+
+            // Commands
+            IncludeFileCommand.Initialize(this, _errorListProvider);
+            DeleteFileCommand.Initialize(this, _errorListProvider);
+            ExcludeFileCommand.Initialize(this, _errorListProvider);
+
             _dte = (DTE)GetService(typeof(SDTE));
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
 
-            if (_errorListProvider == null)
-                _errorListProvider = new ErrorListProvider(this);
-
-            Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() => 
-             { 
-                 Options = (ShowMissingOptions)GetDialogPage(typeof(ShowMissingOptions)); 
-             }), DispatcherPriority.ApplicationIdle, null); 
+            Options = (OptionsDialogPage)GetDialogPage(typeof(OptionsDialogPage));
 
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
             _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
             _buildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
         }
 
-        public static ShowMissingOptions Options { get; private set; }
+        public static OptionsDialogPage Options { get; private set; }
 
         private void BuildEventsOnOnBuildDone(vsBuildScope scope, vsBuildAction action)
         {
@@ -105,7 +113,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             Debug.WriteLine("BuildEventsOnOnBuildBegin {0} {1}", scope, action);
 
-            if (Options.Timing == RunWhen.BeforeBuild)
+            if (Options != null && Options.Timing == RunWhen.BeforeBuild)
                 FindMissingFiles();
         }
 
@@ -113,7 +121,17 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             _errorListProvider.Tasks.Clear();
 
-            var projects = Projects();
+            var projects = _dte.AllProjects();
+
+            var solutionDirectory = Path.GetDirectoryName(_dte.Solution.FullName);
+
+            var gitIgnoreFile = Path.Combine(solutionDirectory, ".gitignore");
+            IgnoreList gitignores = null;
+            if (Options.UseGitIgnore && File.Exists(gitIgnoreFile))
+            {
+                gitignores = new IgnoreList(gitIgnoreFile);
+            }
+
             foreach (Project proj in projects)
             {
                 Debug.WriteLine(proj.Name);
@@ -124,7 +142,58 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 {
                     var buildProject = projectCollection.LoadProject(proj.FullName);
 
-                    NavigateProjectItems(proj.ProjectItems, buildProject);
+                    var physicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
+                    var logicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
+                    var physicalFileProjectMap = new Dictionary<string, string>();
+
+                    NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles,
+                        new HashSet<string>(), physicalFileProjectMap);
+
+                    if (Options.NotIncludedFiles)
+                    {
+                        var filters = new List<Regex>();
+
+                        if (!string.IsNullOrEmpty(Options.IgnorePhysicalFiles))
+                        {
+                            filters.AddRange(Options.IgnorePhysicalFiles.Split(new[] {"\r\n"},
+                                StringSplitOptions.RemoveEmptyEntries).Select( p => FindFilesPatternToRegex.Convert(p.Trim())));
+                        }
+
+                        var errorCategory = Options.MessageLevel;
+
+                        physicalFiles.ExceptWith(logicalFiles);
+
+                        foreach (var file in physicalFiles)
+                        {
+                            Debug.WriteLine($"Physical file: {file}");
+
+                            if (filters.Any(f => f.IsMatch(file)) || (gitignores != null && gitignores.IsIgnored(file, false)))
+                            {
+                                Debug.WriteLine("\tIgnored by filter");
+                                continue;
+                            }
+
+                            IVsHierarchy hierarchyItem;
+                            string physicalFileProject = physicalFileProjectMap[file];
+                            _solution.GetProjectOfUniqueName(physicalFileProject, out hierarchyItem);
+
+                            var newError = new MissingErrorTask()
+                            {
+                                ErrorCategory = errorCategory,
+                                Category = TaskCategory.BuildCompile,
+                                Text = "File on disk is not included in project",
+                                Code = Constants.FileOnDiskNotInProject,
+                                Document = file,
+                                HierarchyItem = hierarchyItem,
+                                ProjectPath = physicalFileProject,
+                            };
+
+                            newError.Navigate += SelectParentProjectInSolution;
+                            Debug.WriteLine("\t\t** Missing");
+
+                            _errorListProvider.Tasks.Add(newError);
+                        }
+                    }
                 }
             }
 
@@ -160,7 +229,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine($"BuildEventsOnOnBuildProjConfigBegin {project}");
         }
 
-        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject)
+        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles, ISet<string> processedPhysicalDirectories, IDictionary<string, string> physicalFileProjectMap  )
         {
             if (projectItems == null)
                 return;
@@ -169,20 +238,30 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             foreach (ProjectItem item in projectItems)
             {
-                NavigateProjectItems(item.ProjectItems, buildProject);
+                NavigateProjectItems(item.ProjectItems, buildProject, projectPhysicalFiles, projectLogicalFiles, processedPhysicalDirectories, physicalFileProjectMap);
 
                 if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}") // VSConstants.GUID_ItemType_PhysicalFile
                     continue;
 
                 Debug.WriteLine("\t" + item.Name);
 
+                string projectFilename = item.ContainingProject.FileName;
+
+                string projectDirectory = Path.GetDirectoryName(projectFilename);
+
                 for (short i = 0; i < item.FileCount; i++)
                 {
-                    var path = item.FileNames[i];
-                    if (!File.Exists(path))
-                    {
+                    var filePath = item.FileNames[i];
 
-                        var relativePath = path.Replace(buildProject.DirectoryPath + @"\", "");
+                    projectLogicalFiles.Add(filePath);
+
+                    // Skip if this is a linked file
+                    if (!filePath.StartsWith(projectDirectory, StringComparison.InvariantCultureIgnoreCase))
+                        continue;
+
+                    if (!File.Exists(filePath))
+                    {
+                        var relativePath = filePath.Replace(buildProject.DirectoryPath + @"\", "");
 
                         var found = buildProject.Items.Any(x => x.EvaluatedInclude == relativePath);
 
@@ -193,16 +272,17 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         }
 
                         IVsHierarchy hierarchyItem;
-                        _solution.GetProjectOfUniqueName(item.ContainingProject.FileName, out hierarchyItem);
+                        _solution.GetProjectOfUniqueName(projectFilename, out hierarchyItem);
 
-                        var newError = new ErrorTask()
+                        var newError = new MissingErrorTask()
                         {
                             ErrorCategory = errorCategory,
                             Category = TaskCategory.BuildCompile,
                             Text = "File referenced in project does not exist",
-                            Document = path,
+                            Code = "MI0001",
+                            Document = filePath,
                             HierarchyItem = hierarchyItem,
-                            CanDelete = true,
+                            ProjectPath = projectFilename
                         };
 
                         newError.Navigate += NewErrorOnNavigate;
@@ -210,8 +290,41 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                         _errorListProvider.Tasks.Add(newError);
                     }
+
+                    string directoryName = Path.GetDirectoryName(filePath);
+
+                    // If we haven't seen this directory before, find the files inside it
+                    if (processedPhysicalDirectories.Add(directoryName))
+                    {
+                        var physicalFiles =
+                            new DirectoryInfo(directoryName).GetFiles()
+                                .Where(
+                                    f => f.Attributes != FileAttributes.Hidden && f.Attributes != FileAttributes.System)
+                                .Where(f => !f.Name.EndsWith(".user") && !f.Name.EndsWith("proj"))
+                                .Select(f => f.FullName)
+                                .ToList();
+
+                        foreach (var physicalFile in physicalFiles)
+                        {
+                            projectPhysicalFiles.Add(physicalFile);
+                            physicalFileProjectMap.Add(physicalFile, projectFilename);
+                        }
+                    }
                 }
             }
+        }
+
+        private void SelectParentProjectInSolution(object sender, EventArgs e)
+        {
+            var error = (MissingErrorTask)sender;
+
+            var project = _dte.AllProjects()
+                .FirstOrDefault(p => p.FullName.Equals(error.ProjectPath, StringComparison.InvariantCultureIgnoreCase));
+
+            
+            //var projectItem = _dte.Solution.FindProjectItem(error.ProjectPath);
+            if (project != null)
+                SelectItemInSolutionExplorer(project.ParentProjectItem);
         }
 
         private void NewErrorOnNavigate(object sender, EventArgs eventArgs)
@@ -220,60 +333,18 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             var error = (ErrorTask)sender;
 
             var projectItem = _dte.Solution.FindProjectItem(error.Document);
-            var uih = (UIHierarchy)_dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
-            var uiHierarchyItem = uih.FindHierarchyItem(projectItem);
-
-            uiHierarchyItem?.Select(vsUISelectionType.vsUISelectionTypeSelect);
+            SelectItemInSolutionExplorer(projectItem);
         }
 
-        private IList<Project> Projects()
+        private void SelectItemInSolutionExplorer(ProjectItem projectItem)
         {
-            Projects projects = _dte.Solution.Projects;
-            List<Project> list = new List<Project>();
-            var item = projects.GetEnumerator();
-            while (item.MoveNext())
+            if (projectItem != null)
             {
-                var project = item.Current as Project;
-                if (project == null)
-                {
-                    continue;
-                }
+                var uih = (UIHierarchy) _dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
+                UIHierarchyItem uiHierarchyItem = uih.FindHierarchyItem(projectItem);
 
-                if (project.Kind == ProjectKinds.vsProjectKindSolutionFolder)
-                {
-                    list.AddRange(GetSolutionFolderProjects(project));
-                }
-                else
-                {
-                    list.Add(project);
-                }
+                uiHierarchyItem?.Select(vsUISelectionType.vsUISelectionTypeSelect);
             }
-
-            return list;
-        }
-
-        private static IEnumerable<Project> GetSolutionFolderProjects(Project solutionFolder)
-        {
-            List<Project> list = new List<Project>();
-            for (var i = 1; i <= solutionFolder.ProjectItems.Count; i++)
-            {
-                var subProject = solutionFolder.ProjectItems.Item(i).SubProject;
-                if (subProject == null)
-                {
-                    continue;
-                }
-
-                // If this is another solution folder, do a recursive call, otherwise add
-                if (subProject.Kind == ProjectKinds.vsProjectKindSolutionFolder)
-                {
-                    list.AddRange(GetSolutionFolderProjects(subProject));
-                }
-                else
-                {
-                    list.Add(subProject);
-                }
-            }
-            return list;
         }
 
         public int OnAfterOpenProject(IVsHierarchy pHierarchy, int fAdded)

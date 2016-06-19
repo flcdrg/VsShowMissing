@@ -24,7 +24,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DavidGardiner.Gardiner_VsShowMissing</RootNamespace>
     <AssemblyName>Gardiner.VsShowMissing</AssemblyName>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -47,6 +47,10 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MAB.DotIgnore, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\MAB.DotIgnore.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.CSharp" />
@@ -66,12 +70,15 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.12.0" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -132,36 +139,44 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Guids.cs" />
-    <Compile Include="Resources.Designer.cs">
+    <Compile Include="BaseCommand.cs" />
+    <Compile Include="BaseMissingCommand.cs" />
+    <Compile Include="CaseInsensitiveEqualityComparer.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="DeleteFileCommand.cs" />
+    <Compile Include="ExcludeFileCommand.cs" />
+    <Compile Include="FindFilesPatternToRegex.cs" />
+    <Compile Include="Gardiner.VsShowMissing.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
+      <DependentUpon>Gardiner.VsShowMissing.vsct</DependentUpon>
     </Compile>
+    <Compile Include="IncludeFileCommand.cs" />
+    <Compile Include="MissingErrorTask.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gardiner.VsShowMissingPackage.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PkgCmdID.cs" />
-    <Compile Include="RunWhen.cs" />
-    <Compile Include="ShowMissingOptions.cs">
+    <Compile Include="Options\EnumBindingSourceExtension.cs" />
+    <Compile Include="Options\OptionsDialogPage.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Options\OptionsDialogPageControl.xaml.cs">
+      <DependentUpon>OptionsDialogPageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectExtensions.cs" />
+    <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RunWhen.cs" />
+    <Compile Include="source.extension.cs">
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    </Compile>
+    <Compile Include="TaskProvider.cs" />
     <Compile Include="UIHierarchyExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VSPackage.resx">
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
+      <LastGenOutput>source.extension.resx</LastGenOutput>
+      <Generator>VsixManifestGenerator</Generator>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -170,10 +185,9 @@
   <ItemGroup>
     <VSCTCompile Include="Gardiner.VsShowMissing.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <Generator>VsctGenerator</Generator>
+      <LastGenOutput>Gardiner.VsShowMissing.cs</LastGenOutput>
     </VSCTCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Images.png" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ChangeLog.txt">
@@ -189,10 +203,28 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\Package.ico" />
+    <Resource Include="source.extension.ico">
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+    </Resource>
     <Content Include="VS2015 Screenshot.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="source.extension.resx">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Options\OptionsDialogPageControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
