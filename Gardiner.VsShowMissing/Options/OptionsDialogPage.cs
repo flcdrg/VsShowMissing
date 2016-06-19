@@ -29,6 +29,22 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Options
         private RunWhen _timing;
         private bool _notIncludedFiles;
         private string _ignorePhysicalFiles;
+        private bool _useGitIgnore;
+
+        [LocDisplayName("Use .gitignore")]
+        [Description("If checked then .gitignore file is also used for ignoring files")]
+        [Category("Show Missing")]
+        [DefaultValue(true)]
+        public bool UseGitIgnore
+        {
+            get { return _useGitIgnore; }
+            set
+            {
+                if (value == _useGitIgnore) return;
+                _useGitIgnore = value;
+                OnPropertyChanged();
+            }
+        }
 
         [LocDisplayName("Message importance")]
         [Description("What kind of message to create in the Error List window for each missing file")]
@@ -137,6 +153,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Options
         {
             IgnorePhysicalFiles = "*.*proj\r\n*.user\r\n.gitignore\r\n*.ruleset\r\n*.suo\r\n*.licx\r\n*.dotSettings";
             NotIncludedFiles = true;
+            UseGitIgnore = true;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

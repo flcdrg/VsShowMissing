@@ -12,6 +12,7 @@ using System.Windows.Threading;
 using DavidGardiner.Gardiner_VsShowMissing.Options;
 using EnvDTE;
 using EnvDTE80;
+using MAB.DotIgnore;
 using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
@@ -40,6 +41,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuids.guidGardiner_VsShowMissingPkgString)]
+    [ProvideBindingPath] // Allow assembly references to be located
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
@@ -120,6 +122,16 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _errorListProvider.Tasks.Clear();
 
             var projects = _dte.AllProjects();
+
+            var solutionDirectory = Path.GetDirectoryName(_dte.Solution.FullName);
+
+            var gitIgnoreFile = Path.Combine(solutionDirectory, ".gitignore");
+            IgnoreList gitignores = null;
+            if (Options.UseGitIgnore && File.Exists(gitIgnoreFile))
+            {
+                gitignores = new IgnoreList(gitIgnoreFile);
+            }
+
             foreach (Project proj in projects)
             {
                 Debug.WriteLine(proj.Name);
@@ -155,7 +167,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         {
                             Debug.WriteLine($"Physical file: {file}");
 
-                            if (filters.Any(f => f.IsMatch(file)))
+                            if (filters.Any(f => f.IsMatch(file)) || (gitignores != null && gitignores.IsIgnored(file, false)))
                             {
                                 Debug.WriteLine("\tIgnored by filter");
                                 continue;

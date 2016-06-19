@@ -24,7 +24,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>DavidGardiner.Gardiner_VsShowMissing</RootNamespace>
     <AssemblyName>Gardiner.VsShowMissing</AssemblyName>
-    <SignAssembly>True</SignAssembly>
+    <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Key.snk</AssemblyOriginatorKeyFile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -47,6 +47,10 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MAB.DotIgnore, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libs\MAB.DotIgnore.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.CSharp" />
