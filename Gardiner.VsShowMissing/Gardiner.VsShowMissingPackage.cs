@@ -155,7 +155,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                         if (!string.IsNullOrEmpty(Options.IgnorePhysicalFiles))
                         {
-                            filters.AddRange(Options.IgnorePhysicalFiles.Split(new[] {";"},
+                            filters.AddRange(Options.IgnorePhysicalFiles.Split(new[] {"\r\n"},
                                 StringSplitOptions.RemoveEmptyEntries).Select( p => FindFilesPatternToRegex.Convert(p.Trim())));
                         }
 
