@@ -119,6 +119,13 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private void FindMissingFiles()
         {
+            // unhook event handlers to reduce risk of memory leaks
+            foreach (MissingErrorTask task in _errorListProvider.Tasks)
+            {
+                task.Navigate -= SelectParentProjectInSolution;
+                task.Navigate -= NewErrorOnNavigate;
+            }
+
             _errorListProvider.Tasks.Clear();
 
             var projects = _dte.AllProjects();
@@ -130,6 +137,14 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             if (Options.UseGitIgnore && File.Exists(gitIgnoreFile))
             {
                 gitignores = new IgnoreList(gitIgnoreFile);
+            }
+
+            var filters = new List<Regex>();
+
+            if (!string.IsNullOrEmpty(Options.IgnorePhysicalFiles))
+            {
+                filters.AddRange(Options.IgnorePhysicalFiles.Split(new[] { "\r\n" },
+                    StringSplitOptions.RemoveEmptyEntries).Select(p => FindFilesPatternToRegex.Convert(p.Trim())));
             }
 
             foreach (Project proj in projects)
@@ -151,14 +166,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                     if (Options.NotIncludedFiles)
                     {
-                        var filters = new List<Regex>();
-
-                        if (!string.IsNullOrEmpty(Options.IgnorePhysicalFiles))
-                        {
-                            filters.AddRange(Options.IgnorePhysicalFiles.Split(new[] {"\r\n"},
-                                StringSplitOptions.RemoveEmptyEntries).Select( p => FindFilesPatternToRegex.Convert(p.Trim())));
-                        }
-
                         var errorCategory = Options.MessageLevel;
 
                         physicalFiles.ExceptWith(logicalFiles);

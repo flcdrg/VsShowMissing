@@ -12,7 +12,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         public const string Description = @"Find files references in project files that don't exist on disk, and optionally files that do exist on disk that aren't included in a project. 
 Runs on Build. Missing files are listed in Error List window.";
         public const string Language = "en-US";
-        public const string Version = "2.0";
+        public const string Version = "2.1";
         public const string Author = "David Gardiner";
         public const string Tags = "Missing, Warnings";
     }

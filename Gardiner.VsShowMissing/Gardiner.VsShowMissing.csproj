@@ -173,6 +173,7 @@
     <Compile Include="UIHierarchyExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ChangeLog.rtf" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
       <LastGenOutput>source.extension.resx</LastGenOutput>
@@ -190,10 +191,6 @@
     </VSCTCompile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ChangeLog.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <IncludeInVSIX>true</IncludeInVSIX>
-    </Content>
     <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
