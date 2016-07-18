@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -8,10 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Windows.Threading;
 using DavidGardiner.Gardiner_VsShowMissing.Options;
 using EnvDTE;
-using EnvDTE80;
 using MAB.DotIgnore;
 using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio;
@@ -76,6 +73,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", ToString()));
             base.Initialize();
 
+#if MEMPROFILER
+            RedGate.MemoryProfiler.Snapshot.TakeSnapshot("Initialize");
+#endif
+
+
             // listen for solution events
             _solution = (IVsSolution)GetService(typeof(SVsSolution));
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
@@ -106,7 +108,17 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine("BuildEventsOnOnBuildDone {0} {1}", scope, action);
 
             if (Options.Timing == RunWhen.AfterBuild)
+            {
+#if MEMPROFILER
+                RedGate.MemoryProfiler.Snapshot.TakeSnapshot("Before");
+#endif
                 FindMissingFiles();
+
+#if MEMPROFILER
+                RedGate.MemoryProfiler.Snapshot.TakeSnapshot("After");
+#endif
+
+            }
         }
 
         private void BuildEventsOnOnBuildBegin(vsBuildScope scope, vsBuildAction action)
@@ -114,7 +126,18 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Debug.WriteLine("BuildEventsOnOnBuildBegin {0} {1}", scope, action);
 
             if (Options != null && Options.Timing == RunWhen.BeforeBuild)
+            {
+#if MEMPROFILER
+                RedGate.MemoryProfiler.Snapshot.TakeSnapshot("Before");
+#endif
+
                 FindMissingFiles();
+
+#if MEMPROFILER
+                RedGate.MemoryProfiler.Snapshot.TakeSnapshot("After");
+#endif
+
+            }
         }
 
         private void FindMissingFiles()
