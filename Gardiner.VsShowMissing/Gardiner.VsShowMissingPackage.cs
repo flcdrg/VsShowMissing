@@ -180,8 +180,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 {
                     var buildProject = projectCollection.LoadProject(proj.FullName);
 
-                    var physicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
-                    var logicalFiles = new HashSet<string>(new CaseInsensitiveEqualityComparer());
+                    var physicalFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    var logicalFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                     var physicalFileProjectMap = new Dictionary<string, string>();
 
                     NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles,
