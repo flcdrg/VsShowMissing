@@ -151,7 +151,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Options
 
         private void DefaultSettings()
         {
-            IgnorePhysicalFiles = "*.*proj\r\n*.user\r\n.gitignore\r\n*.ruleset\r\n*.suo\r\n*.licx\r\n*.dotSettings";
+            IgnorePhysicalFiles = "*.*proj\r\n*.user\r\n.gitignore\r\n*.ruleset\r\n*.suo\r\n*.licx\r\n*.dotSettings\r\n*.vspscc";
             NotIncludedFiles = true;
             UseGitIgnore = true;
         }
