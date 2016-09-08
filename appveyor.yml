@@ -10,6 +10,9 @@ before_build:
 build_script:
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
+artifacts:
+  - path: '**\*.vsix'
+    
 deploy:
   release: v$(GitVersion_FullSemVer)
   description: ''
