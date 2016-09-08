@@ -43,6 +43,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                 try
                 {
+                    // Remove possible read-only attribute before deleting
+                    File.SetAttributes(task.Document, FileAttributes.Normal);
                     File.Delete(task.Document);
                     RemoveTask(task);
                 }
