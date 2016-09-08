@@ -12,6 +12,7 @@ build_script:
 
 artifacts:
   - path: '**\*.vsix'
+    name: Gardiner.VsShowMissing
     
 deploy:
   release: v$(GitVersion_FullSemVer)
