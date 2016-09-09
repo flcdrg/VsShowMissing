@@ -10,7 +10,7 @@ process {
 
     $version = New-Object Version ([int]$version.Major),([int]$version.Minor),([System.Math]::Max([int]$version.Build, 0)),$env:APPVEYOR_BUILD_NUMBER
 
-	$env:VSIX_VERSION = "$version"
+	$env:VsixVersion = "$version"
 	
     foreach($manifestFile in $manifestFilePath)
     {
