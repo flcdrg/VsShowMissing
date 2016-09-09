@@ -6,6 +6,7 @@ before_build:
   - nuget restore
   - ps: gitversion /l console /output buildserver
   - ps: .\Update-VsixVersion.ps1 -Version $env:GitVersion_AssemblySemVer
+  - ps: "Set VSIX_VERSION = " + $env:VSIX_VERSION
 
 build_script:
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
