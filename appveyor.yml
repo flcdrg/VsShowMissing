@@ -12,7 +12,7 @@ build_script:
 
 artifacts:
   - path: '**\*.vsix'
-    name: Gardiner.VsShowMissing
+    name: VsixFile
     
 deploy:
   release: v$(GitVersion_FullSemVer)
@@ -20,7 +20,7 @@ deploy:
   provider: GitHub
   auth_token:
     secure: AK/yvGPxuuam1cqWJIO6jiY2QP5XATL7mI/QGOlPMJ7008nNvlHu+YoxHOPBeHfZ
-  artifact: /.*\.vsix/            # upload all NuGet packages to release assets
+  artifact: VsixFile            # upload all NuGet packages to release assets
   draft: false
   prerelease: false
   force_update: true
