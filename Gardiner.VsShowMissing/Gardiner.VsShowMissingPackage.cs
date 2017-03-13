@@ -275,7 +275,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                 Debug.WriteLine("\t" + item.Name);
 
-                string projectFilename = item.ContainingProject.FileName;
+                string projectFilename = item.ContainingProject.FullName;
 
                 string projectDirectory = Path.GetDirectoryName(projectFilename);
 
