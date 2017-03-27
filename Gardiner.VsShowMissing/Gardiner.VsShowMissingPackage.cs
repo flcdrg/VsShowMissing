@@ -49,6 +49,10 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private IVsSolution _solution;
         private ErrorListProvider _errorListProvider;
         private BuildEvents _buildEvents;
+        private IList<Project> _projects;
+        private string _solutionDirectory;
+        private List<Regex> _filters;
+        private IgnoreList _gitignores;
 
         /// <summary>
         /// Default constructor of the package.
@@ -97,27 +101,57 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             Options = (OptionsDialogPage)GetDialogPage(typeof(OptionsDialogPage));
 
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
+            _buildEvents.OnBuildProjConfigDone += BuildEventsOnBuildProjConfigDone;
             _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
             _buildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
         }
 
+        private void BuildEventsOnBuildProjConfigDone(string project, string projectConfig, string platform, string solutionConfig, bool success)
+        {
+            Debug.WriteLine($"BuildEventsOnBuildProjConfigDone {project} {projectConfig} {platform} {solutionConfig} {success}");
+
+            if (Options.Timing == RunWhen.AfterBuild)
+            {
+                var proj = GetProject(project);
+                FindMissingFiles(proj);
+            }
+
+            if (_errorListProvider.Tasks.Count > 0 && Options.FailBuildOnError && Options.Timing == RunWhen.BeforeBuild)
+            {
+                _dte.ExecuteCommand("Build.Cancel");
+            }
+        }
+
         public static OptionsDialogPage Options { get; private set; }
+
+        private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
+        {
+            Debug.WriteLine($"BuildEventsOnOnBuildProjConfigBegin {project} {projectConfig} {platform} {solutionConfig}");
+
+            if (Options.Timing == RunWhen.BeforeBuild)
+            {
+                var proj = GetProject(project);
+                FindMissingFiles(proj);
+            }
+        }
+
+        private Project GetProject(string project)
+        {
+            var projectPath = Path.Combine(_solutionDirectory, project);
+            var proj = _projects.FirstOrDefault(p => p.FullName == projectPath);
+            return proj;
+        }
 
         private void BuildEventsOnOnBuildDone(vsBuildScope scope, vsBuildAction action)
         {
             Debug.WriteLine("BuildEventsOnOnBuildDone {0} {1}", scope, action);
 
-            if (Options.Timing == RunWhen.AfterBuild)
+            _projects = null;
+            _solutionDirectory = null;
+
+            if (_errorListProvider.Tasks.Count > 0)
             {
-#if MEMPROFILER
-                RedGate.MemoryProfiler.Snapshot.TakeSnapshot("Before");
-#endif
-                FindMissingFiles();
-
-#if MEMPROFILER
-                RedGate.MemoryProfiler.Snapshot.TakeSnapshot("After");
-#endif
-
+                _errorListProvider.Show();
             }
         }
 
@@ -125,23 +159,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             Debug.WriteLine("BuildEventsOnOnBuildBegin {0} {1}", scope, action);
 
-            if (Options != null && Options.Timing == RunWhen.BeforeBuild)
-            {
-#if MEMPROFILER
-                RedGate.MemoryProfiler.Snapshot.TakeSnapshot("Before");
-#endif
+            _projects = _dte.AllProjects();
+            _solutionDirectory = Path.GetDirectoryName(_dte.Solution.FullName);
 
-                FindMissingFiles();
-
-#if MEMPROFILER
-                RedGate.MemoryProfiler.Snapshot.TakeSnapshot("After");
-#endif
-
-            }
-        }
-
-        private void FindMissingFiles()
-        {
             // unhook event handlers to reduce risk of memory leaks
             foreach (MissingErrorTask task in _errorListProvider.Tasks)
             {
@@ -151,89 +171,76 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             _errorListProvider.Tasks.Clear();
 
-            var projects = _dte.AllProjects();
-
-            var solutionDirectory = Path.GetDirectoryName(_dte.Solution.FullName);
-
-            var gitIgnoreFile = Path.Combine(solutionDirectory, ".gitignore");
-            IgnoreList gitignores = null;
+            var gitIgnoreFile = Path.Combine(_solutionDirectory, ".gitignore");
+            _gitignores = null;
             if (Options.UseGitIgnore && File.Exists(gitIgnoreFile))
             {
-                gitignores = new IgnoreList(gitIgnoreFile);
+                _gitignores = new IgnoreList(gitIgnoreFile);
             }
 
-            var filters = new List<Regex>();
+            _filters = new List<Regex>();
 
             if (!string.IsNullOrEmpty(Options.IgnorePhysicalFiles))
             {
-                filters.AddRange(Options.IgnorePhysicalFiles.Split(new[] { "\r\n" },
+                _filters.AddRange(Options.IgnorePhysicalFiles.Split(new[] { "\r\n" },
                     StringSplitOptions.RemoveEmptyEntries).Select(p => FindFilesPatternToRegex.Convert(p.Trim())));
             }
+        }
 
-            foreach (Project proj in projects)
+        private void FindMissingFiles(Project proj)
+        {
+            Debug.WriteLine($"Project {proj.Name}");
+
+            IDictionary<string, string> dict = new Dictionary<string, string>();
+            dict.Add("Configuration", proj.ConfigurationManager.ActiveConfiguration.ConfigurationName);
+            using (var projectCollection = new ProjectCollection(dict))
             {
-                Debug.WriteLine(proj.Name);
+                var buildProject = projectCollection.LoadProject(proj.FullName);
 
-                IDictionary<string, string> dict = new Dictionary<string, string>();
-                dict.Add("Configuration", proj.ConfigurationManager.ActiveConfiguration.ConfigurationName);
-                using (var projectCollection = new ProjectCollection(dict))
+                var physicalFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var logicalFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var physicalFileProjectMap = new Dictionary<string, string>();
+
+                NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles,
+                    new HashSet<string>(), physicalFileProjectMap);
+
+                if (Options.NotIncludedFiles)
                 {
-                    var buildProject = projectCollection.LoadProject(proj.FullName);
+                    var errorCategory = Options.MessageLevel;
 
-                    var physicalFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    var logicalFiles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    var physicalFileProjectMap = new Dictionary<string, string>();
+                    physicalFiles.ExceptWith(logicalFiles);
 
-                    NavigateProjectItems(proj.ProjectItems, buildProject, physicalFiles, logicalFiles,
-                        new HashSet<string>(), physicalFileProjectMap);
-
-                    if (Options.NotIncludedFiles)
+                    foreach (var file in physicalFiles)
                     {
-                        var errorCategory = Options.MessageLevel;
+                        Debug.WriteLine($"Physical file: {file}");
 
-                        physicalFiles.ExceptWith(logicalFiles);
-
-                        foreach (var file in physicalFiles)
+                        if (_filters.Any(f => f.IsMatch(file)) ||
+                            (_gitignores != null && _gitignores.IsIgnored(file, false)))
                         {
-                            Debug.WriteLine($"Physical file: {file}");
-
-                            if (filters.Any(f => f.IsMatch(file)) || (gitignores != null && gitignores.IsIgnored(file, false)))
-                            {
-                                Debug.WriteLine("\tIgnored by filter");
-                                continue;
-                            }
-
-                            IVsHierarchy hierarchyItem;
-                            string physicalFileProject = physicalFileProjectMap[file];
-                            _solution.GetProjectOfUniqueName(physicalFileProject, out hierarchyItem);
-
-                            var newError = new MissingErrorTask()
-                            {
-                                ErrorCategory = errorCategory,
-                                Category = TaskCategory.BuildCompile,
-                                Text = "File on disk is not included in project",
-                                Code = Constants.FileOnDiskNotInProject,
-                                Document = file,
-                                HierarchyItem = hierarchyItem,
-                                ProjectPath = physicalFileProject,
-                            };
-
-                            newError.Navigate += SelectParentProjectInSolution;
-                            Debug.WriteLine("\t\t** Missing");
-
-                            _errorListProvider.Tasks.Add(newError);
+                            Debug.WriteLine("\tIgnored by filter");
+                            continue;
                         }
+
+                        IVsHierarchy hierarchyItem;
+                        string physicalFileProject = physicalFileProjectMap[file];
+                        _solution.GetProjectOfUniqueName(physicalFileProject, out hierarchyItem);
+
+                        var newError = new MissingErrorTask()
+                        {
+                            ErrorCategory = errorCategory,
+                            Category = TaskCategory.BuildCompile,
+                            Text = "File on disk is not included in project",
+                            Code = Constants.FileOnDiskNotInProject,
+                            Document = file,
+                            HierarchyItem = hierarchyItem,
+                            ProjectPath = physicalFileProject,
+                        };
+
+                        newError.Navigate += SelectParentProjectInSolution;
+                        Debug.WriteLine("\t\t** Missing");
+
+                        _errorListProvider.Tasks.Add(newError);
                     }
-                }
-            }
-
-            if (_errorListProvider.Tasks.Count > 0)
-            {
-                _errorListProvider.Show();
-
-                if (Options.FailBuildOnError && Options.Timing == RunWhen.BeforeBuild)
-                {
-                    _dte.ExecuteCommand("Build.Cancel");
                 }
             }
         }
@@ -252,11 +259,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             }
 
             base.Dispose(disposing);
-        }
-
-        private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
-        {
-            Debug.WriteLine($"BuildEventsOnOnBuildProjConfigBegin {project}");
         }
 
         private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles, ISet<string> processedPhysicalDirectories, IDictionary<string, string> physicalFileProjectMap  )
@@ -359,7 +361,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private void NewErrorOnNavigate(object sender, EventArgs eventArgs)
         {
-            Debug.WriteLine(sender);
+            Debug.WriteLine($"NewErrorOnNavigate {sender}");
             var error = (ErrorTask)sender;
 
             var projectItem = _dte.Solution.FindProjectItem(error.Document);
