@@ -111,7 +111,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Options
         [LocDisplayName("Ignore Pattern")]
         [Description("Semicolon-separated list of filename patterns to ignore when checking physical files")]
         [Category("Show Missing")]
-        [DefaultValue("*.*proj;*.user;.gitignore;*.ruleset;*.suo;*.licx;*.dotSettings")]
+        [DefaultValue("*.*proj;*.user;.gitignore;*.ruleset;*.suo;*.licx;*.dotSettings;*.dbmdl;*.jfm")]
         public string IgnorePhysicalFiles
         {
             get { return _ignorePhysicalFiles; }
@@ -161,7 +161,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Options
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            Debug.WriteLine($"{propertyName}");
+            Debug.WriteLine($"OnPropertyChanged {propertyName}");
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
