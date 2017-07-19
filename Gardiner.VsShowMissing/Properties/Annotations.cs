@@ -379,7 +379,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   }
 
   [Flags]
+#pragma warning disable S2344 // Enumeration type names should not have "Flags" or "Enum" suffixes
   public enum ImplicitUseKindFlags
+#pragma warning restore S2344 // Enumeration type names should not have "Flags" or "Enum" suffixes
   {
     Default = Access | Assign | InstantiatedWithFixedConstructorSignature,
     /// <summary>Only entity marked with attribute considered used.</summary>
@@ -400,7 +402,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   /// with <see cref="MeansImplicitUseAttribute"/> or <see cref="UsedImplicitlyAttribute"/>.
   /// </summary>
   [Flags]
+#pragma warning disable S2344 // Enumeration type names should not have "Flags" or "Enum" suffixes
   public enum ImplicitUseTargetFlags
+#pragma warning restore S2344 // Enumeration type names should not have "Flags" or "Enum" suffixes
   {
     Default = Itself,
     Itself = 1,
@@ -415,7 +419,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   /// which should not be removed and so is treated as used.
   /// </summary>
   [MeansImplicitUse(ImplicitUseTargetFlags.WithMembers)]
+#pragma warning disable S101 // Types should be named in camel case
+#pragma warning disable CA1018 // Mark attributes with AttributeUsageAttribute
   public sealed class PublicAPIAttribute : Attribute
+#pragma warning restore CA1018 // Mark attributes with AttributeUsageAttribute
+#pragma warning restore S101 // Types should be named in camel case
   {
     public PublicAPIAttribute() { }
     public PublicAPIAttribute([NotNull] string comment)
@@ -835,7 +843,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   }
 
   [Flags]
+#pragma warning disable S2342 // Enumeration types should comply with a naming convention
+#pragma warning disable CA1714 // Flags enums should have plural names
   public enum CollectionAccessType
+#pragma warning restore CA1714 // Flags enums should have plural names
+#pragma warning restore S2342 // Enumeration types should comply with a naming convention
   {
     /// <summary>Method does not use or modify content of the collection.</summary>
     None = 0,
@@ -877,6 +889,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   /// </summary>
   public enum AssertionConditionType
   {
+#pragma warning disable CA1707 // Identifiers should not contain underscores
     /// <summary>Marked parameter should be evaluated to true.</summary>
     IS_TRUE = 0,
     /// <summary>Marked parameter should be evaluated to false.</summary>
@@ -885,13 +898,14 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
     IS_NULL = 2,
     /// <summary>Marked parameter should be evaluated to not null value.</summary>
     IS_NOT_NULL = 3,
+#pragma warning restore CA1707 // Identifiers should not contain underscores
   }
 
-  /// <summary>
-  /// Indicates that the marked method unconditionally terminates control flow execution.
-  /// For example, it could unconditionally throw exception.
-  /// </summary>
-  [Obsolete("Use [ContractAnnotation('=> halt')] instead")]
+    /// <summary>
+    /// Indicates that the marked method unconditionally terminates control flow execution.
+    /// For example, it could unconditionally throw exception.
+    /// </summary>
+    [Obsolete("Use [ContractAnnotation('=> halt')] instead")]
   [AttributeUsage(AttributeTargets.Method)]
   public sealed class TerminatesProgramAttribute : Attribute { }
 
@@ -998,7 +1012,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
       FieldName = fieldName;
     }
 
+#pragma warning disable CA1721 // Property names should not match get methods
     [NotNull] public string Type { get; private set; }
+#pragma warning restore CA1721 // Property names should not match get methods
     [NotNull] public string FieldName { get; private set; }
   }
 
@@ -1035,5 +1051,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   /// The attribute must be mentioned in your member reordering patterns
   /// </remarks>
   [AttributeUsage(AttributeTargets.All)]
+#pragma warning disable S3376 // Attribute, EventArgs, and Exception type names should end with the type being extended
+#pragma warning disable CA1710 // Identifiers should have correct suffix
   public sealed class NoReorder : Attribute { }
+#pragma warning restore CA1710 // Identifiers should have correct suffix
+#pragma warning restore S3376 // Attribute, EventArgs, and Exception type names should end with the type being extended
 }

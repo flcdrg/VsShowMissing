@@ -19,7 +19,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             ServiceProvider = serviceProvider;
             DTE = serviceProvider.GetService(typeof(SDTE)) as DTE2;
 
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
+#pragma warning disable CA2214 // Do not call overridable methods in constructors
             SetupCommands();
+#pragma warning restore CA2214 // Do not call overridable methods in constructors
+#pragma warning restore S1699 // Constructors should only call non-overridable methods
         }
 
         /// <summary>

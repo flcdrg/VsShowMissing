@@ -11,9 +11,11 @@ Download the latest version from the [Visual Studio Marketplace](https://marketp
 
 ## Development
 
+You will need Visual Studio 2017
+
 ### Debugging
 
 In Project Properties, Debug tab, set:
 
-* Select **Start external program** and set value to `C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\devenv.exe`
+* Select **Start external program** and set value to `C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\devenv.exe` (replace 'Enterprise' with 'Community' or 'Professional' as appropriate)
 * Set **command line arguments** to `/RootSuffix Exp`

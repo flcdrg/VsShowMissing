@@ -9,14 +9,15 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private static readonly Regex HasQuestionMarkRegEx   = new Regex(@"\?", RegexOptions.Compiled);
         private static readonly Regex IllegalCharactersRegex  = new Regex("[" + @"\/:<>|" + "\"]", RegexOptions.Compiled);
         private static readonly Regex CatchExtentionRegex    = new Regex(@"^\s*.*\.([^\.]+)\s*$", RegexOptions.Compiled);
-        private static readonly string NonDotCharacters      = @"[^.]*";
-        
+        private const string NonDotCharacters = @"[^.]*";
+
         public static Regex Convert(string pattern)
         {
             if (pattern == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(pattern));
             }
+
             pattern = pattern.Trim();
             if (pattern.Length == 0)
             {
@@ -45,7 +46,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             }
             regexString += "$";
 
-            if (regexString.StartsWith(@"^\"))
+            if (regexString.StartsWith(@"^\", StringComparison.CurrentCultureIgnoreCase))
                 regexString = regexString.Replace(@"^\", @"^.*\");
 
             Regex regex = new Regex(regexString, RegexOptions.Compiled | RegexOptions.IgnoreCase);
