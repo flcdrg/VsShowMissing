@@ -1,25 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.VisualStudio.Shell;
 
 namespace DavidGardiner.Gardiner_VsShowMissing.Options
 {
+#pragma warning disable S110 // Inheritance tree of classes should not be too deep
     /// <summary>
     /// Interaction logic for OptionsDialogPageControl.xaml
     /// </summary>
     public partial class OptionsDialogPageControl
+#pragma warning restore S110 // Inheritance tree of classes should not be too deep
     {
         public OptionsDialogPageControl()
         {

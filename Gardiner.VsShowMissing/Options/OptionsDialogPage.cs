@@ -127,17 +127,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Options
 
         protected override UIElement Child => _optionsDialogControl ?? (_optionsDialogControl = new OptionsDialogPageControl(this));
 
-        protected override void OnApply(PageApplyEventArgs args)
-        {
-            if (args.ApplyBehavior == ApplyKind.Apply)
-            {
-                //string[] userEncouragments = _optionsDialogControl.Encouragements.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
-                //// GetEncouragements().AllEncouragements = userEncouragments;
-            }
-
-            base.OnApply(args);
-        }
-
         public OptionsDialogPage()
         {
             DefaultSettings();

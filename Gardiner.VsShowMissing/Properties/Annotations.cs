@@ -379,7 +379,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   }
 
   [Flags]
+#pragma warning disable S2344 // Enumeration type names should not have "Flags" or "Enum" suffixes
   public enum ImplicitUseKindFlags
+#pragma warning restore S2344 // Enumeration type names should not have "Flags" or "Enum" suffixes
   {
     Default = Access | Assign | InstantiatedWithFixedConstructorSignature,
     /// <summary>Only entity marked with attribute considered used.</summary>
@@ -400,7 +402,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   /// with <see cref="MeansImplicitUseAttribute"/> or <see cref="UsedImplicitlyAttribute"/>.
   /// </summary>
   [Flags]
+#pragma warning disable S2344 // Enumeration type names should not have "Flags" or "Enum" suffixes
   public enum ImplicitUseTargetFlags
+#pragma warning restore S2344 // Enumeration type names should not have "Flags" or "Enum" suffixes
   {
     Default = Itself,
     Itself = 1,
@@ -415,7 +419,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   /// which should not be removed and so is treated as used.
   /// </summary>
   [MeansImplicitUse(ImplicitUseTargetFlags.WithMembers)]
+#pragma warning disable S101 // Types should be named in camel case
   public sealed class PublicAPIAttribute : Attribute
+#pragma warning restore S101 // Types should be named in camel case
   {
     public PublicAPIAttribute() { }
     public PublicAPIAttribute([NotNull] string comment)
@@ -835,7 +841,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   }
 
   [Flags]
+#pragma warning disable S2342 // Enumeration types should comply with a naming convention
   public enum CollectionAccessType
+#pragma warning restore S2342 // Enumeration types should comply with a naming convention
   {
     /// <summary>Method does not use or modify content of the collection.</summary>
     None = 0,
@@ -1035,5 +1043,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Annotations
   /// The attribute must be mentioned in your member reordering patterns
   /// </remarks>
   [AttributeUsage(AttributeTargets.All)]
+#pragma warning disable S3376 // Attribute, EventArgs, and Exception type names should end with the type being extended
   public sealed class NoReorder : Attribute { }
+#pragma warning restore S3376 // Attribute, EventArgs, and Exception type names should end with the type being extended
 }

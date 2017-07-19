@@ -42,7 +42,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
+#pragma warning disable S101 // Types should be named in camel case
     public sealed class Gardiner_VsShowMissingPackage : Package, IVsSolutionEvents
+#pragma warning restore S101 // Types should be named in camel case
     {
         private DTE _dte;
         private uint _solutionCookie;
@@ -353,8 +355,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             var project = _dte.AllProjects()
                 .FirstOrDefault(p => p.FullName.Equals(error.ProjectPath, StringComparison.InvariantCultureIgnoreCase));
 
-            
-            //var projectItem = _dte.Solution.FindProjectItem(error.ProjectPath);
             if (project != null)
                 SelectItemInSolutionExplorer(project.ParentProjectItem);
         }

@@ -15,8 +15,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             if (pattern == null)
             {
-                throw new ArgumentNullException();
+                throw new ArgumentNullException(nameof(pattern));
             }
+
             pattern = pattern.Trim();
             if (pattern.Length == 0)
             {

@@ -4,6 +4,7 @@ using EnvDTE;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
+#pragma warning disable S101 // Types should be named in camel case
     /// <summary>
     ///     Extends functionality for UIHierarchy classes, e.g:
     ///     VisualStudioServices.Dte.ToolWindows.SolutionExplorer
@@ -12,6 +13,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     /// From https://gist.github.com/anonymous/1862526
     /// </remarks>
     internal static class UIHierarchyExtensions
+#pragma warning restore S101 // Types should be named in camel case
     {
         /// <summary>
         ///     Finds the hierarchy item for the given item.
@@ -50,11 +52,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             // This gets children of the root note in the hierarchy
             var items = hierarchy.UIHierarchyItems.Item(1).UIHierarchyItems;
 
-
             // Finds the given item in the hierarchy
-
             var uiItem = FindHierarchyItem(items, item);
-
 
             // uiItem would be null in most cases, however, for projects inside Solution Folders, there is a strange behavior in which the project byitself can't
             // be found in the hierarchy. Instead, in case of failure we'll search for the UIHierarchyItem
@@ -81,7 +80,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             while (itemHierarchy.Count != 0)
             {
                 // Visual Studio would sometimes not recognize the children of a node in the hierarchy since its not expanded and thus not loaded.
-
                 if (!items.Expanded)
                 {
                     items.Expanded = true;
@@ -90,19 +88,13 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 if (!items.Expanded)
                 {
                     //Expand dont always work without this fix
-
                     var parent = ((UIHierarchyItem) items.Parent);
-
                     parent.Select(vsUISelectionType.vsUISelectionTypeSelect);
-
-                    //VisualStudioServices.Dte.ToolWindows.SolutionExplorer.DoDefaultAction();
                 }
 
 
                 // We're popping the top ancestors first and each time going deeper until we reach the original item
-
                 var itemOrParent = itemHierarchy.Pop();
-
 
                 last = null;
 
@@ -111,9 +103,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     if (child.Object == itemOrParent)
                     {
                         last = child;
-
                         items = child.UIHierarchyItems;
-
                         break;
                     }
                 }
@@ -128,37 +118,39 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         /// </summary>
         private static void CreateItemHierarchy(Stack itemHierarchy, object item)
         {
-            if (item is ProjectItem)
+            var projectItem = item as ProjectItem;
+            if (projectItem != null)
             {
-                var pi = (ProjectItem) item;
-
+                var pi = projectItem;
                 itemHierarchy.Push(pi);
-
                 CreateItemHierarchy(itemHierarchy, pi.Collection.Parent);
-            }
-
-            else if (item is Project)
-            {
-                var p = (Project) item;
-
-                itemHierarchy.Push(p);
-
-                if (p.ParentProjectItem != null)
-                {
-                    //top nodes dont have solution as parent, but is null 
-                    CreateItemHierarchy(itemHierarchy, p.ParentProjectItem);
-                }
-            }
-
-            else if (item is Solution)
-            {
-                //doesn't seem to ever happend... 
-                var sol = (Solution) item;
             }
 
             else
             {
-                throw new Exception("unknown item");
+                var project = item as Project;
+                if (project != null)
+                {
+                    var p = project;
+
+                    itemHierarchy.Push(p);
+
+                    if (p.ParentProjectItem != null)
+                    {
+                        //top nodes dont have solution as parent, but is null 
+                        CreateItemHierarchy(itemHierarchy, p.ParentProjectItem);
+                    }
+                }
+
+                else if (item is Solution)
+                {
+                    // doesn't seem to ever happen... 
+                }
+
+                else
+                {
+                    throw new InvalidOperationException("Unknown item");
+                }
             }
         }
     }
