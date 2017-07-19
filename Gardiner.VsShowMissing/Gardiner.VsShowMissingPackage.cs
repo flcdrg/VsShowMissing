@@ -266,6 +266,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             if (projectItems == null)
                 return;
 
+            var projectDirectory = buildProject.DirectoryPath + Path.DirectorySeparatorChar;
+            var projectFilename = buildProject.FullPath;
+
             var errorCategory = Options.MessageLevel;
 
             foreach (ProjectItem item in projectItems)
@@ -275,21 +278,18 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}") // VSConstants.GUID_ItemType_PhysicalFile
                     continue;
 
-                Debug.WriteLine("\t" + item.Name);
-
-                string projectFilename = item.ContainingProject.FullName;
-
-                string projectDirectory = Path.GetDirectoryName(projectFilename);
+                string itemName = item.Name;
+                Debug.WriteLine("\t" + itemName + item.Kind);
 
                 for (short i = 0; i < item.FileCount; i++)
-                {
+                {           
                     var filePath = item.FileNames[i];
-
-                    projectLogicalFiles.Add(filePath);
 
                     // Skip if this is a linked file
                     if (!filePath.StartsWith(projectDirectory, StringComparison.InvariantCultureIgnoreCase))
                         continue;
+
+                    projectLogicalFiles.Add(filePath);
 
                     if (!File.Exists(filePath))
                     {
