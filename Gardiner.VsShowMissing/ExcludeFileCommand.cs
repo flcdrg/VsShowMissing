@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio;
@@ -22,7 +23,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
             var tasks = MissingErrorTasks(Constants.FileInProjectNotOnDisk);
-            var physicalFile = VSConstants.GUID_ItemType_PhysicalFile.ToString("B").ToUpperInvariant();
+            var physicalFile = VSConstants.GUID_ItemType_PhysicalFile.ToString("B", CultureInfo.InvariantCulture).ToUpperInvariant();
 
             var projects = ((DTE) DTE).AllProjects();
             foreach (var task in tasks)

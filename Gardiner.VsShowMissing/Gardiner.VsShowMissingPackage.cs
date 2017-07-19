@@ -43,7 +43,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 #pragma warning disable S101 // Types should be named in camel case
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
     public sealed class Gardiner_VsShowMissingPackage : Package, IVsSolutionEvents
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
+#pragma warning restore CA1707 // Identifiers should not contain underscores
 #pragma warning restore S101 // Types should be named in camel case
     {
         private DTE _dte;
@@ -108,7 +112,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _buildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
         }
 
+#pragma warning disable CA1801 // Review unused parameters
         private void BuildEventsOnBuildProjConfigDone(string project, string projectConfig, string platform, string solutionConfig, bool success)
+#pragma warning restore CA1801 // Review unused parameters
         {
             Debug.WriteLine($"BuildEventsOnBuildProjConfigDone {project} {projectConfig} {platform} {solutionConfig} {success}");
 
@@ -126,7 +132,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         public static OptionsDialogPage Options { get; private set; }
 
+#pragma warning disable CA1801 // Review unused parameters
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
+#pragma warning restore CA1801 // Review unused parameters
         {
             Debug.WriteLine($"BuildEventsOnOnBuildProjConfigBegin {project} {projectConfig} {platform} {solutionConfig}");
 
@@ -334,7 +342,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             new DirectoryInfo(directoryName).GetFiles()
                                 .Where(
                                     f => f.Attributes != FileAttributes.Hidden && f.Attributes != FileAttributes.System)
-                                .Where(f => !f.Name.EndsWith(".user") && !f.Name.EndsWith("proj"))
+                                .Where(f => !f.Name.EndsWith(".user", StringComparison.InvariantCultureIgnoreCase) 
+                                    && !f.Name.EndsWith("proj", StringComparison.InvariantCultureIgnoreCase))
                                 .Select(f => f.FullName)
                                 .ToList();
 
