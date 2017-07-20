@@ -30,7 +30,8 @@ deploy:
     appveyor_repo_tag: true        # deploy on tag push only
 
 on_success:
-  - ps: Get-ChildItem -Recurse *.vsix | ForEach-Object { 
-  - ps:   Push-AppveyorArtifact $_.FullName -FileName ([IO.Path]::ChangeExtension($_.Name, "-$($env:VsixVersion).vsix")) -DeploymentName VsixFile 
-  - ps:   if ($env:GitVersion_BranchName -eq "master") { Vsix-PublishToGallery $_.FullName }
-  - ps: }
+  - ps: |
+      Get-ChildItem -Recurse *.vsix | ForEach-Object { 
+        Push-AppveyorArtifact $_.FullName -FileName ([IO.Path]::ChangeExtension($_.Name, "-$($env:VsixVersion).vsix")) -DeploymentName VsixFile 
+        if ($env:GitVersion_BranchName -eq "master") { Vsix-PublishToGallery $_.FullName }
+      }
