@@ -15,12 +15,8 @@ before_build:
 build_script:
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
-#artifacts:
-#  - path: '**\*.vsix'
-#    name: VsixFile
-
 after_build:
-  - ps: Get-ChildItem -Recurse *.vsix | ForEach-Object { Push-AppveyorArtifact $_.FullName -FileName ([IO.Path]::ChangeExtension($_.Name, ".$($env:VsixVersion).vsix")) -DeploymentName VsixFile }
+  - ps: Get-ChildItem -Recurse *.vsix | ForEach-Object { Push-AppveyorArtifact $_.FullName -FileName ([IO.Path]::ChangeExtension($_.Name, "-$($env:VsixVersion).vsix")) -DeploymentName VsixFile }
     
 deploy:
   release: v$(GitVersion_FullSemVer)
