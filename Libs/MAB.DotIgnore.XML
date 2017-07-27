@@ -14,35 +14,40 @@
             The individual ignore rules currently loaded into this list
             </summary>
         </member>
-        <member name="M:MAB.DotIgnore.IgnoreList.#ctor(System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:MAB.DotIgnore.IgnoreList.#ctor(System.Collections.Generic.IEnumerable{System.String},MAB.DotIgnore.MatchFlags)">
             <summary>
             Create a list of ignore rules to check paths against
             </summary>
             <param name="rules">A list of glob ignore patterns as strings</param>
+            <param name="flags">Optional flags determining pattern matching behaviour</param>
         </member>
-        <member name="M:MAB.DotIgnore.IgnoreList.#ctor(System.String)">
+        <member name="M:MAB.DotIgnore.IgnoreList.#ctor(System.String,MAB.DotIgnore.MatchFlags)">
             <summary>
             Create a list of ignore rules to check paths against
             </summary>
             <param name="ignoreFilePath">Path to a text file containing a list of glob ignore patterns as strings</param>
+            <param name="flags">Optional flags determining pattern matching behaviour</param>
         </member>
-        <member name="M:MAB.DotIgnore.IgnoreList.AddRule(System.String)">
+        <member name="M:MAB.DotIgnore.IgnoreList.AddRule(System.String,MAB.DotIgnore.MatchFlags)">
             <summary>
             Add a rule to the ignore list
             </summary>
             <param name="rule">Glob ignore pattern as string</param>
+            <param name="flags">Optional flags determining pattern matching behaviour</param>
         </member>
-        <member name="M:MAB.DotIgnore.IgnoreList.AddRules(System.String)">
+        <member name="M:MAB.DotIgnore.IgnoreList.AddRules(System.String,MAB.DotIgnore.MatchFlags)">
             <summary>
             Add multiple rules to the ignore list
             </summary>
             <param name="ignoreFilePath">Path to a text file containing a list of glob ignore patterns as strings</param>
+            <param name="flags">Optional flags determining pattern matching behaviour</param>
         </member>
-        <member name="M:MAB.DotIgnore.IgnoreList.AddRules(System.Collections.Generic.IEnumerable{System.String})">
+        <member name="M:MAB.DotIgnore.IgnoreList.AddRules(System.Collections.Generic.IEnumerable{System.String},MAB.DotIgnore.MatchFlags)">
             <summary>
             Add multiple rules to the ignore list
             </summary>
             <param name="rules">A list of glob ignore patterns as strings</param>
+            <param name="flags">Optional flags determining pattern matching behaviour</param>
         </member>
         <member name="M:MAB.DotIgnore.IgnoreList.RemoveRule(System.String)">
             <summary>
@@ -54,9 +59,9 @@
             <summary>
             Check if a file path matches any of the rules in the ignore list
             </summary>
-            <param name="file">FileInfo representing the file to chec</param>
+            <param name="file">FileInfo representing the file to check</param>
         </member>
-        <member name="M:MAB.DotIgnore.IgnoreList.IsIgnored(System.IO.FileInfo,System.Collections.Generic.List{System.String})">
+        <member name="M:MAB.DotIgnore.IgnoreList.IsIgnored(System.IO.FileInfo,MAB.DotIgnore.IgnoreLog)">
             <summary>
             Check if a directory path matches any of the rules in the ignore list
             </summary>
@@ -69,7 +74,7 @@
             </summary>
             <param name="directory">DirectoryInfo representing the file to check</param>
         </member>
-        <member name="M:MAB.DotIgnore.IgnoreList.IsIgnored(System.IO.DirectoryInfo,System.Collections.Generic.List{System.String})">
+        <member name="M:MAB.DotIgnore.IgnoreList.IsIgnored(System.IO.DirectoryInfo,MAB.DotIgnore.IgnoreLog)">
             <summary>
             Check if a directory path matches any of the rules in the ignore list
             </summary>
@@ -83,7 +88,7 @@
             <param name="path">String representing the path to check</param>
             <param name="pathIsDirectory">Should be set True if the path represents a directory, False if it represents a file</param>
         </member>
-        <member name="M:MAB.DotIgnore.IgnoreList.IsIgnored(System.String,System.Boolean,System.Collections.Generic.List{System.String})">
+        <member name="M:MAB.DotIgnore.IgnoreList.IsIgnored(System.String,System.Boolean,MAB.DotIgnore.IgnoreLog)">
             <summary>
             Check if a string path matches any of the rules in the ignore list
             </summary>
@@ -126,6 +131,7 @@
             Create an individual ignore rule for the specified pattern
             </summary>
             <param name="pattern">A glob pattern specifying file(s) this rule should ignore</param>
+            <param name="flags">Optional flags determining pattern matching behaviour</param>
         </member>
         <member name="M:MAB.DotIgnore.IgnoreRule.IsMatch(System.IO.FileInfo)">
             <summary>
