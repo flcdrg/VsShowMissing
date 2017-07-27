@@ -58,7 +58,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private IList<Project> _projects;
         private string _solutionDirectory;
         private List<Regex> _filters;
-        private IgnoreList _gitignores;
+        private readonly Dictionary<string, IgnoreList> _gitignores;
 
         /// <summary>
         /// Default constructor of the package.
@@ -70,6 +70,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         public Gardiner_VsShowMissingPackage()
         {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", ToString()));
+            _gitignores = new Dictionary<string, IgnoreList>();
         }
 
         /////////////////////////////////////////////////////////////////////////////
@@ -181,12 +182,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             _errorListProvider.Tasks.Clear();
 
-            var gitIgnoreFile = Path.Combine(_solutionDirectory, ".gitignore");
-            _gitignores = null;
-            if (Options.UseGitIgnore && File.Exists(gitIgnoreFile))
-            {
-                _gitignores = new IgnoreList(gitIgnoreFile);
-            }
+            _gitignores.Clear();
+            AddGitIgnoreFromDirectory(_solutionDirectory);
 
             _filters = new List<Regex>();
 
@@ -224,8 +221,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     {
                         Debug.WriteLine($"Physical file: {file}");
 
-                        if (_filters.Any(f => f.IsMatch(file)) ||
-                            (_gitignores != null && _gitignores.IsIgnored(file, false)))
+                        if (_filters.Any(f => f.IsMatch(file)) || (CheckIgnored(file)))
                         {
                             Debug.WriteLine("\tIgnored by filter");
                             continue;
@@ -253,6 +249,36 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     }
                 }
             }
+        }
+
+        private bool CheckIgnored(string file)
+        {
+            if (!Options.UseGitIgnore)
+            {
+                return false;
+            }
+
+            var directory = Path.GetDirectoryName(file);
+
+            // Chance we're linking to a file outside our hierarchy
+            while (directory != null && directory.StartsWith(_solutionDirectory, StringComparison.CurrentCultureIgnoreCase))
+            {
+                var truncatedFile = file.Substring(directory.Length + 1); // allow for removing separator
+                if (_gitignores.ContainsKey(directory) && _gitignores[directory].IsIgnored(truncatedFile, false))
+                {
+                    return true;
+                }
+
+                // move up to parent
+                directory = Path.GetDirectoryName(directory);
+            }
+
+            if (directory != null && _gitignores.ContainsKey(directory))
+            {
+                return _gitignores[directory].IsIgnored(file, false);
+            }
+
+            return false;
         }
 
         protected override void Dispose(bool disposing)
@@ -338,6 +364,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     // If we haven't seen this directory before, find the files inside it
                     if (processedPhysicalDirectories.Add(directoryName))
                     {
+                        AddGitIgnoreFromDirectory(directoryName);
+
                         var physicalFiles =
                             new DirectoryInfo(directoryName).GetFiles()
                                 .Where(
@@ -354,6 +382,15 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         }
                     }
                 }
+            }
+        }
+
+        private void AddGitIgnoreFromDirectory(string directoryName)
+        {
+            var gitIgnoreFile = Path.Combine(directoryName, ".gitignore");
+            if (Options.UseGitIgnore && File.Exists(gitIgnoreFile))
+            {
+                _gitignores.Add(directoryName, new IgnoreList(gitIgnoreFile));
             }
         }
 
