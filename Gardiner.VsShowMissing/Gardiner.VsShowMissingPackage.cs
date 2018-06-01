@@ -88,6 +88,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             RedGate.MemoryProfiler.Snapshot.TakeSnapshot("Initialize");
 #endif
 
+
             // listen for solution events
             _solution = (IVsSolution)GetService(typeof(SVsSolution));
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
@@ -147,7 +148,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private Project GetProject(string project)
         {
-            var projectPath = Path.GetFullPath($"{_solutionDirectory}\\{project}");
+            var projectPath = Path.Combine(_solutionDirectory, project);
             var proj = _projects.FirstOrDefault(p => p.FullName == projectPath);
             return proj;
         }
@@ -296,7 +297,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             base.Dispose(disposing);
         }
 
-        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles, ISet<string> processedPhysicalDirectories, IDictionary<string, string> physicalFileProjectMap)
+        private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles, ISet<string> processedPhysicalDirectories, IDictionary<string, string> physicalFileProjectMap  )
         {
             if (projectItems == null)
                 return;
@@ -317,7 +318,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 Debug.WriteLine("\t" + itemName + item.Kind);
 
                 for (short i = 0; i < item.FileCount; i++)
-                {
+                {           
                     var filePath = item.FileNames[i];
 
                     // Skip if this is a linked file
@@ -369,7 +370,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             new DirectoryInfo(directoryName).GetFiles()
                                 .Where(
                                     f => f.Attributes != FileAttributes.Hidden && f.Attributes != FileAttributes.System)
-                                .Where(f => !f.Name.EndsWith(".user", StringComparison.InvariantCultureIgnoreCase)
+                                .Where(f => !f.Name.EndsWith(".user", StringComparison.InvariantCultureIgnoreCase) 
                                     && !f.Name.EndsWith("proj", StringComparison.InvariantCultureIgnoreCase))
                                 .Select(f => f.FullName)
                                 .ToList();
@@ -417,7 +418,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             if (projectItem != null)
             {
-                var uih = (UIHierarchy)_dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
+                var uih = (UIHierarchy) _dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;
                 UIHierarchyItem uiHierarchyItem = uih.FindHierarchyItem(projectItem);
 
                 uiHierarchyItem?.Select(vsUISelectionType.vsUISelectionTypeSelect);
