@@ -12,6 +12,7 @@ using EnvDTE;
 using MAB.DotIgnore;
 using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.AsyncPackageHelpers;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Project = EnvDTE.Project;
@@ -29,9 +30,10 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     /// IVsPackage interface and uses the registration attributes defined in the framework to
     /// register itself and its components with the shell.
     /// </summary>
-    // This attribute tells the PkgDef creation utility (CreatePkgDef.exe) that this class is
-    // a package.
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    ///
+    [AsyncPackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
+    [Microsoft.VisualStudio.AsyncPackageHelpers.ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
+
     // This attribute is used to register the information needed to show this package
     // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
@@ -39,13 +41,12 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuids.guidGardiner_VsShowMissingPkgString)]
     [ProvideBindingPath] // Allow assembly references to be located
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
     [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 #pragma warning disable S101 // Types should be named in camel case
 #pragma warning disable CA1707 // Identifiers should not contain underscores
 #pragma warning disable CA1001 // Types that own disposable fields should be disposable
-    public sealed class Gardiner_VsShowMissingPackage : Package, IVsSolutionEvents
+    public sealed class Gardiner_VsShowMissingPackage : Package, IVsSolutionEvents, IAsyncLoadablePackageInitialize
 #pragma warning restore CA1001 // Types that own disposable fields should be disposable
 #pragma warning restore CA1707 // Identifiers should not contain underscores
 #pragma warning restore S101 // Types should be named in camel case
@@ -73,23 +74,78 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _gitignores = new Dictionary<string, IgnoreList>();
         }
 
-        /////////////////////////////////////////////////////////////////////////////
-        // Overridden Package Implementation
+        private bool _isAsyncLoadSupported;
+
         /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited, so this is the place
-        /// where you can put all the initialization code that rely on services provided by VisualStudio.
+        /// Initialization of the package; this method is always called right after the package is sited on main UI thread of Visual Studio.
+        /// 
+        /// Both asynchronous package and synchronous package loading will call this method initially so it is important to skip any initialization
+        /// meant for async load phase based on AsyncPackage support in IDE.
         /// </summary>
         protected override void Initialize()
         {
-            Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", ToString()));
             base.Initialize();
 
-#if MEMPROFILER
-            RedGate.MemoryProfiler.Snapshot.TakeSnapshot("Initialize");
-#endif
+            _isAsyncLoadSupported = this.IsAsyncPackageSupported();
 
+            // Only perform initialization if async package framework is not supported
+            if (!_isAsyncLoadSupported)
+            {
+                BackgroundThreadInitialization();
+
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
+                var solution = (IVsSolution) GetService(typeof(SVsSolution));
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
+                MainThreadInitialization(solution, isAsyncPath: false);
+            }
+        }
+
+        /// <summary>
+        /// Performs the asynchronous initialization for the package in cases where IDE supports AsyncPackage.
+        /// 
+        /// This method is always called from background thread initially.
+        /// </summary>
+        /// <param name="pServiceProvider">Async service provider instance to query services asynchronously</param>
+        /// <param name="pProfferService">Async service proffer instance</param>
+        /// <param name="pProgressCallback">Progress callback instance</param>
+        /// <returns></returns>
+        public IVsTask Initialize(IAsyncServiceProvider pServiceProvider, IProfferAsyncService pProfferService, IAsyncProgressCallback pProgressCallback)
+        {
+            if (!_isAsyncLoadSupported)
+            {
+                throw new InvalidOperationException("Async Initialize method should not be called when async load is not supported.");
+            }
+
+            return ThreadHelper.JoinableTaskFactory.RunAsync<object>(async () =>
+            {
+                BackgroundThreadInitialization();
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+#pragma warning disable CA2007 // Do not directly await a Task
+                var solution = await pServiceProvider.GetServiceAsync<IVsSolution>(typeof(SVsSolution));
+#pragma warning restore CA2007 // Do not directly await a Task
+                MainThreadInitialization(solution, isAsyncPath: true);
+                return null;
+            }).AsVsTask();
+        }
+
+        // ReSharper disable once MemberCanBeMadeStatic.Local
+#pragma warning disable CA1822
+        private void BackgroundThreadInitialization()
+#pragma warning restore CA1822
+        {
+            // Anything that doesn't require UI thread could be put here
+
+        }
+
+#pragma warning disable CA1801, S1172 // Unused method parameters should be removed
+        private void MainThreadInitialization(IVsSolution solution, bool isAsyncPath)
+#pragma warning restore CA1801, S1172 // Unused method parameters should be removed
+        {
             // listen for solution events
-            _solution = (IVsSolution)GetService(typeof(SVsSolution));
+            _solution = solution;
+
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
 
             if (_errorListProvider == null)
@@ -100,7 +156,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             DeleteFileCommand.Initialize(this, _errorListProvider);
             ExcludeFileCommand.Initialize(this, _errorListProvider);
 
+#pragma warning disable VSSDK006 // Check services exist
             _dte = (DTE)GetService(typeof(SDTE));
+#pragma warning restore VSSDK006 // Check services exist
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
 
@@ -123,6 +181,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 var proj = GetProject(project);
                 FindMissingFiles(proj);
             }
+
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             if (_errorListProvider.Tasks.Count > 0 && Options.FailBuildOnError && Options.Timing == RunWhen.BeforeBuild)
             {
@@ -147,8 +207,12 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private Project GetProject(string project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var projectPath = Path.GetFullPath($"{_solutionDirectory}\\{project}");
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
             var proj = _projects.FirstOrDefault(p => p.FullName == projectPath);
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
             return proj;
         }
 
@@ -168,6 +232,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private void BuildEventsOnOnBuildBegin(vsBuildScope scope, vsBuildAction action)
         {
             Debug.WriteLine("BuildEventsOnOnBuildBegin {0} {1}", scope, action);
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             _projects = _dte.AllProjects();
             _solutionDirectory = Path.GetDirectoryName(_dte.Solution.FullName);
@@ -195,6 +260,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private void FindMissingFiles(Project proj)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             Debug.WriteLine($"Project {proj.Name}");
 
             IDictionary<string, string> dict = new Dictionary<string, string>();
@@ -230,7 +297,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         string physicalFileProject = physicalFileProjectMap[file];
                         _solution.GetProjectOfUniqueName(physicalFileProject, out hierarchyItem);
 
-                        var newError = new MissingErrorTask()
+                        var newError = new MissingErrorTask
                         {
                             ErrorCategory = errorCategory,
                             Category = TaskCategory.BuildCompile,
@@ -238,7 +305,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                             Code = Constants.FileOnDiskNotInProject,
                             Document = file,
                             HierarchyItem = hierarchyItem,
-                            ProjectPath = physicalFileProject,
+                            ProjectPath = physicalFileProject
                         };
 
                         newError.Navigate += SelectParentProjectInSolution;
@@ -282,6 +349,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override void Dispose(bool disposing)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (_solutionCookie != 0)
             {
                 _solution.UnadviseSolutionEvents(_solutionCookie);
@@ -300,6 +369,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             if (projectItems == null)
                 return;
+
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             var projectDirectory = buildProject.DirectoryPath + Path.DirectorySeparatorChar;
             var projectFilename = buildProject.FullPath;
@@ -341,7 +412,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                         IVsHierarchy hierarchyItem;
                         _solution.GetProjectOfUniqueName(projectFilename, out hierarchyItem);
 
-                        var newError = new MissingErrorTask()
+                        var newError = new MissingErrorTask
                         {
                             ErrorCategory = errorCategory,
                             Category = TaskCategory.BuildCompile,
@@ -395,10 +466,14 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private void SelectParentProjectInSolution(object sender, EventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var error = (MissingErrorTask)sender;
 
             var project = _dte.AllProjects()
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
                 .FirstOrDefault(p => p.FullName.Equals(error.ProjectPath, StringComparison.InvariantCultureIgnoreCase));
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 
             if (project != null)
                 SelectItemInSolutionExplorer(project.ParentProjectItem);
@@ -407,6 +482,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private void NewErrorOnNavigate(object sender, EventArgs eventArgs)
         {
             Debug.WriteLine($"NewErrorOnNavigate {sender}");
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var error = (ErrorTask)sender;
 
             var projectItem = _dte.Solution.FindProjectItem(error.Document);
@@ -415,6 +492,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private void SelectItemInSolutionExplorer(ProjectItem projectItem)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (projectItem != null)
             {
                 var uih = (UIHierarchy)_dte.Windows.Item(EnvDTE.Constants.vsWindowKindSolutionExplorer).Object;

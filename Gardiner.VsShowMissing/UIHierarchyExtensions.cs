@@ -49,6 +49,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private static UIHierarchyItem FindHierarchyItem(UIHierarchy hierarchy, object item)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+
             // This gets children of the root note in the hierarchy
             var items = hierarchy.UIHierarchyItems.Item(1).UIHierarchyItems;
 
@@ -69,6 +71,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         /// </summary>
         private static UIHierarchyItem FindHierarchyItem(UIHierarchyItems items, object item)
         {
+            Microsoft.VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
+
             // This creates the full hierarchy for the given item
             var itemHierarchy = new Stack();
             CreateItemHierarchy(itemHierarchy, item);
