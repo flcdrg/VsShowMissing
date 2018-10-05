@@ -1,13 +1,12 @@
 # Show Missing Files
-A Visual Studio 2013/2015/2017 extension to generate warnings or errors for all missing files.
+
+A Visual Studio 2013/2015/2017/2019 extension to generate warnings or errors for all missing files.
 
 Download the latest version from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=DavidGardiner.ShowMissingFiles)
 
+[![Build Status](https://gardiner.visualstudio.com/Show%20Missing/_apis/build/status/flcdrg.VsShowMissing)](https://gardiner.visualstudio.com/Show%20Missing/_build/latest?definitionId=3)
 [![Build status](https://ci.appveyor.com/api/projects/status/9jvn9qbl4gx58uho?svg=true)](https://ci.appveyor.com/project/DavidGardiner/vsshowmissing)
-<a href="https://scan.coverity.com/projects/5748">
-  <img alt="Coverity Scan Build Status"
-       src="https://scan.coverity.com/projects/5748/badge.svg"/>
-</a>
+[![Coverity Scan Build Status](https://scan.coverity.com/projects/5748/badge.svg)](https://scan.coverity.com/projects/5748)
 
 ## Development
 
