@@ -48,7 +48,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                     File.Delete(task.Document);
                     RemoveTask(task);
                 }
-                catch (Exception)
+#pragma warning disable CA1031
+                catch
                 {
                     failedFiles.Add(task.Document);
                 }
