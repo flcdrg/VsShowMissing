@@ -87,9 +87,10 @@
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gardiner.VsShowMissingPackage.cs" />
-    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="source.extension.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
   </ItemGroup>
@@ -98,8 +99,8 @@
     <None Include="Gardiner.VsShowMissing.ruleset" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
-      <LastGenOutput>source.extension.resx</LastGenOutput>
       <Generator>VsixManifestGenerator</Generator>
+      <LastGenOutput>source.extension.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -131,17 +132,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="source.extension.resx">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations">
+      <Version>2019.1.1</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.2</Version>
     </PackageReference>

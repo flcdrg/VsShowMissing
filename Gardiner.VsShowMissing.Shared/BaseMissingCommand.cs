@@ -23,11 +23,14 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             OleMenuCommand menuItem = (OleMenuCommand) sender;
 
+            ThreadHelper.ThrowIfNotOnUIThread();
             menuItem.Visible = CalculateVisible();
         }
 
         protected void ForEachTask(Action<object> action)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             Window window = DTE.Windows.Item(WindowKinds.vsWindowKindErrorList);
             var myErrorList = (IVsTaskList2) window.Object;
 
@@ -52,6 +55,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private bool CalculateVisible()
         {
             int misMatched = 0;
+            ThreadHelper.ThrowIfNotOnUIThread();
 
             ForEachTask(item =>
             {
@@ -71,7 +75,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         protected List<MissingErrorTask> MissingErrorTasks(string code)
         {
             var tasks = new List<MissingErrorTask>();
-
+            ThreadHelper.ThrowIfNotOnUIThread();
             ForEachTask(task =>
             {
                 var item = task as MissingErrorTask;

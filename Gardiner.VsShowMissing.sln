@@ -13,10 +13,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gardiner.VsShowMissing", "G
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Gardiner.VsShowMissing.Shared", "Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.shproj", "{805D77B4-504C-4CD9-95C8-D472F2436A90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS2019", "VS2019\VS2019.csproj", "{A8D2366D-3CA7-490F-B5B6-52F02B436A82}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.projitems*{805d77b4-504c-4cd9-95c8-d472f2436a90}*SharedItemsImports = 13
 		Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.projitems*{8db7f31d-73f0-47c0-b17b-61d85abaa0e3}*SharedItemsImports = 4
+		Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.projitems*{a8d2366d-3ca7-490f-b5b6-52f02b436a82}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +30,10 @@ Global
 		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8D2366D-3CA7-490F-B5B6-52F02B436A82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8D2366D-3CA7-490F-B5B6-52F02B436A82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8D2366D-3CA7-490F-B5B6-52F02B436A82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8D2366D-3CA7-490F-B5B6-52F02B436A82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

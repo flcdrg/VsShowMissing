@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using DavidGardiner.Gardiner_VsShowMissing.Annotations;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
 using UIElement = System.Windows.UIElement;
 
@@ -18,7 +18,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing.Options
     [Description("Extension that checks for any files referenced in projects that do not exist")]
     [LocDisplayName("Extension that checks for any files referenced in projects that do not exist")]
     [ClassInterface(ClassInterfaceType.AutoDual)]
-    [CLSCompliant(false)]
     [ComVisible(true)]
     [Guid("1D9ECCF3-5D2F-4112-9B25-264596873DC9")]
     public class OptionsDialogPage : UIElementDialogPage, INotifyPropertyChanged

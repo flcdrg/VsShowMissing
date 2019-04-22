@@ -13,8 +13,7 @@ Runs on Build. Missing files are listed in Error List window.</Description>
         <Tags>Missing, Warnings</Tags>
     </Metadata>
     <Installation InstalledByMsi="false">
-        <InstallationTarget Id="Microsoft.VisualStudio.Pro" Version="[12.0,17.0)" />
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[12.0,17.0)" />
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[12.0,16.0)" />
     </Installation>
     <Dependencies>
         <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />

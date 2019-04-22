@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using EnvDTE;
 using EnvDTE80;
+using Microsoft.VisualStudio.Shell;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
@@ -8,6 +9,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     {
         public static IList<Project> AllProjects(this DTE dte, bool excludeUnloaded = true)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             Projects projects = dte.Solution.Projects;
             List<Project> list = new List<Project>();
             var item = projects.GetEnumerator();
@@ -38,6 +41,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         private static IEnumerable<Project> GetSolutionFolderProjects(Project solutionFolder)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             List<Project> list = new List<Project>();
             for (var i = 1; i <= solutionFolder.ProjectItems.Count; i++)
             {
