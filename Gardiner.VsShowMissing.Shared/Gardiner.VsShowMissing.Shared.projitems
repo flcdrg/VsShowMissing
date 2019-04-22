@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>805d77b4-504c-4cd9-95c8-d472f2436a90</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Gardiner.VsShowMissing.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)BaseCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BaseMissingCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DeleteFileCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ExcludeFileCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FindFilesPatternToRegex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IncludeFileCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MissingErrorTask.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\EnumBindingSourceExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\OptionsDialogPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Options\OptionsDialogPageControl.xaml.cs">
+      <DependentUpon>OptionsDialogPageControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)ProjectExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RunWhen.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TaskProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UIHierarchyExtensions.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="$(MSBuildThisFileDirectory)Options\OptionsDialogPageControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+</Project>
