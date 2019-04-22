@@ -11,6 +11,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <Features>IOperation</Features>
+    <RuntimeIdentifiers>win</RuntimeIdentifiers>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Resources\BrokenlinktoFile_431_24.ico</ApplicationIcon>
