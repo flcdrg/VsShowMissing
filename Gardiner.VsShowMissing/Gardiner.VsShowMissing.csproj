@@ -12,7 +12,9 @@
     </NuGetPackageImportStamp>
     <Features>IOperation</Features>
     <RuntimeIdentifiers>win</RuntimeIdentifiers>
+    <DeployExtension Condition="'$(AppVeyor)' != '' And '$(TF_BUILD)' != '' ">False</DeployExtension>
   </PropertyGroup>
+  
   <PropertyGroup>
     <ApplicationIcon>Resources\BrokenlinktoFile_431_24.ico</ApplicationIcon>
   </PropertyGroup>
