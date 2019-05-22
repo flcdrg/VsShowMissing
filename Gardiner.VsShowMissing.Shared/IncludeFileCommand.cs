@@ -27,14 +27,17 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var tasks = MissingErrorTasks(Constants.FileOnDiskNotInProject);
 
             var projects = ((DTE) DTE).AllProjects();
             foreach (var task in tasks)
             {
+#pragma warning disable VSTHRD010
                 var project =
                     projects.FirstOrDefault(
                         p => p.FullName.Equals(task.ProjectPath, StringComparison.InvariantCultureIgnoreCase));
+#pragma warning restore VSTHRD010
 
                 if (project != null)
                 {

@@ -33,6 +33,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override void InvokeHandler(object sender, EventArgs eventArgs)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var tasks = MissingErrorTasks(Constants.FileOnDiskNotInProject);
 
             var failedFiles = new List<string>();

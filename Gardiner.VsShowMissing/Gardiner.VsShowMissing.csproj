@@ -14,7 +14,6 @@
     <RuntimeIdentifiers>win</RuntimeIdentifiers>
     <DeployExtension Condition="'$(AppVeyor)' != '' And '$(TF_BUILD)' != '' ">False</DeployExtension>
   </PropertyGroup>
-  
   <PropertyGroup>
     <ApplicationIcon>Resources\BrokenlinktoFile_431_24.ico</ApplicationIcon>
   </PropertyGroup>
@@ -83,45 +82,25 @@
     <Compile Include="AsyncPackageHelpers\AsyncPackageRegistrationAttribute.cs" />
     <Compile Include="AsyncPackageHelpers\ExtensionMethods.cs" />
     <Compile Include="AsyncPackageHelpers\ProvideAutoLoadAttribute.cs" />
-    <Compile Include="BaseCommand.cs" />
-    <Compile Include="BaseMissingCommand.cs" />
-    <Compile Include="Constants.cs" />
-    <Compile Include="DeleteFileCommand.cs" />
-    <Compile Include="ExcludeFileCommand.cs" />
-    <Compile Include="FindFilesPatternToRegex.cs" />
     <Compile Include="Gardiner.VsShowMissing.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
       <DependentUpon>Gardiner.VsShowMissing.vsct</DependentUpon>
     </Compile>
-    <Compile Include="IncludeFileCommand.cs" />
-    <Compile Include="MissingErrorTask.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gardiner.VsShowMissingPackage.cs" />
-    <Compile Include="Options\EnumBindingSourceExtension.cs" />
-    <Compile Include="Options\OptionsDialogPage.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Options\OptionsDialogPageControl.xaml.cs">
-      <DependentUpon>OptionsDialogPageControl.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ProjectExtensions.cs" />
-    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RunWhen.cs" />
     <Compile Include="source.extension.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
       <DependentUpon>source.extension.vsixmanifest</DependentUpon>
     </Compile>
-    <Compile Include="TaskProvider.cs" />
-    <Compile Include="UIHierarchyExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog.rtf" />
     <None Include="Gardiner.VsShowMissing.ruleset" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
-      <LastGenOutput>source.extension.resx</LastGenOutput>
       <Generator>VsixManifestGenerator</Generator>
+      <LastGenOutput>source.extension.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -153,23 +132,11 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="source.extension.resx">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
-      <MergeWithCTO>true</MergeWithCTO>
-      <ManifestResourceName>VSPackage</ManifestResourceName>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="Options\OptionsDialogPageControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations">
+      <Version>2019.1.1</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers">
       <Version>2.9.2</Version>
     </PackageReference>
@@ -199,6 +166,7 @@
       <Version>12.0.4</Version>
     </PackageReference>
   </ItemGroup>
+  <Import Project="..\Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.projitems" Label="Shared" />
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>
   </PropertyGroup>

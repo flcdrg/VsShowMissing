@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using EnvDTE;
+using Microsoft.VisualStudio.Shell;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
@@ -27,6 +28,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         /// </returns>
         public static UIHierarchyItem FindHierarchyItem(this UIHierarchy hierarchy, Project item)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             return FindHierarchyItem(hierarchy, (object) item);
         }
 
@@ -35,6 +38,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         /// </summary>
         public static UIHierarchyItem FindHierarchyItem(this UIHierarchy hierarchy, Solution item)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             return FindHierarchyItem(hierarchy, (object) item);
         }
 
@@ -44,6 +49,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         public static UIHierarchyItem FindHierarchyItem(this UIHierarchy hierarchy, ProjectItem item)
 
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             return FindHierarchyItem(hierarchy, (object) item);
         }
 
@@ -60,7 +67,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             // uiItem would be null in most cases, however, for projects inside Solution Folders, there is a strange behavior in which the project byitself can't
             // be found in the hierarchy. Instead, in case of failure we'll search for the UIHierarchyItem
             if (uiItem == null && item is Project && ((Project) item).ParentProjectItem != null)
+            {
                 uiItem = FindHierarchyItem(items, ((Project) item).ParentProjectItem);
+            }
 
             return uiItem;
         }
@@ -122,6 +131,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         /// </summary>
         private static void CreateItemHierarchy(Stack itemHierarchy, object item)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var projectItem = item as ProjectItem;
             if (projectItem != null)
             {
