@@ -55,7 +55,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private uint _solutionCookie;
         private IVsSolution _solution;
         private ErrorListProvider _errorListProvider;
+#pragma warning disable S1450
         private BuildEvents _buildEvents;
+#pragma warning restore S1450
         private IList<Project> _projects;
         private string _solutionDirectory;
         private List<Regex> _filters;
