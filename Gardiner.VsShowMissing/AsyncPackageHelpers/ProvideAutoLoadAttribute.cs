@@ -6,6 +6,8 @@
 // </copyright>                                                                
 //------------------------------------------------------------------------------
 
+using JetBrains.Annotations;
+
 namespace Microsoft.VisualStudio.AsyncPackageHelpers
 {
 
@@ -101,8 +103,13 @@ namespace Microsoft.VisualStudio.AsyncPackageHelpers
         /// contains the location where the registration information should be placed.
         /// it also contains such as the type being registered, and path information.
         /// </summary>
-        public override void Register(RegistrationContext context)
+        public override void Register([NotNull] RegistrationContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             using (Key childKey = context.CreateKey(RegKeyName))
             {
                 childKey.SetValue(context.ComponentType.GUID.ToString("B", CultureInfo.InvariantCulture), (int)Flags);
@@ -112,8 +119,13 @@ namespace Microsoft.VisualStudio.AsyncPackageHelpers
         /// <summary>
         /// Unregister this AutoLoad specification.
         /// </summary>
-        public override void Unregister(RegistrationContext context)
+        public override void Unregister([NotNull] RegistrationContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             context.RemoveValue(RegKeyName, context.ComponentType.GUID.ToString("B", CultureInfo.InvariantCulture));
         }
     }

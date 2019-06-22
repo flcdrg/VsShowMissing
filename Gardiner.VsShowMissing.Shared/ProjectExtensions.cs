@@ -1,14 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using EnvDTE;
 using EnvDTE80;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
     public static class ProjectExtensions
     {
-        public static IList<Project> AllProjects(this DTE dte, bool excludeUnloaded = true)
+        public static IList<Project> AllProjects([NotNull] this DTE dte, bool excludeUnloaded = true)
         {
+            if (dte == null)
+            {
+                throw new ArgumentNullException(nameof(dte));
+            }
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             Projects projects = dte.Solution.Projects;

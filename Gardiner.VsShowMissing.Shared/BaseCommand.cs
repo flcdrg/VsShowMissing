@@ -14,7 +14,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         protected BaseCommand(IServiceProvider serviceProvider)
         {
             if (serviceProvider == null)
+            {
                 throw new ArgumentNullException(nameof(serviceProvider));
+            }
 
             ServiceProvider = serviceProvider;
             DTE = serviceProvider.GetService(typeof(SDTE)) as DTE2;
@@ -39,7 +41,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         protected OleMenuCommand AddCommand(Guid menuGroup, int commandID, EventHandler invokeHandler, EventHandler beforeQueryHandler)
         {
             if (invokeHandler == null)
+            {
                 throw new ArgumentNullException(nameof(invokeHandler), "Missing action to perform");
+            }
 
             OleMenuCommandService commandService = GetService<OleMenuCommandService, IMenuCommandService>();
             if (commandService != null)
