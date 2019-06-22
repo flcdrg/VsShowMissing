@@ -1,6 +1,9 @@
 image: 
-
   - Visual Studio 2017
+
+branches:
+  only:
+    - master
 
 install:
   - choco install gitversion.portable -pre -y
