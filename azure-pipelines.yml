@@ -12,8 +12,6 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@0
-
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
@@ -23,8 +21,5 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    msbuildArgs: /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal
 
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
