@@ -39,10 +39,12 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             uint[] fetched = {0};
             IVsTaskItem[] items = {null};
+#pragma warning disable S1264
             for (itemEnumerator.Reset(); itemEnumerator.Next(1, items, fetched) == VSConstants.S_OK && fetched[0] == 1;)
             {
                 action(items[0]);
             }
+#pragma warning restore S1264
         }
 
         protected abstract bool VisibleExpression(MissingErrorTask task);

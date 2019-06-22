@@ -48,13 +48,15 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     [ProvideBindingPath] // Allow assembly references to be located
     [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-    public sealed class VsShowMissingPackage : AsyncPackage, IVsSolutionEvents
+    public sealed class VsShowMissingPackage : AsyncPackage, IVsSolutionEvents, IDisposable
     {
         private DTE _dte;
         private uint _solutionCookie;
         private IVsSolution _solution;
         private ErrorListProvider _errorListProvider;
+#pragma warning disable S1450
         private BuildEvents _buildEvents;
+#pragma warning restore S1450
         private IList<Project> _projects;
         private string _solutionDirectory;
         private List<Regex> _filters;
@@ -90,7 +92,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
-            await this.JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
+            await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
             var solution = (IVsSolution) await GetServiceAsync(typeof(SVsSolution));
             MainThreadInitialization(solution);
@@ -522,6 +524,11 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _errorListProvider.Tasks.Clear();
 
             return VSConstants.S_OK;
+        }
+
+        public void Dispose()
+        {
+            _errorListProvider?.Dispose();
         }
     }
 }

@@ -1,11 +1,10 @@
 ﻿using System;
-using Microsoft.VisualStudio;
+
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 
 namespace DavidGardiner.Gardiner_VsShowMissing
 {
-    public class TaskProvider : ErrorListProvider, IVsTaskProvider, IVsTaskProvider3
+    public class TaskProvider : ErrorListProvider
     {
         public TaskProvider(IServiceProvider provider) : base(provider)
         {
