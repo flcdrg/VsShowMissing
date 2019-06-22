@@ -149,7 +149,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
 
             if (_errorListProvider == null)
+            {
                 _errorListProvider = new TaskProvider(this);
+            }
 
             // Commands
             IncludeFileCommand.Initialize(this, _errorListProvider);
@@ -368,7 +370,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private void NavigateProjectItems(ProjectItems projectItems, Microsoft.Build.Evaluation.Project buildProject, ISet<string> projectPhysicalFiles, ISet<string> projectLogicalFiles, ISet<string> processedPhysicalDirectories, IDictionary<string, string> physicalFileProjectMap)
         {
             if (projectItems == null)
+            {
                 return;
+            }
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -382,7 +386,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
                 NavigateProjectItems(item.ProjectItems, buildProject, projectPhysicalFiles, projectLogicalFiles, processedPhysicalDirectories, physicalFileProjectMap);
 
                 if (item.Kind != "{6BB5F8EE-4483-11D3-8BCF-00C04F8EC28C}") // VSConstants.GUID_ItemType_PhysicalFile
+                {
                     continue;
+                }
 
                 string itemName = item.Name;
                 Debug.WriteLine("\t" + itemName + item.Kind);
@@ -393,7 +399,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
                     // Skip if this is a linked file
                     if (!filePath.StartsWith(projectDirectory, StringComparison.InvariantCultureIgnoreCase))
+                    {
                         continue;
+                    }
 
                     projectLogicalFiles.Add(filePath);
 
@@ -476,7 +484,9 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 #pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
 
             if (project != null)
+            {
                 SelectItemInSolutionExplorer(project.ParentProjectItem);
+            }
         }
 
         private void NewErrorOnNavigate(object sender, EventArgs eventArgs)

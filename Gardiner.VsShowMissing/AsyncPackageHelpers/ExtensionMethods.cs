@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell.Interop;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.VisualStudio.AsyncPackageHelpers
@@ -39,8 +40,13 @@ namespace Microsoft.VisualStudio.AsyncPackageHelpers
         /// </summary>
         /// <param name="serviceProvider">an IServiceProvider instance, usually a Package instance</param>
         /// <returns>true if async packages are supported</returns>
-        public static bool IsAsyncPackageSupported(this IServiceProvider serviceProvider)
+        public static bool IsAsyncPackageSupported([NotNull] this IServiceProvider serviceProvider)
         {
+            if (serviceProvider == null)
+            {
+                throw new ArgumentNullException(nameof(serviceProvider));
+            }
+
             IAsyncServiceProvider asyncServiceProvider = serviceProvider.GetService(typeof(SAsyncServiceProvider)) as IAsyncServiceProvider;
             return asyncServiceProvider != null;
         }

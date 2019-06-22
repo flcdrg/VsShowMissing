@@ -4,6 +4,8 @@
 // </copyright>                                                                
 //------------------------------------------------------------------------------
 
+using JetBrains.Annotations;
+
 namespace Microsoft.VisualStudio.AsyncPackageHelpers {
 
     using System;
@@ -65,7 +67,12 @@ namespace Microsoft.VisualStudio.AsyncPackageHelpers {
         ///     It also contains other information such as the type being registered 
         ///     and path of the assembly.
         /// </param>
-        public override void Register(RegistrationContext context) {
+        public override void Register([NotNull] RegistrationContext context) {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             Type t = context.ComponentType;
 
             Key packageKey = null;
@@ -129,7 +136,9 @@ namespace Microsoft.VisualStudio.AsyncPackageHelpers {
                     finally
                     {
                         if (childKey != null)
+                        {
                             childKey.Close();
+                        }
                     }
                 }
 
@@ -147,7 +156,9 @@ namespace Microsoft.VisualStudio.AsyncPackageHelpers {
             finally
             {
                 if (packageKey != null)
+                {
                     packageKey.Close();
+                }
             }
         }
 
@@ -155,8 +166,13 @@ namespace Microsoft.VisualStudio.AsyncPackageHelpers {
         ///     Unregister this package.
         /// </devdoc>
         /// <param name="context"></param>
-        public override void Unregister(RegistrationContext context) 
+        public override void Unregister([NotNull] RegistrationContext context)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
             context.RemoveKey(RegKeyName(context));
         }
 
