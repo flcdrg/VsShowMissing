@@ -1,11 +1,11 @@
-﻿<UserControl x:Class="DavidGardiner.Gardiner_VsShowMissing.Options.OptionsDialogPageControl"
+﻿<UserControl x:Class="Gardiner.VsShowMissing.Options.OptionsDialogPageControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DavidGardiner.Gardiner_VsShowMissing.Options"
              xmlns:shell="clr-namespace:Microsoft.VisualStudio.Shell;assembly=Microsoft.VisualStudio.Shell.12.0"
-             xmlns:gardinerVsShowMissing="clr-namespace:DavidGardiner.Gardiner_VsShowMissing"
+             xmlns:options="clr-namespace:Gardiner.VsShowMissing.Options"
+             xmlns:vsShowMissing="clr-namespace:Gardiner.VsShowMissing"
              mc:Ignorable="d" 
              
              d:DesignHeight="300" d:DesignWidth="300">
@@ -33,14 +33,14 @@
             <ComboBox 
                 Margin="5,0,0,0"
                 SelectedValue="{Binding Timing}"
-                ItemsSource="{Binding Source={local:EnumBindingSource {x:Type gardinerVsShowMissing:RunWhen}}}" />
+                ItemsSource="{Binding Source={options:EnumBindingSource {x:Type vsShowMissing:RunWhen}}}" />
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal" Style="{StaticResource Rows}">
             <TextBlock>Message importance: </TextBlock>
             <ComboBox 
                 Margin="5, 0, 0, 0"
                 SelectedValue="{Binding MessageLevel}" 
-                ItemsSource="{Binding Source={local:EnumBindingSource {x:Type shell:TaskErrorCategory}}}"
+                ItemsSource="{Binding Source={options:EnumBindingSource {x:Type shell:TaskErrorCategory}}}"
                 ToolTip="What kind of message to create in the Error List window for each missing file" />
         </StackPanel>
         <StackPanel Grid.Row="3" Style="{StaticResource Rows}">

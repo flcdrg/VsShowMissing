@@ -5,7 +5,7 @@ using EnvDTE80;
 using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
 
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
     public static class ProjectExtensions
     {

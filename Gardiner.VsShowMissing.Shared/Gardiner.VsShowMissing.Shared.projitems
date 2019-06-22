@@ -6,13 +6,12 @@
     <SharedGUID>805d77b4-504c-4cd9-95c8-d472f2436a90</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>Gardiner.VsShowMissing.Shared</Import_RootNamespace>
+    <Import_RootNamespace>Gardiner.VsShowMissing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)BaseCommand.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)BaseMissingCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DeleteFileCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ErrorListCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ExcludeFileCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FindFilesPatternToRegex.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IncludeFileCommand.cs" />
@@ -32,6 +31,7 @@
   <ItemGroup>
     <Page Include="$(MSBuildThisFileDirectory)Options\OptionsDialogPageControl.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
 </Project>

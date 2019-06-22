@@ -1,37 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
+using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
-    internal class DeleteFileCommand : BaseMissingCommand
+    /// <summary>
+    /// Command handler
+    /// </summary>
+    internal sealed class DeleteFileCommand : ErrorListCommand
     {
-        public DeleteFileCommand(IServiceProvider serviceProvider, ErrorListProvider errorListProvider) 
-            : base(serviceProvider, errorListProvider)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DeleteFileCommand"/> class.
+        /// Adds our command handlers for menu (commands must exist in the command table file)
+        /// </summary>
+        private DeleteFileCommand(
+            OleMenuCommandService commandService, 
+            DTE dte,
+            ErrorListProvider errorListProvider
+            ) : base(dte, errorListProvider)
         {
+            commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
+
+            var menuCommandID = new CommandID(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidDeleteFileOnDisk);
+            var menuItem = new OleMenuCommand(Execute, menuCommandID);
+            menuItem.BeforeQueryStatus += MenuItemOnBeforeQueryStatus;
+            commandService.AddCommand(menuItem);
         }
-        
+
+        /// <summary>
+        /// Gets the instance of the command.
+        /// </summary>
         public static DeleteFileCommand Instance { get; private set; }
 
         public static void Initialize(IServiceProvider provider, ErrorListProvider errorListProvider)
         {
-            Instance = new DeleteFileCommand(provider, errorListProvider);
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            var commandService = (OleMenuCommandService) provider.GetService(typeof(IMenuCommandService));
+            var dte = (DTE) provider.GetService(typeof(DTE));
+
+            Instance = new DeleteFileCommand(commandService, dte, errorListProvider);
         }
-        
-        protected override void SetupCommands()
+
+#if VS2019
+        /// <summary>
+        /// Initializes the singleton instance of the command.
+        /// </summary>
+        /// <param name="package">Owner package, not null.</param>
+        /// <param name="errorListProvider"></param>
+        public static async System.Threading.Tasks.Task InitializeAsync(AsyncPackage package, ErrorListProvider errorListProvider)
         {
-            AddCommand(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidDeleteFileOnDisk, InvokeHandler, AddCustomToolItemBeforeQueryStatus);
+            // Switch to the main thread - the call to AddCommand in DeleteFileCommand's constructor requires
+            // the UI thread.
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
+
+            OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
+            var dte = (DTE)await package.GetServiceAsync(typeof(DTE));
+
+            Instance = new DeleteFileCommand(commandService, dte, errorListProvider);
         }
+#endif
 
         protected override bool VisibleExpression(MissingErrorTask task)
         {
             return (task != null && task.Code == Constants.FileOnDiskNotInProject);
         }
 
-        protected override void InvokeHandler(object sender, EventArgs eventArgs)
+        /// <summary>
+        /// This function is the callback used to execute the command when the menu item is clicked.
+        /// See the constructor to see how the menu item is associated with this function using
+        /// OleMenuCommandService service and MenuCommand class.
+        /// </summary>
+        /// <param name="sender">Event sender.</param>
+        /// <param name="e">Event args.</param>
+        private void Execute(object sender, EventArgs e)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var tasks = MissingErrorTasks(Constants.FileOnDiskNotInProject);

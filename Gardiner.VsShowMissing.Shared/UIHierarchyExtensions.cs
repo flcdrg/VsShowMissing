@@ -3,7 +3,7 @@ using System.Collections;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
 #pragma warning disable S101 // Types should be named in camel case
     /// <summary>

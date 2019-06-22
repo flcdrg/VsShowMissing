@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
     // http://stackoverflow.com/a/4375058/25702
     internal static class FindFilesPatternToRegex

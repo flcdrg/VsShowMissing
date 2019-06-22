@@ -1,4 +1,4 @@
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
     public enum RunWhen
     {

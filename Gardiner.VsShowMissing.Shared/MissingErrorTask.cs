@@ -1,6 +1,6 @@
 ﻿using Microsoft.VisualStudio.Shell;
 
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
     public class MissingErrorTask : ErrorTask
     {

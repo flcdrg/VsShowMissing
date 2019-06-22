@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using DavidGardiner.Gardiner_VsShowMissing.Options;
+using Gardiner.VsShowMissing.Options;
 using EnvDTE;
 using MAB.DotIgnore;
 using Microsoft.Build.Evaluation;
@@ -15,10 +15,12 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.AsyncPackageHelpers;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+
+
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
 
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -33,7 +35,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     ///
     [AsyncPackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [Microsoft.VisualStudio.AsyncPackageHelpers.ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
-
     // This attribute is used to register the information needed to show this package
     // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]

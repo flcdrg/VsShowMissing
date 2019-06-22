@@ -1,26 +1,32 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
-    class ExcludeFileCommand : BaseMissingCommand
+    sealed class ExcludeFileCommand : ErrorListCommand
     {
-        public ExcludeFileCommand(IServiceProvider serviceProvider, ErrorListProvider errorListProvider) : base(serviceProvider, errorListProvider)
+        private ExcludeFileCommand(
+            OleMenuCommandService commandService,
+            DTE dte, 
+            ErrorListProvider errorListProvider) 
+            : base(dte, errorListProvider)
         {
+            commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
+
+            var menuCommandID = new CommandID(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidExcludeFileFromProject);
+            var menuItem = new OleMenuCommand(Execute, menuCommandID);
+            menuItem.BeforeQueryStatus += MenuItemOnBeforeQueryStatus;
+            commandService.AddCommand(menuItem);
         }
 
-        protected override void SetupCommands()
-        {
-            AddCommand(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidExcludeFileFromProject, InvokeHandler,
-                AddCustomToolItemBeforeQueryStatus);
-        }
-
-        protected override void InvokeHandler(object sender, EventArgs eventArgs)
+        private void Execute(object sender, EventArgs eventArgs)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -28,7 +34,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             var physicalFile = VSConstants.GUID_ItemType_PhysicalFile.ToString("B", CultureInfo.InvariantCulture).ToUpperInvariant();
 
             ThreadHelper.ThrowIfNotOnUIThread();
-            var projects = ((DTE) DTE).AllProjects();
+            var projects = Dte.AllProjects();
             foreach (var task in tasks)
             {
 #pragma warning disable VSTHRD010
@@ -63,7 +69,23 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         public static void Initialize(IServiceProvider serviceProvider, ErrorListProvider errorListProvider)
         {
-            Instance = new ExcludeFileCommand(serviceProvider, errorListProvider);
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var commandService = (OleMenuCommandService)serviceProvider.GetService(typeof(IMenuCommandService));
+            var dte = (DTE)serviceProvider.GetService(typeof(DTE));
+
+            Instance = new ExcludeFileCommand(commandService, dte, errorListProvider);
         }
+
+#if VS2019
+        internal static async System.Threading.Tasks.Task InitializeAsync(AsyncPackage package, ErrorListProvider errorListProvider)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
+
+            var commandService = (OleMenuCommandService) await package.GetServiceAsync(typeof(IMenuCommandService));
+            var dte = (DTE) await package.GetServiceAsync(typeof(DTE));
+
+            Instance = new ExcludeFileCommand(commandService, dte, errorListProvider);
+        }
+#endif
     }
 }

@@ -1,26 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
-
-using DavidGardiner.Gardiner_VsShowMissing.Options;
 using EnvDTE;
-
+using Gardiner.VsShowMissing.Options;
 using MAB.DotIgnore;
 using Microsoft.Build.Evaluation;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Task = System.Threading.Tasks.Task;
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
+using Task = System.Threading.Tasks.Task;
 
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
     /// <summary>
     /// This is the class that implements the package exposed by this assembly.
@@ -40,14 +37,10 @@ namespace DavidGardiner.Gardiner_VsShowMissing
     /// </para>
     /// </remarks>
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
-    [InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)] // Info on this package for Help/About
-    // This attribute is needed to let the shell know that this package exposes some menus.
+	[ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [Guid(PackageGuids.guidGardiner_VsShowMissingPkgString)]
-    [ProvideBindingPath] // Allow assembly references to be located
+    [Guid(PackageGuids.guidVsShowMissingPackageString)]
     [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
     public sealed class VsShowMissingPackage : AsyncPackage, IVsSolutionEvents, IDisposable
     {
         private DTE _dte;
@@ -61,12 +54,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         private string _solutionDirectory;
         private List<Regex> _filters;
         private readonly Dictionary<string, IgnoreList> _gitignores;
-
-        /// <summary>
-        /// VsShowMissingPackage GUID string.
-        /// </summary>
-        public const string PackageGuidString = "22acbd31-fcf2-4575-b605-2d53e1e847e5";
-
         /// <summary>
         /// Initializes a new instance of the <see cref="VsShowMissingPackage"/> class.
         /// </summary>
@@ -79,8 +66,6 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _gitignores = new Dictionary<string, IgnoreList>();
         }
 
-        #region Package Members
-
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initialization code that rely on services provided by VisualStudio.
@@ -90,38 +75,24 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         /// <returns>A task representing the async work of package initialization, or an already completed task if there is none. Do not return null from this method.</returns>
         protected override async Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
+            await base.InitializeAsync(cancellationToken, progress);
+
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
-
-            var solution = (IVsSolution) await GetServiceAsync(typeof(SVsSolution));
-            MainThreadInitialization(solution);
-        }
-
-        #endregion
-
-        private void MainThreadInitialization(IVsSolution solution)
-        {
-            // listen for solution events
+            var solution = (IVsSolution)await GetServiceAsync(typeof(SVsSolution));
             _solution = solution;
-
-            ThreadHelper.ThrowIfNotOnUIThread();
-
             ErrorHandler.ThrowOnFailure(_solution.AdviseSolutionEvents(this, out _solutionCookie));
-
             if (_errorListProvider == null)
             {
                 _errorListProvider = new TaskProvider(this);
             }
 
-            // Commands
-            IncludeFileCommand.Initialize(this, _errorListProvider);
-            DeleteFileCommand.Initialize(this, _errorListProvider);
-            ExcludeFileCommand.Initialize(this, _errorListProvider);
+            await IncludeFileCommand.InitializeAsync(this, _errorListProvider);
+            await DeleteFileCommand.InitializeAsync(this, _errorListProvider);
+            await ExcludeFileCommand.InitializeAsync(this, _errorListProvider);
 
-#pragma warning disable VSSDK006 // Check services exist
-            _dte = (DTE)GetService(typeof(SDTE));
-#pragma warning restore VSSDK006 // Check services exist
+            _dte = (DTE)await GetServiceAsync(typeof(SDTE)) ?? throw new InvalidOperationException("SDTE service request returned null");
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
 
@@ -131,6 +102,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
             _buildEvents.OnBuildProjConfigDone += BuildEventsOnBuildProjConfigDone;
             _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
             _buildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
+
+            _dte.StatusBar.Text = "Show Missing ready";
         }
 
 #pragma warning disable CA1801 // Review unused parameters
@@ -313,6 +286,8 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
         protected override void Dispose(bool disposing)
         {
+            Debug.WriteLine("Disposing");
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             if (_solutionCookie != 0)
@@ -323,7 +298,7 @@ namespace DavidGardiner.Gardiner_VsShowMissing
 
             if (disposing)
             {
-                _errorListProvider.Dispose();
+                _errorListProvider?.Dispose();
             }
 
             base.Dispose(disposing);

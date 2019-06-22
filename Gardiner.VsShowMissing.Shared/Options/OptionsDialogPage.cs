@@ -7,7 +7,7 @@ using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
 using UIElement = System.Windows.UIElement;
 
-namespace DavidGardiner.Gardiner_VsShowMissing.Options
+namespace Gardiner.VsShowMissing.Options
 {
     /// <summary>
     /// 

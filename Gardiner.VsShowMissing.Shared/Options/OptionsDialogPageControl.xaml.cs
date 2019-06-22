@@ -2,7 +2,7 @@
 using System.Windows.Input;
 using Microsoft.VisualStudio.Shell;
 
-namespace DavidGardiner.Gardiner_VsShowMissing.Options
+namespace Gardiner.VsShowMissing.Options
 {
 #pragma warning disable S110 // Inheritance tree of classes should not be too deep
     /// <summary>
