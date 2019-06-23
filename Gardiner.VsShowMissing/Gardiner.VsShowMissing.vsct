@@ -41,7 +41,7 @@
          must be a menu. -->
     <Groups>
 
-      <Group guid="guidGardiner_VsShowMissingCmdSet" id="MyMenuGroup" priority="0x0600">
+      <Group guid="guidVsShowMissingPackageCmdSet" id="MyMenuGroup" priority="0x0600">
         <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_TOOLS"/>
       </Group>
 
@@ -63,8 +63,8 @@
               <CommandFlag>DynamicVisibility</CommandFlag>
           If you do not want an image next to your command, remove the Icon node /> -->
 
-      <Button guid="guidGardiner_VsShowMissingCmdSet" id="cmdidFindMissingFiles" priority="0x0100" type="Button">
-        <Parent guid="guidGardiner_VsShowMissingCmdSet" id="MyMenuGroup" />
+      <Button guid="guidVsShowMissingPackageCmdSet" id="cmdidFindMissingFiles" priority="0x0100" type="Button">
+        <Parent guid="guidVsShowMissingPackageCmdSet" id="MyMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
@@ -74,8 +74,8 @@
 
       <Button guid="guidGardiner_ErrorListCmdSet" id="cmdidDeleteFileOnDisk" priority="0x0100" type="Button">
         <Parent guid="guidGardiner_ErrorListCmdSet" id="MyErrorListMenuGroup" />
-        <CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>
+        <!--<CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultInvisible</CommandFlag>-->
         <Strings>
           <ButtonText>Delete file on disk</ButtonText>
         </Strings>
@@ -108,7 +108,7 @@
     <GuidSymbol name="guidGardiner_VsShowMissingPkg" value="{36b8e40e-ceaa-4305-bdb7-1a68a0d84067}" />
     
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidGardiner_VsShowMissingCmdSet" value="{5faea57f-7fa2-4ac2-99b8-e93b226d14cb}">
+    <GuidSymbol name="guidVsShowMissingPackageCmdSet" value="{5faea57f-7fa2-4ac2-99b8-e93b226d14cb}">
 
       <IDSymbol name="MyMenuGroup" value="0x1020" />
       <IDSymbol name="cmdidFindMissingFiles" value="0x0100" />

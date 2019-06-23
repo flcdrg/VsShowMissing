@@ -1,36 +1,39 @@
 ﻿using System;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 
-namespace DavidGardiner.Gardiner_VsShowMissing
+namespace Gardiner.VsShowMissing
 {
-    internal class IncludeFileCommand : BaseMissingCommand
+    internal class IncludeFileCommand : ErrorListCommand
     {
-        private IncludeFileCommand(IServiceProvider serviceProvider, ErrorListProvider errorListProvider)
-            : base(serviceProvider, errorListProvider)
+        private IncludeFileCommand(
+            OleMenuCommandService commandService,
+            DTE dte,
+            ErrorListProvider errorListProvider)
+            : base(dte, errorListProvider)
         {
+            if (commandService == null)
+            {
+                throw new ArgumentNullException(nameof(commandService));
+            }
+
+            var menuCommandID = new CommandID(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidIncludeFileInProject);
+            var menuItem = new OleMenuCommand(Execute, menuCommandID);
+            menuItem.BeforeQueryStatus += MenuItemOnBeforeQueryStatus;
+            commandService.AddCommand(menuItem);
         }
 
         public static IncludeFileCommand Instance { get; private set; }
 
-        public static void Initialize(IServiceProvider provider, ErrorListProvider errorListProvider)
-        {
-            Instance = new IncludeFileCommand(provider, errorListProvider);
-        }
-
-        protected override void SetupCommands()
-        {
-            AddCommand(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidIncludeFileInProject, InvokeHandler, AddCustomToolItemBeforeQueryStatus);
-        }
-
-        protected override void InvokeHandler(object sender, EventArgs eventArgs)
+        private void Execute(object sender, EventArgs eventArgs)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             var tasks = MissingErrorTasks(Constants.FileOnDiskNotInProject);
 
-            var projects = ((DTE) DTE).AllProjects();
+            var projects = Dte.AllProjects();
             foreach (var task in tasks)
             {
 #pragma warning disable VSTHRD010
@@ -52,5 +55,26 @@ namespace DavidGardiner.Gardiner_VsShowMissing
         {
             return (task != null && task.Code == Constants.FileOnDiskNotInProject);
         }
+
+        public static void Initialize(IServiceProvider serviceProvider, ErrorListProvider errorListProvider)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            var commandService = (OleMenuCommandService)serviceProvider.GetService(typeof(IMenuCommandService));
+            var dte = (DTE)serviceProvider.GetService(typeof(DTE));
+
+            Instance = new IncludeFileCommand(commandService, dte, errorListProvider);
+        }
+
+#if VS2019
+        internal static async System.Threading.Tasks.Task InitializeAsync(AsyncPackage package, ErrorListProvider errorListProvider)
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
+
+            var commandService = (OleMenuCommandService)await package.GetServiceAsync(typeof(IMenuCommandService));
+            var dte = (DTE)await package.GetServiceAsync(typeof(DTE));
+
+            Instance = new IncludeFileCommand(commandService, dte, errorListProvider);
+        }
+#endif
     }
 }

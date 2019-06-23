@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Markup;
 
-namespace DavidGardiner.Gardiner_VsShowMissing.Options
+namespace Gardiner.VsShowMissing.Options
 {
     // http://brianlagunas.com/a-better-way-to-data-bind-enums-in-wpf/
     public class EnumBindingSourceExtension : MarkupExtension
