@@ -6,20 +6,16 @@ branches:
     - master
 
 install:
-  - choco install gitversion.portable -pre -y
   - ps: (new-object Net.WebClient).DownloadString("https://raw.github.com/madskristensen/ExtensionScripts/master/AppVeyor/vsix.ps1") | iex
  
 before_build: 
   - nuget restore -Verbosity quiet
-  - ps: gitversion /l console /output buildserver
-  - ps: .\Update-VsixVersion.ps1 -Version $env:GitVersion_AssemblySemVer
-  - ps: Write-Output "Set VsixVersion = $($env:VsixVersion)"
 
 build_script:
   - msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
     
 deploy:
-  release: v$(GitVersion_FullSemVer)
+  release: v$(GitBuildVersion)
   description: ''
   provider: GitHub
   auth_token:

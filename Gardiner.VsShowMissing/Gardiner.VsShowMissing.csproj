@@ -90,19 +90,12 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Gardiner.VsShowMissingPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="source.extension.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ChangeLog.rtf" />
     <None Include="Gardiner.VsShowMissing.ruleset" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
-      <Generator>VsixManifestGenerator</Generator>
-      <LastGenOutput>source.extension.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

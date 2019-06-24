@@ -25,5 +25,20 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+    maximumCpuCount: true
     msbuildArgs: /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal
 
+# Publish all needed files for the Release pipeline
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: |
+      Overview.md
+      build/**
+      VS2019/**/*.vsix
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishPipelineArtifact@0
+  inputs:
+    artifactName: 'drop'
+    targetPath: '$(Build.ArtifactStagingDirectory)'
