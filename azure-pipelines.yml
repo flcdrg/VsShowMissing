@@ -33,7 +33,7 @@ steps:
   inputs:
     SourceFolder: '$(Build.SourcesDirectory)'
     Contents: |
-      README.md
+      Overview.md
       build/**
       VS2019/**/*.vsix
     TargetFolder: '$(Build.ArtifactStagingDirectory)'
