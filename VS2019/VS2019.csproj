@@ -46,11 +46,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="source.extension.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>source.extension.vsixmanifest</DependentUpon>
-    </Compile>
     <Compile Include="VsShowMissingPackage.cs" />
     <Compile Include="VsShowMissingPackage1.cs">
       <AutoGen>True</AutoGen>
@@ -61,8 +56,6 @@
   <ItemGroup>
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
-      <Generator>VsixManifestGenerator</Generator>
-      <LastGenOutput>source.extension.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -113,7 +106,10 @@
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
-  </Target>
   -->
+  <Target Name="AfterBuild">
+    <Message Importance="high" Text="AssemblyInformationalVersion: $(AssemblyInformationalVersion)" />
+    <Message Importance="high" Text="NuGetPackageVersion: $(NuGetPackageVersion)" />
+  </Target>
+
 </Project>
