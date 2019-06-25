@@ -3,7 +3,7 @@ $PersonalAccessToken = $args[0]
 $ErrorActionPreference = "Stop"
 
 # TODO: Replace the path with the path to your VSIX file
-$VsixPath = "$PSScriptRoot\VS2019\bin\Release\Gardiner.VsShowMissing.VS2019.vsix"
+$VsixPath = "$PSScriptRoot\..\VS2019\bin\Release\Gardiner.VsShowMissing.VS2019.vsix"
 $ManifestPath = "$PSScriptRoot\extension-manifest.json"
 
 # Find the location of VsixPublisher
