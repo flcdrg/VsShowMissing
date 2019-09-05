@@ -140,7 +140,7 @@
       <Version>14.3.26929</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers">
-      <Version>16.0.102</Version>
+      <Version>16.3.52</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
       <Version>[15.9.3039,16)</Version>
