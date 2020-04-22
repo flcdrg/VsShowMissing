@@ -377,7 +377,7 @@ namespace Gardiner.VsShowMissing
                     string directoryName = Path.GetDirectoryName(filePath);
 
                     // If we haven't seen this directory before, find the files inside it
-                    if (processedPhysicalDirectories.Add(directoryName))
+                    if (Directory.Exists(directoryName) && processedPhysicalDirectories.Add(directoryName))
                     {
                         AddGitIgnoreFromDirectory(directoryName);
 
