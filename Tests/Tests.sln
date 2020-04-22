@@ -19,6 +19,8 @@ Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedProject1", "SharedPro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassLibrary2", "ClassLibrary2\ClassLibrary2.csproj", "{D1D3CBEF-7740-4BF5-B5B3-822F9D69FDF3}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CppProject", "CppProject\CppProject.vcxproj", "{C4ABFF71-96A7-410E-B9A1-2CCE3A5130B6}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		SharedProject1\SharedProject1.projitems*{d1d3cbef-7740-4bf5-b5b3-822f9d69fdf3}*SharedItemsImports = 4
@@ -51,6 +53,10 @@ Global
 		{D1D3CBEF-7740-4BF5-B5B3-822F9D69FDF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1D3CBEF-7740-4BF5-B5B3-822F9D69FDF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1D3CBEF-7740-4BF5-B5B3-822F9D69FDF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4ABFF71-96A7-410E-B9A1-2CCE3A5130B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4ABFF71-96A7-410E-B9A1-2CCE3A5130B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4ABFF71-96A7-410E-B9A1-2CCE3A5130B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4ABFF71-96A7-410E-B9A1-2CCE3A5130B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
