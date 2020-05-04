@@ -26,12 +26,28 @@ namespace Gardiner.VsShowMissing
             commandService.AddCommand(menuItem);
         }
 
+        private void RemoveDocument(ProjectItems projectItems, string fileName)
+        {
+            if( projectItems != null)
+            {
+                foreach (ProjectItem projectItem in projectItems)
+                {
+                    var physicalFile = VSConstants.GUID_ItemType_PhysicalFile.ToString("B", CultureInfo.InvariantCulture).ToUpperInvariant();
+                    if (projectItem.Kind.Equals(physicalFile, StringComparison.InvariantCultureIgnoreCase) && projectItem.FileNames[0].Equals(fileName, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        projectItem.Remove();
+                        return;
+                    }
+                    RemoveDocument(projectItem.ProjectItems, fileName);
+                }
+            }
+        }
+
         private void Execute(object sender, EventArgs eventArgs)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
             var tasks = MissingErrorTasks(Constants.FileInProjectNotOnDisk);
-            var physicalFile = VSConstants.GUID_ItemType_PhysicalFile.ToString("B", CultureInfo.InvariantCulture).ToUpperInvariant();
 
             ThreadHelper.ThrowIfNotOnUIThread();
             var projects = Dte.AllProjects();
@@ -46,15 +62,7 @@ namespace Gardiner.VsShowMissing
                 if (project != null)
                 {
                     Debug.WriteLine($"Removing {task.Document} from {project.FullName}");
-
-                    foreach (ProjectItem projectItem in project.ProjectItems)
-                    {                        
-                        if (projectItem.Kind.Equals(physicalFile, StringComparison.InvariantCultureIgnoreCase) && projectItem.FileNames[0].Equals(task.Document, StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            projectItem.Remove();
-                        }
-                    }
-
+                    RemoveDocument(project.ProjectItems, task.Document);
                     RemoveTask(task);
                 }
             }
