@@ -9,6 +9,7 @@
     <Import_RootNamespace>Gardiner.VsShowMissing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)TaskErrorCategory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DeleteFileCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ErrorListCommand.cs" />

@@ -304,7 +304,7 @@ namespace Gardiner.VsShowMissing
 
                         var newError = new MissingErrorTask
                         {
-                            ErrorCategory = errorCategory,
+                            ErrorCategory = (Microsoft.VisualStudio.Shell.TaskErrorCategory) errorCategory,
                             Category = TaskCategory.BuildCompile,
                             Text = "File on disk is not included in project",
                             Code = Constants.FileOnDiskNotInProject,
@@ -425,7 +425,7 @@ namespace Gardiner.VsShowMissing
 
                         var newError = new MissingErrorTask
                         {
-                            ErrorCategory = errorCategory,
+                            ErrorCategory = (Microsoft.VisualStudio.Shell.TaskErrorCategory) errorCategory,
                             Category = TaskCategory.BuildCompile,
                             Text = "File referenced in project does not exist",
                             Code = "MI0001",

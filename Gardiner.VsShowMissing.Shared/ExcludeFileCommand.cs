@@ -3,8 +3,9 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
+
 using EnvDTE;
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 
@@ -28,7 +29,8 @@ namespace Gardiner.VsShowMissing
 
         private void RemoveDocument(ProjectItems projectItems, string fileName)
         {
-            if( projectItems != null)
+            ThreadHelper.ThrowIfNotOnUIThread();
+            if ( projectItems != null)
             {
                 foreach (ProjectItem projectItem in projectItems)
                 {
