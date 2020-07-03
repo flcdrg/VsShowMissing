@@ -96,4 +96,4 @@ stages:
               rootFolder: '$(Pipeline.Workspace)/drop/build'
               patternManifest: 'extension-manifest.json'
               updateTasksVersion: false
-              arguments: '--vsix $(Pipeline.Workspace)/drop/**/Gardiner.VsShowMissing.VS2019.vsix'
+              arguments: '--vsix $(Pipeline.Workspace)/drop/VS2019/bin/Release/Gardiner.VsShowMissing.VS2019.vsix'
