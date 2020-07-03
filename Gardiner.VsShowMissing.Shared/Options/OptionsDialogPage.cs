@@ -1,156 +1,87 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
+using System.Drawing.Design;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
+
 using Microsoft.VisualStudio.Shell;
-using UIElement = System.Windows.UIElement;
 
 namespace Gardiner.VsShowMissing.Options
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <remarks>
-    /// Based on http://blog.danskingdom.com/adding-a-wpf-settings-page-to-the-tools-options-dialog-window-for-your-visual-studio-extension/ and https://github.com/Haacked/Encourage/tree/master
-    /// </remarks>
+#pragma warning disable CA1812
+
     [Description("Extension that checks for any files referenced in projects that do not exist")]
-    [LocDisplayName("Extension that checks for any files referenced in projects that do not exist")]
+    [DisplayName("Extension that checks for any files referenced in projects that do not exist")]
     [ClassInterface(ClassInterfaceType.AutoDual)]
     [ComVisible(true)]
     [Guid("1D9ECCF3-5D2F-4112-9B25-264596873DC9")]
-    public class OptionsDialogPage : UIElementDialogPage, INotifyPropertyChanged
+    internal class GeneralOptions : BaseOptionModel<GeneralOptions>
     {
-        private OptionsDialogPageControl _optionsDialogControl;
-        private TaskErrorCategory _messageLevel;
-        private bool _failBuildOnError;
-        private RunWhen _timing;
-        private bool _notIncludedFiles;
+        private const string IgnorePhysicalFilesDefault = "*.*proj;*.user;.gitignore;*.ruleset;*.suo;*.licx;*.dotSettings;*.dbmdl;*.jfm";
+        private const bool UseGitIgnoreDefault = true;
+        private const bool NotIncludedFilesDefault = true;
+        private const bool FailBuildOnErrorDefault = false;
         private string _ignorePhysicalFiles;
-        private bool _useGitIgnore;
+
+        public GeneralOptions()
+        {
+            _ignorePhysicalFiles = IgnorePhysicalFilesDefault;
+            UseGitIgnore = UseGitIgnoreDefault;
+            NotIncludedFiles = NotIncludedFilesDefault;
+            FailBuildOnError = FailBuildOnErrorDefault;
+        }
 
         [LocDisplayName("Use .gitignore")]
         [Description("If checked then .gitignore file is also used for ignoring files")]
         [Category("Show Missing")]
-        [DefaultValue(true)]
-        public bool UseGitIgnore
-        {
-            get { return _useGitIgnore; }
-            set
-            {
-                if (value == _useGitIgnore) return;
-                _useGitIgnore = value;
-                OnPropertyChanged();
-            }
-        }
+        [DefaultValue(UseGitIgnoreDefault)]
+        public bool UseGitIgnore { get; set; }
 
         [LocDisplayName("Message importance")]
         [Description("What kind of message to create in the Error List window for each missing file")]
         [Category("Show Missing")]
         [DefaultValue(TaskErrorCategory.Error)]
-        public TaskErrorCategory MessageLevel
-        {
-            get { return _messageLevel; }
-            set
-            {
-                if (value == _messageLevel) return;
-                _messageLevel = value;
-                OnPropertyChanged();
-            }
-        }
+        public TaskErrorCategory MessageLevel { get; set; }
 
         [LocDisplayName("Cancel build on error")]
         [Description(
             "If true, cancel the build if any missing files are found. This only has effect if When is set to BeforeBuild"
             )]
         [Category("Show Missing")]
-        [DefaultValue(false)]
-        public bool FailBuildOnError
-        {
-            get { return _failBuildOnError; }
-            set
-            {
-                if (value == _failBuildOnError) return;
-                _failBuildOnError = value;
-                OnPropertyChanged();
-            }
-        }
+        [DefaultValue(FailBuildOnErrorDefault)]
+        public bool FailBuildOnError { get; set; }
 
         [LocDisplayName("When")]
         [Description("When to check for missing files")]
         [Category("Show Missing")]
         [DefaultValue(RunWhen.BeforeBuild)]
-        public RunWhen Timing
-        {
-            get { return _timing; }
-            set
-            {
-                if (value == _timing) return;
-                _timing = value;
-                OnPropertyChanged();
-            }
-        }
+        public RunWhen Timing { get; set; }
 
         [LocDisplayName("Non-included files")]
         [Description("Generate warnings/errors for files on disk that are not included in the project")]
         [Category("Show Missing")]
-        [DefaultValue(true)]
-        public bool NotIncludedFiles
-        {
-            get { return _notIncludedFiles; }
-            set
-            {
-                if (value == _notIncludedFiles) return;
-                _notIncludedFiles = value;
-                OnPropertyChanged();
-            }
-        }
+        [DefaultValue(NotIncludedFilesDefault)]
+        public bool NotIncludedFiles { get; set; }
 
         [LocDisplayName("Ignore Pattern")]
         [Description("Semicolon-separated list of filename patterns to ignore when checking physical files")]
         [Category("Show Missing")]
-        [DefaultValue("*.*proj;*.user;.gitignore;*.ruleset;*.suo;*.licx;*.dotSettings;*.dbmdl;*.jfm")]
+        [DefaultValue(IgnorePhysicalFilesDefault)]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string IgnorePhysicalFiles
         {
-            get { return _ignorePhysicalFiles; }
+            get => _ignorePhysicalFiles;
             set
             {
-                if (string.Equals(value, _ignorePhysicalFiles, StringComparison.Ordinal)) return;
+                if (string.Equals(value, _ignorePhysicalFiles, StringComparison.Ordinal))
+                {
+                    return;
+                }
 
                 Debug.WriteLine($"IgnoreFiles\nOld: {_ignorePhysicalFiles}\nNew: {value}");
                 _ignorePhysicalFiles = value;
-                OnPropertyChanged();
             }
-        }
-
-        protected override UIElement Child => _optionsDialogControl ?? (_optionsDialogControl = new OptionsDialogPageControl(this));
-
-        public OptionsDialogPage()
-        {
-            DefaultSettings();
-        }
-
-        public override void ResetSettings()
-        {
-            DefaultSettings();
-            base.ResetSettings();
-        }
-
-        private void DefaultSettings()
-        {
-            IgnorePhysicalFiles = "*.*proj\r\n*.user\r\n.gitignore\r\n*.ruleset\r\n*.suo\r\n*.licx\r\n*.dotSettings\r\n*.vspscc";
-            NotIncludedFiles = true;
-            UseGitIgnore = true;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            Debug.WriteLine($"OnPropertyChanged {propertyName}");
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

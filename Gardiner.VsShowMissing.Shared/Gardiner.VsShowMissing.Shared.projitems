@@ -9,6 +9,16 @@
     <Import_RootNamespace>Gardiner.VsShowMissing</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Options\BaseOptionModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\BaseOptionPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\DialogPageProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Options\OptionsUserControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Options\OptionsUserControl.Designer.cs">
+      <DependentUpon>OptionsUserControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)TaskErrorCategory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Constants.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DeleteFileCommand.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ErrorListCommand.cs" />
@@ -20,18 +30,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Options\OptionsDialogPage.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="$(MSBuildThisFileDirectory)Options\OptionsDialogPageControl.xaml.cs">
-      <DependentUpon>OptionsDialogPageControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)ProjectExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RunWhen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TaskProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIHierarchyExtensions.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="$(MSBuildThisFileDirectory)Options\OptionsDialogPageControl.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
   </ItemGroup>
 </Project>

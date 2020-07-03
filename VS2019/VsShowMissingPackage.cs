@@ -40,7 +40,7 @@ namespace Gardiner.VsShowMissing
 	[ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuids.guidVsShowMissingPackageString)]
-    [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
+    [ProvideOptionPage(typeof(DialogPageProvider.General), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     public sealed class VsShowMissingPackage : AsyncPackage, IVsSolutionEvents, IDisposable
     {
         private DTE _dte;
@@ -77,6 +77,8 @@ namespace Gardiner.VsShowMissing
         {
             await base.InitializeAsync(cancellationToken, progress);
 
+            Options = await GeneralOptions.GetLiveInstanceAsync();
+
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
@@ -95,8 +97,6 @@ namespace Gardiner.VsShowMissing
             _dte = (DTE)await GetServiceAsync(typeof(SDTE)) ?? throw new InvalidOperationException("SDTE service request returned null");
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
-
-            Options = (OptionsDialogPage)GetDialogPage(typeof(OptionsDialogPage));
 
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
             _buildEvents.OnBuildProjConfigDone += BuildEventsOnBuildProjConfigDone;
@@ -126,7 +126,7 @@ namespace Gardiner.VsShowMissing
             }
         }
 
-        public static OptionsDialogPage Options { get; private set; }
+        private GeneralOptions Options { get; set; }
 
 #pragma warning disable CA1801 // Review unused parameters
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
@@ -236,7 +236,7 @@ namespace Gardiner.VsShowMissing
 
                         var newError = new MissingErrorTask
                         {
-                            ErrorCategory = errorCategory,
+                            ErrorCategory = (Microsoft.VisualStudio.Shell.TaskErrorCategory) errorCategory,
                             Category = TaskCategory.BuildCompile,
                             Text = "File on disk is not included in project",
                             Code = Constants.FileOnDiskNotInProject,
@@ -359,7 +359,7 @@ namespace Gardiner.VsShowMissing
 
                         var newError = new MissingErrorTask
                         {
-                            ErrorCategory = errorCategory,
+                            ErrorCategory = (Microsoft.VisualStudio.Shell.TaskErrorCategory)errorCategory,
                             Category = TaskCategory.BuildCompile,
                             Text = "File referenced in project does not exist",
                             Code = "MI0001",

@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
+using Task = System.Threading.Tasks.Task;
 
 namespace Gardiner.VsShowMissing
 {
@@ -42,7 +43,7 @@ namespace Gardiner.VsShowMissing
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuids.guidGardiner_VsShowMissingPkgString)]
     [ProvideBindingPath] // Allow assembly references to be located
-    [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
+    [ProvideOptionPage(typeof(DialogPageProvider.General), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 #pragma warning disable S101 // Types should be named in camel case
 #pragma warning disable CA1707 // Identifiers should not contain underscores
@@ -94,6 +95,8 @@ namespace Gardiner.VsShowMissing
             // Only perform initialization if async package framework is not supported
             if (!_isAsyncLoadSupported)
             {
+                Options = GeneralOptions.Instance;
+
                 BackgroundThreadInitialization();
 
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
@@ -122,6 +125,7 @@ namespace Gardiner.VsShowMissing
             return ThreadHelper.JoinableTaskFactory.RunAsync<object>(async () =>
             {
                 BackgroundThreadInitialization();
+                Options = await GeneralOptions.GetLiveInstanceAsync();
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 #pragma warning disable CA2007 // Do not directly await a Task
                 var solution = await pServiceProvider.GetServiceAsync<IVsSolution>(typeof(SVsSolution));
@@ -137,7 +141,6 @@ namespace Gardiner.VsShowMissing
 #pragma warning restore CA1822
         {
             // Anything that doesn't require UI thread could be put here
-
         }
 
 #pragma warning disable CA1801, S1172 // Unused method parameters should be removed
@@ -167,8 +170,6 @@ namespace Gardiner.VsShowMissing
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
 
-            Options = (OptionsDialogPage)GetDialogPage(typeof(OptionsDialogPage));
-
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
             _buildEvents.OnBuildProjConfigDone += BuildEventsOnBuildProjConfigDone;
             _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
@@ -195,7 +196,7 @@ namespace Gardiner.VsShowMissing
             }
         }
 
-        public static OptionsDialogPage Options { get; private set; }
+        private GeneralOptions Options { set; get; }
 
 #pragma warning disable CA1801 // Review unused parameters
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
@@ -304,7 +305,7 @@ namespace Gardiner.VsShowMissing
 
                         var newError = new MissingErrorTask
                         {
-                            ErrorCategory = errorCategory,
+                            ErrorCategory = (Microsoft.VisualStudio.Shell.TaskErrorCategory) errorCategory,
                             Category = TaskCategory.BuildCompile,
                             Text = "File on disk is not included in project",
                             Code = Constants.FileOnDiskNotInProject,
@@ -425,7 +426,7 @@ namespace Gardiner.VsShowMissing
 
                         var newError = new MissingErrorTask
                         {
-                            ErrorCategory = errorCategory,
+                            ErrorCategory = (Microsoft.VisualStudio.Shell.TaskErrorCategory) errorCategory,
                             Category = TaskCategory.BuildCompile,
                             Text = "File referenced in project does not exist",
                             Code = "MI0001",
