@@ -68,32 +68,20 @@ stages:
     displayName: Deploy
     environment: 'Visual Studio Marketplace'
     pool:
-      vmImage: ubuntu-latest
+      vmImage: $(vmImageName)
 
     strategy:
       runOnce:
         deploy:
           steps:
-          - task: TfxInstaller@3
-            inputs:
-              version: 'v0.7.x'
-
-          # - task: PublishAzureDevOpsExtension@3
+          # - task: TfxInstaller@3
           #   inputs:
-          #     # connectTo: 'VsTeam'
-          #     connectedServiceName: 'Visual Studio Marketplace'
-          #     fileType: 'vsix'
-          #     vsixFile: '$(Pipeline.Workspace)/drop/**/Gardiner.VsShowMissing.VS2019.vsix'
-              # updateTasksVersion: false
-              # extensionVisibility: 'public'
-              # extensionPricing: 'free'
-          - task: PublishAzureDevOpsExtension@3
-            displayName: Publish
+          #     version: 'v0.7.x'
+
+          - task: PublishVisualStudioExtension@3
             inputs:
-              connectTo: 'VsTeam'
               connectedServiceName: 'Visual Studio Marketplace'
-              fileType: 'manifest'
-              rootFolder: '$(Pipeline.Workspace)/drop/build'
-              patternManifest: 'extension-manifest.json'
-              updateTasksVersion: false
-              arguments: '--vsix $(Pipeline.Workspace)/drop/VS2019/bin/Release/Gardiner.VsShowMissing.VS2019.vsix'
+              vsixFile: '$(Pipeline.Workspace)/drop/VS2019/bin/Release/Gardiner.VsShowMissing.VS2019.vsix'
+              manifestFile: '$(Pipeline.Workspace)/drop/build/extension-manifest.json'
+              publisherId: 'DavidGardiner'
+              ignoreWarnings: 'VSIXValidatorWarning01,VSIXValidatorWarning02,VSIXValidatorWarning08'
