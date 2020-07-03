@@ -18,7 +18,13 @@ namespace Gardiner.VsShowMissing.Options
     [Guid("1D9ECCF3-5D2F-4112-9B25-264596873DC9")]
     internal class GeneralOptions : BaseOptionModel<GeneralOptions>
     {
+        private const string IgnorePhysicalFilesDefault = "*.*proj;*.user;.gitignore;*.ruleset;*.suo;*.licx;*.dotSettings;*.dbmdl;*.jfm";
         private string _ignorePhysicalFiles;
+
+        public GeneralOptions()
+        {
+            _ignorePhysicalFiles = IgnorePhysicalFilesDefault;
+        }
 
         [LocDisplayName("Use .gitignore")]
         [Description("If checked then .gitignore file is also used for ignoring files")]
@@ -55,7 +61,7 @@ namespace Gardiner.VsShowMissing.Options
         [LocDisplayName("Ignore Pattern")]
         [Description("Semicolon-separated list of filename patterns to ignore when checking physical files")]
         [Category("Show Missing")]
-        [DefaultValue("*.*proj;*.user;.gitignore;*.ruleset;*.suo;*.licx;*.dotSettings;*.dbmdl;*.jfm")]
+        [DefaultValue(IgnorePhysicalFilesDefault)]
         [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string IgnorePhysicalFiles
         {
