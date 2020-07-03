@@ -46,7 +46,6 @@ stages:
         artifactName: 'drop'
         targetPath: '$(Build.ArtifactStagingDirectory)'
 
-
 - stage: Publish
   displayName: Deploy stage
   dependsOn: Build
@@ -54,7 +53,7 @@ stages:
   jobs:
   - deployment: Deploy
     displayName: Deploy
-    environment: 'development'
+    environment: 'Visual Studio Marketplace'
     pool:
       vmImage: $(vmImageName)
 
@@ -63,6 +62,9 @@ stages:
         deploy:
 
           steps:
+          - task: TfxInstaller@3
+            inputs:
+              version: 'v0.7.x'
           - task: PublishAzureDevOpsExtension@3
             inputs:
               connectTo: 'VsTeam'
