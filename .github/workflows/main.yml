@@ -36,6 +36,14 @@ jobs:
     - name: nuget restore
       run: nuget restore -Verbosity quiet
 
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v1
+      #with:
+        # Folder location of where vswhere.exe is located if a self-hosted agent
+        #vswhere-path: # optional
+        # Version of Visual Studio to search; defaults to latest if not specified
+        #vs-version: # optional
+    
     # Runs a set of commands using the runners shell
     - name: Build
       run: msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
