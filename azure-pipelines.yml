@@ -28,6 +28,10 @@ stages:
         path: $(NUGET_PACKAGES)
       displayName: Cache NuGet packages
 
+    - task: NuGetToolInstaller@1
+      inputs:
+        versionSpec: '5.6.0'
+
     - task: NuGetCommand@2
       inputs:
         restoreSolution: '$(solution)'
@@ -64,7 +68,7 @@ stages:
     displayName: Deploy
     environment: 'Visual Studio Marketplace'
     pool:
-      vmImage: $(vmImageName)
+      vmImage: ubuntu-latest
 
     strategy:
       runOnce:
@@ -74,11 +78,12 @@ stages:
             inputs:
               version: 'v0.7.x'
           - task: PublishAzureDevOpsExtension@3
+            displayName: Publish
             inputs:
-              connectTo: 'VsTeam'
+              # connectTo: 'VsTeam'
               connectedServiceName: 'Visual Studio Marketplace'
               fileType: 'vsix'
               vsixFile: '$(Pipeline.Workspace)/drop/**/Gardiner.VsShowMissing.VS2019.vsix'
-              updateTasksVersion: false
-              extensionVisibility: 'public'
-              extensionPricing: 'free'
+              # updateTasksVersion: false
+              # extensionVisibility: 'public'
+              # extensionPricing: 'free'
