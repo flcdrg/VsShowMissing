@@ -5,6 +5,7 @@ trigger:
 variables:
   # Agent VM image name
   vmImageName: 'vs2017-win2016'
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
 
 stages:
 - stage: Build
@@ -19,6 +20,14 @@ stages:
       buildConfiguration: 'Release'
 
     steps:
+    - task: Cache@2
+      inputs:
+        key: 'nuget | "$(Agent.OS)" | **/packages.lock.json,!**/bin/**'
+        restoreKeys: |
+          nuget | "$(Agent.OS)"
+        path: $(NUGET_PACKAGES)
+      displayName: Cache NuGet packages
+
     - task: NuGetCommand@2
       inputs:
         restoreSolution: '$(solution)'
@@ -60,7 +69,6 @@ stages:
     strategy:
       runOnce:
         deploy:
-
           steps:
           - task: TfxInstaller@3
             inputs:
@@ -70,7 +78,7 @@ stages:
               connectTo: 'VsTeam'
               connectedServiceName: 'Visual Studio Marketplace'
               fileType: 'vsix'
-              vsixFile: '$(Pipeline.Workspace)/drop/*.vsix'
+              vsixFile: '$(Pipeline.Workspace)/drop/**/Gardiner.VsShowMissing.VS2019.vsix'
               updateTasksVersion: false
               extensionVisibility: 'public'
               extensionPricing: 'free'
