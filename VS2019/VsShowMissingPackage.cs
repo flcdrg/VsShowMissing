@@ -40,7 +40,7 @@ namespace Gardiner.VsShowMissing
 	[ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuids.guidVsShowMissingPackageString)]
-    [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
+    [ProvideOptionPage(typeof(DialogPageProvider.General), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     public sealed class VsShowMissingPackage : AsyncPackage, IVsSolutionEvents, IDisposable
     {
         private DTE _dte;
@@ -96,8 +96,6 @@ namespace Gardiner.VsShowMissing
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
 
-            Options = (OptionsDialogPage)GetDialogPage(typeof(OptionsDialogPage));
-
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
             _buildEvents.OnBuildProjConfigDone += BuildEventsOnBuildProjConfigDone;
             _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
@@ -126,7 +124,7 @@ namespace Gardiner.VsShowMissing
             }
         }
 
-        public static OptionsDialogPage Options { get; private set; }
+        private GeneralOptions Options => GeneralOptions.Instance;
 
 #pragma warning disable CA1801 // Review unused parameters
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)

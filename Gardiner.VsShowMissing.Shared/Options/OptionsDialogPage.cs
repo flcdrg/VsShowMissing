@@ -3,12 +3,12 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
-using UIElement = System.Windows.UIElement;
 
 namespace Gardiner.VsShowMissing.Options
 {
+#pragma warning disable CA1812
+
     /// <summary>
     /// 
     /// </summary>
@@ -16,13 +16,12 @@ namespace Gardiner.VsShowMissing.Options
     /// Based on http://blog.danskingdom.com/adding-a-wpf-settings-page-to-the-tools-options-dialog-window-for-your-visual-studio-extension/ and https://github.com/Haacked/Encourage/tree/master
     /// </remarks>
     [Description("Extension that checks for any files referenced in projects that do not exist")]
-    [LocDisplayName("Extension that checks for any files referenced in projects that do not exist")]
+    [DisplayName("Extension that checks for any files referenced in projects that do not exist")]
     [ClassInterface(ClassInterfaceType.AutoDual)]
     [ComVisible(true)]
     [Guid("1D9ECCF3-5D2F-4112-9B25-264596873DC9")]
-    public class OptionsDialogPage : UIElementDialogPage, INotifyPropertyChanged
+    internal class GeneralOptions : BaseOptionModel<GeneralOptions>
     {
-        private OptionsDialogPageControl _optionsDialogControl;
         private TaskErrorCategory _messageLevel;
         private bool _failBuildOnError;
         private RunWhen _timing;
@@ -41,7 +40,6 @@ namespace Gardiner.VsShowMissing.Options
             {
                 if (value == _useGitIgnore) return;
                 _useGitIgnore = value;
-                OnPropertyChanged();
             }
         }
 
@@ -56,7 +54,6 @@ namespace Gardiner.VsShowMissing.Options
             {
                 if (value == _messageLevel) return;
                 _messageLevel = value;
-                OnPropertyChanged();
             }
         }
 
@@ -73,7 +70,6 @@ namespace Gardiner.VsShowMissing.Options
             {
                 if (value == _failBuildOnError) return;
                 _failBuildOnError = value;
-                OnPropertyChanged();
             }
         }
 
@@ -88,7 +84,6 @@ namespace Gardiner.VsShowMissing.Options
             {
                 if (value == _timing) return;
                 _timing = value;
-                OnPropertyChanged();
             }
         }
 
@@ -103,7 +98,6 @@ namespace Gardiner.VsShowMissing.Options
             {
                 if (value == _notIncludedFiles) return;
                 _notIncludedFiles = value;
-                OnPropertyChanged();
             }
         }
 
@@ -120,37 +114,7 @@ namespace Gardiner.VsShowMissing.Options
 
                 Debug.WriteLine($"IgnoreFiles\nOld: {_ignorePhysicalFiles}\nNew: {value}");
                 _ignorePhysicalFiles = value;
-                OnPropertyChanged();
             }
-        }
-
-        protected override UIElement Child => _optionsDialogControl ?? (_optionsDialogControl = new OptionsDialogPageControl(this));
-
-        public OptionsDialogPage()
-        {
-            DefaultSettings();
-        }
-
-        public override void ResetSettings()
-        {
-            DefaultSettings();
-            base.ResetSettings();
-        }
-
-        private void DefaultSettings()
-        {
-            IgnorePhysicalFiles = "*.*proj\r\n*.user\r\n.gitignore\r\n*.ruleset\r\n*.suo\r\n*.licx\r\n*.dotSettings\r\n*.vspscc";
-            NotIncludedFiles = true;
-            UseGitIgnore = true;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            Debug.WriteLine($"OnPropertyChanged {propertyName}");
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

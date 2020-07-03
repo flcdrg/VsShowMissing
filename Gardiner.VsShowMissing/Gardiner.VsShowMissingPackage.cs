@@ -42,7 +42,7 @@ namespace Gardiner.VsShowMissing
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [Guid(PackageGuids.guidGardiner_VsShowMissingPkgString)]
     [ProvideBindingPath] // Allow assembly references to be located
-    [ProvideOptionPage(typeof(OptionsDialogPage), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
+    [ProvideOptionPage(typeof(DialogPageProvider.General), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
 #pragma warning disable S101 // Types should be named in camel case
 #pragma warning disable CA1707 // Identifiers should not contain underscores
@@ -167,8 +167,6 @@ namespace Gardiner.VsShowMissing
             var events = _dte.Events;
             _buildEvents = events.BuildEvents;
 
-            Options = (OptionsDialogPage)GetDialogPage(typeof(OptionsDialogPage));
-
             _buildEvents.OnBuildProjConfigBegin += BuildEventsOnOnBuildProjConfigBegin;
             _buildEvents.OnBuildProjConfigDone += BuildEventsOnBuildProjConfigDone;
             _buildEvents.OnBuildBegin += BuildEventsOnOnBuildBegin;
@@ -195,7 +193,7 @@ namespace Gardiner.VsShowMissing
             }
         }
 
-        public static OptionsDialogPage Options { get; private set; }
+        private GeneralOptions Options { get; } = GeneralOptions.Instance;
 
 #pragma warning disable CA1801 // Review unused parameters
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
