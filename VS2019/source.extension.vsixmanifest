@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="VS2019.52b01d49-2718-47a2-a08f-117f19edf495" Version="|%CurrentProject%;GetBuildVersion|" Language="en-US" Publisher="David Gardiner" />
+        <Identity Id="VS2019.52b01d49-2718-47a2-a08f-117f19edf495" Version="|%CurrentProject%;GetBuildVersion|" Language="en-US" Publisher="DavidGardiner" />
         <DisplayName>Show Missing Files 2019</DisplayName>
         <Description xml:space="preserve">Find files references in project files that don't exist on disk, and optionally files that do exist on disk that aren't included in a project. 
 Runs on Build. Missing files are listed in Error List window.</Description>
