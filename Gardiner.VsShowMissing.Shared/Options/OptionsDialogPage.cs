@@ -19,17 +19,23 @@ namespace Gardiner.VsShowMissing.Options
     internal class GeneralOptions : BaseOptionModel<GeneralOptions>
     {
         private const string IgnorePhysicalFilesDefault = "*.*proj;*.user;.gitignore;*.ruleset;*.suo;*.licx;*.dotSettings;*.dbmdl;*.jfm";
+        private const bool UseGitIgnoreDefault = true;
+        private const bool NotIncludedFilesDefault = true;
+        private const bool FailBuildOnErrorDefault = false;
         private string _ignorePhysicalFiles;
 
         public GeneralOptions()
         {
             _ignorePhysicalFiles = IgnorePhysicalFilesDefault;
+            UseGitIgnore = UseGitIgnoreDefault;
+            NotIncludedFiles = NotIncludedFilesDefault;
+            FailBuildOnError = FailBuildOnErrorDefault;
         }
 
         [LocDisplayName("Use .gitignore")]
         [Description("If checked then .gitignore file is also used for ignoring files")]
         [Category("Show Missing")]
-        [DefaultValue(true)]
+        [DefaultValue(UseGitIgnoreDefault)]
         public bool UseGitIgnore { get; set; }
 
         [LocDisplayName("Message importance")]
@@ -43,7 +49,7 @@ namespace Gardiner.VsShowMissing.Options
             "If true, cancel the build if any missing files are found. This only has effect if When is set to BeforeBuild"
             )]
         [Category("Show Missing")]
-        [DefaultValue(false)]
+        [DefaultValue(FailBuildOnErrorDefault)]
         public bool FailBuildOnError { get; set; }
 
         [LocDisplayName("When")]
@@ -55,7 +61,7 @@ namespace Gardiner.VsShowMissing.Options
         [LocDisplayName("Non-included files")]
         [Description("Generate warnings/errors for files on disk that are not included in the project")]
         [Category("Show Missing")]
-        [DefaultValue(true)]
+        [DefaultValue(NotIncludedFilesDefault)]
         public bool NotIncludedFiles { get; set; }
 
         [LocDisplayName("Ignore Pattern")]
