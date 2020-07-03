@@ -111,5 +111,4 @@
     <Message Importance="high" Text="AssemblyInformationalVersion: $(AssemblyInformationalVersion)" />
     <Message Importance="high" Text="NuGetPackageVersion: $(NuGetPackageVersion)" />
   </Target>
-
 </Project>
