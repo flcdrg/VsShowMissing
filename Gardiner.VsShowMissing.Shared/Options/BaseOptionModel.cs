@@ -7,8 +7,10 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 
+using Microsoft; // Required by VS2019
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop; // Required by VS2019
 using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Threading;
 using Task = System.Threading.Tasks.Task;
@@ -25,9 +27,6 @@ namespace Gardiner.VsShowMissing.Options
 #pragma warning disable S2743 // Static fields should not be used in generic types
         private static readonly AsyncLazy<ShellSettingsManager> _settingsManager = new AsyncLazy<ShellSettingsManager>(GetSettingsManagerAsync, ThreadHelper.JoinableTaskFactory);
 #pragma warning restore S2743 // Static fields should not be used in generic types
-
-        protected BaseOptionModel()
-        { }
 
         /// <summary>
         /// A singleton instance of the options. MUST be called from UI thread only.
