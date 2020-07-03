@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
-using Microsoft;
+
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Threading;
 using Task = System.Threading.Tasks.Task;
@@ -142,10 +142,26 @@ namespace Gardiner.VsShowMissing.Options
         }
 
         /// <summary>
-        /// Serializes an object value to a string using the binary serializer.
+        /// Serializes an object value to a string
         /// </summary>
         protected virtual string SerializeValue(object value)
         {
+            switch (value)
+            {
+                case null:
+                    return string.Empty;
+                case string s:
+                    return s;
+                case bool b:
+                    return b.ToString(CultureInfo.InvariantCulture);
+            }
+
+            if (value.GetType().IsEnum)
+            {
+                return value.ToString();
+            }
+
+            // last resort
             using (var stream = new MemoryStream())
             {
                 var formatter = new BinaryFormatter();
@@ -156,10 +172,26 @@ namespace Gardiner.VsShowMissing.Options
         }
 
         /// <summary>
-        /// Deserializes a string to an object using the binary serializer.
+        /// Deserializes a string to an object
         /// </summary>
         protected virtual object DeserializeValue(string value, Type type)
         {
+            if (type == typeof(string))
+            {
+                return value;
+            }
+
+            if (type == typeof(bool))
+            {
+                return bool.Parse(value);
+            }
+
+            if (type.IsEnum)
+            {
+                return Enum.Parse(type, value);
+            }
+
+            // last resort
             byte[] b = Convert.FromBase64String(value);
 
             using (var stream = new MemoryStream(b))

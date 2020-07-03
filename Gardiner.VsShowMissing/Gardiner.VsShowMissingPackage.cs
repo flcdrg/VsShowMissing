@@ -19,6 +19,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
+using Task = System.Threading.Tasks.Task;
 
 namespace Gardiner.VsShowMissing
 {
@@ -94,6 +95,8 @@ namespace Gardiner.VsShowMissing
             // Only perform initialization if async package framework is not supported
             if (!_isAsyncLoadSupported)
             {
+                Options = GeneralOptions.Instance;
+
                 BackgroundThreadInitialization();
 
 #pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
@@ -122,6 +125,7 @@ namespace Gardiner.VsShowMissing
             return ThreadHelper.JoinableTaskFactory.RunAsync<object>(async () =>
             {
                 BackgroundThreadInitialization();
+                Options = await GeneralOptions.GetLiveInstanceAsync();
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 #pragma warning disable CA2007 // Do not directly await a Task
                 var solution = await pServiceProvider.GetServiceAsync<IVsSolution>(typeof(SVsSolution));
@@ -137,7 +141,6 @@ namespace Gardiner.VsShowMissing
 #pragma warning restore CA1822
         {
             // Anything that doesn't require UI thread could be put here
-
         }
 
 #pragma warning disable CA1801, S1172 // Unused method parameters should be removed
@@ -193,7 +196,7 @@ namespace Gardiner.VsShowMissing
             }
         }
 
-        private GeneralOptions Options { get; } = GeneralOptions.Instance;
+        private GeneralOptions Options { set; get; }
 
 #pragma warning disable CA1801 // Review unused parameters
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)

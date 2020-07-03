@@ -77,6 +77,8 @@ namespace Gardiner.VsShowMissing
         {
             await base.InitializeAsync(cancellationToken, progress);
 
+            Options = await GeneralOptions.GetLiveInstanceAsync();
+
             // When initialized asynchronously, the current thread may be a background thread at this point.
             // Do any initialization that requires the UI thread after switching to the UI thread.
             await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
@@ -124,7 +126,7 @@ namespace Gardiner.VsShowMissing
             }
         }
 
-        private GeneralOptions Options => GeneralOptions.Instance;
+        private GeneralOptions Options { get; set; }
 
 #pragma warning disable CA1801 // Review unused parameters
         private void BuildEventsOnOnBuildProjConfigBegin(string project, string projectConfig, string platform, string solutionConfig)
