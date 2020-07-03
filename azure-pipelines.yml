@@ -1,44 +1,74 @@
-# .NET Desktop
-# Build and run tests for .NET Desktop or Windows classic desktop solutions.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
-
-pool:
-  vmImage: 'VS2017-Win2016'
-
 trigger:
   branches:
     include: ['master']
 
 variables:
-  solution: '*.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
+  # Agent VM image name
+  vmImageName: 'vs2017-win2016'
 
-steps:
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
+stages:
+- stage: Build
+  jobs:
+  - job:
+    pool:
+      vmImage: $(vmImageName)
 
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-    maximumCpuCount: true
-    msbuildArgs: /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal
+    variables:
+      solution: '*.sln'
+      buildPlatform: 'Any CPU'
+      buildConfiguration: 'Release'
 
-# Publish all needed files for the Release pipeline
-- task: CopyFiles@2
-  inputs:
-    SourceFolder: '$(Build.SourcesDirectory)'
-    Contents: |
-      Overview.md
-      build/**
-      VS2019/**/*.vsix
-    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    steps:
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '$(solution)'
 
-- task: PublishPipelineArtifact@0
-  inputs:
-    artifactName: 'drop'
-    targetPath: '$(Build.ArtifactStagingDirectory)'
+    - task: VSBuild@1
+      inputs:
+        solution: '$(solution)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+        maximumCpuCount: true
+        msbuildArgs: /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal
+
+    # Publish all needed files for the Release pipeline
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)'
+        Contents: |
+          Overview.md
+          build/**
+          VS2019/**/*.vsix
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishPipelineArtifact@0
+      inputs:
+        artifactName: 'drop'
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+
+
+- stage: Publish
+  displayName: Deploy stage
+  dependsOn: Build
+  condition: and(succeeded(),startsWith(variables['Build.SourceBranch'], 'refs/heads/'))
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    environment: 'development'
+    pool:
+      vmImage: $(vmImageName)
+
+    strategy:
+      runOnce:
+        deploy:
+
+          steps:
+          - task: PublishAzureDevOpsExtension@3
+            inputs:
+              connectTo: 'VsTeam'
+              connectedServiceName: 'Visual Studio Marketplace'
+              fileType: 'vsix'
+              vsixFile: '$(Pipeline.Workspace)/drop/*.vsix'
+              updateTasksVersion: false
+              extensionVisibility: 'public'
+              extensionPricing: 'free'
