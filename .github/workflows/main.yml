@@ -17,6 +17,10 @@ jobs:
   build:
     # The type of runner that the job will run on
     runs-on: windows-latest
+    outputs:
+      GitAssemblyInformationalVersion: ${{ steps.build.env.GitAssemblyInformationalVersion }}
+      GitBuildVersion: ${{ steps.build.env.GitBuildVersion }}
+      GitBuildVersionSimple: ${{ steps.build.env.GitBuildVersionSimple }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -40,6 +44,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1
     
     - name: Build
+      id: build
       run: msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
     - name: Upload a Build Artifact
@@ -72,7 +77,7 @@ jobs:
         run: ls -R
 
       - name: Display environment
-        run: printenv
+        run: 'printenv | sort'
 
       - name: Upload Release Asset
         id: upload-release-asset 
