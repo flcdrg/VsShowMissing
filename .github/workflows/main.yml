@@ -18,9 +18,9 @@ jobs:
     # The type of runner that the job will run on
     runs-on: windows-latest
     outputs:
-      GitAssemblyInformationalVersion: ${{ steps.build.env.GitAssemblyInformationalVersion }}
-      GitBuildVersion: ${{ steps.build.env.GitBuildVersion }}
-      GitBuildVersionSimple: ${{ steps.build.env.GitBuildVersionSimple }}
+      GitAssemblyInformationalVersion: ${{ steps.build.outputs.GitAssemblyInformationalVersion }}
+      GitBuildVersion: ${{ steps.build.outputs.GitBuildVersion }}
+      GitBuildVersionSimple: ${{ steps.build.outputs.GitBuildVersionSimple }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -45,7 +45,12 @@ jobs:
     
     - name: Build
       id: build
-      run: msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+      run: |
+        msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+
+        echo "::set-output name=GitAssemblyInformationalVersion::$($env:GitAssemblyInformationalVersion)"
+        echo "::set-output name=GitBuildVersion::$($env:GitBuildVersion)"
+        echo "::set-output name=GitBuildVersionSimple::$($env:GitBuildVersionSimple)"
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
@@ -62,6 +67,11 @@ jobs:
     name: Update release draft
     runs-on: ubuntu-latest
     needs: [build]
+    env:
+      GitAssemblyInformationalVersion: ${{ needs.build.outputs.GitAssemblyInformationalVersion }}
+      GitBuildVersion: ${{ needs.build.outputs.GitBuildVersion }}
+      GitBuildVersionSimple: ${{ needs.build.outputs.GitBuildVersionSimple }}
+
     if: github.ref == 'refs/heads/master' # Running this job only for master branch
     steps:
       - uses: release-drafter/release-drafter@v5
