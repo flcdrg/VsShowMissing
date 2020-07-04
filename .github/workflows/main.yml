@@ -102,6 +102,8 @@ jobs:
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          version: ${{ needs.build.outputs.GitBuildVersionSimple }}
 
       - uses: actions/download-artifact@v2
         with:
@@ -112,6 +114,11 @@ jobs:
 
       - name: Display environment
         run: 'printenv | sort'
+
+      - name: Dump steps context
+        env:
+          STEPS_CONTEXT: ${{ toJson(steps) }}
+        run: echo "$STEPS_CONTEXT"
 
       - name: Upload Release Asset
         id: upload-release-asset 
