@@ -15,7 +15,7 @@ jobs:
       #     GITHUB_CONTEXT: ${{ toJson(github) }}
       #   run: echo "$GITHUB_CONTEXT"
 
-      - run: ${{ github.event.release.id }}
+      - uses: actions/checkout@v2
 
       - name: Download Assets
         uses: i3h/download-release-asset@v1.2.0
@@ -26,18 +26,17 @@ jobs:
           file: Gardiner.VsShowMissing.VS2019.vsix
           token: ${{ secrets.GITHUB_TOKEN }}
       
-      - run: dir -recurse
+      # - run: dir -recurse
 
       - name: Script
         run: |
-          & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -format json
- 
-          $Installation = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -prerelease -format json | ConvertFrom-Json
+          # Find VsixPublisher
+          $Installation = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -format json | ConvertFrom-Json
           $Path = $Installation.installationPath
 
           Write-Host $Path
           $VsixPublisher = Join-Path -Path $Path -ChildPath "VSSDK\VisualStudioIntegration\Tools\Bin\VsixPublisher.exe" -Resolve
 
-          Write-Host $VsixPublisher
-
-          Test-Path $VsixPublisher
+          & $VsixPublisher publish -payload ".\Gardiner.VsShowMissing.VS2019.vsix" -publishManifest ".\build\extension-manifest.json" -personalAccessToken $env:PersonalAccessToken -ignoreWarnings "VSIXValidatorWarning01,VSIXValidatorWarning02,VSIXValidatorWarning08"
+        env:
+          PersonalAccessToken: ${{ secrets.PersonalAccessToken }}        
