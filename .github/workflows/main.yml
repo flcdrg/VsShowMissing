@@ -51,7 +51,7 @@ jobs:
         path: 'vs2019/**/*.vsix'
 
     - name: Display environment
-      run: dir env:
+      run: 'dir env:'
 
   update_release_draft:
     name: Update release draft
