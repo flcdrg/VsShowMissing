@@ -74,9 +74,6 @@ stages:
       runOnce:
         deploy:
           steps:
-          # - task: TfxInstaller@3
-          #   inputs:
-          #     version: 'v0.7.x'
 
           - task: PublishVisualStudioExtension@3
             inputs:
