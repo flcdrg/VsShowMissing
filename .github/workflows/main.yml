@@ -50,6 +50,7 @@ jobs:
         msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
     - name: gitversion
+      id: gitversion
       run: |
         dir env:
         
@@ -69,6 +70,11 @@ jobs:
 
     - id: step1
       run: echo "::set-output name=test::hello"
+
+    - name: Dump steps context
+      env:
+        STEPS_CONTEXT: ${{ toJson(steps) }}
+      run: echo "$STEPS_CONTEXT"
 
   update_release_draft:
     name: Update release draft
@@ -91,7 +97,7 @@ jobs:
         env:
           NEEDS_CONTEXT: ${{ toJson(needs) }}
         run: echo "$NEEDS_CONTEXT"
-        
+
       - uses: release-drafter/release-drafter@v5
         id: create_release
         env:
