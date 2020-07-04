@@ -2,8 +2,8 @@ name: Publish
 
 on:
   release:
-    # types: # https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads#release
-    #   - released
+    types: # https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads#release
+      - released
 
 jobs:
   main:
@@ -14,35 +14,24 @@ jobs:
       #   env:
       #     GITHUB_CONTEXT: ${{ toJson(github) }}
       #   run: echo "$GITHUB_CONTEXT"
-      # - name: Dump job context
-      #   env:
-      #     JOB_CONTEXT: ${{ toJson(job) }}
-      #   run: echo "$JOB_CONTEXT"
-      # - name: Dump steps context
-      #   env:
-      #     STEPS_CONTEXT: ${{ toJson(steps) }}
-      #   run: echo "$STEPS_CONTEXT"
-      # - name: Dump runner context
-      #   env:
-      #     RUNNER_CONTEXT: ${{ toJson(runner) }}
-      #   run: echo "$RUNNER_CONTEXT"
-      # - name: Dump strategy context
-      #   env:
-      #     STRATEGY_CONTEXT: ${{ toJson(strategy) }}
-      #   run: echo "$STRATEGY_CONTEXT"
-      # - name: Dump matrix context
-      #   env:
-      #     MATRIX_CONTEXT: ${{ toJson(matrix) }}
-      #   run: echo "$MATRIX_CONTEXT"
+
       - run: ${{ github.event.release.id }}
 
-      - uses: wyozi/download-gh-release-asset@master
+      - name: Download Assets
+        uses: i3h/download-release-asset@v1.2.0
         with:
-          args: Gardiner.VsShowMissing.VS2019.vsix
-        env:
-          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          # 
+          owner: ${{ github.event.repository.owner.login }}
+          # 
+          repo: ${{ github.event.repository.owner.login }}
+          # 
+          tag: ${{ github.event.release.tag_name }}
+          # 
+          file: Gardiner.VsShowMissing.VS2019.vsix
+          # 
+          token: ${{ secrets.GITHUB_TOKEN }}
       
-      - run: ls -R
+      - run: dir -recurse
 
       - name: Script
         run: |
