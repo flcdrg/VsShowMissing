@@ -1,0 +1,15 @@
+name: Publish
+
+on:
+  release:
+    types:
+      - released
+
+jobs:
+  main:
+     runs-on: ubuntu-latest
+ 
+     steps:
+       - name: start
+         run: echo "Hello"
+ 
