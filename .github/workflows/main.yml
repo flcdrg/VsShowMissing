@@ -83,6 +83,15 @@ jobs:
     steps:
       - run: echo ${{needs.build.outputs.output1}}
 
+      - name: Dump job context
+        env:
+          JOB_CONTEXT: ${{ toJson(job) }}
+        run: echo "$JOB_CONTEXT"
+      - name: Dump needs context
+        env:
+          NEEDS_CONTEXT: ${{ toJson(needs) }}
+        run: echo "$NEEDS_CONTEXT"
+        
       - uses: release-drafter/release-drafter@v5
         id: create_release
         env:
