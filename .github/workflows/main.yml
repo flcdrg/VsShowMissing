@@ -21,7 +21,6 @@ jobs:
       GitAssemblyInformationalVersion: ${{ steps.gitversion.outputs.GitAssemblyInformationalVersion }}
       GitBuildVersion: ${{ steps.gitversion.outputs.GitBuildVersion }}
       GitBuildVersionSimple: ${{ steps.gitversion.outputs.GitBuildVersionSimple }}
-      output1: ${{ steps.step1.outputs.test }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -37,7 +36,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
     
-    # Runs a single command using the runners shell
     - name: nuget restore
       run: nuget restore -Verbosity quiet
 
@@ -54,8 +52,6 @@ jobs:
       run: |
         dir env:
         
-        echo "set-output name=GitAssemblyInformationalVersion::$($env:GitAssemblyInformationalVersion)"
-
         echo "::set-output name=GitAssemblyInformationalVersion::$($env:GitAssemblyInformationalVersion)"
         echo "::set-output name=GitBuildVersion::$($env:GitBuildVersion)"
         echo "::set-output name=GitBuildVersionSimple::$($env:GitBuildVersionSimple)"
@@ -68,13 +64,10 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: 'vs2019/**/*.vsix'
 
-    - id: step1
-      run: echo "::set-output name=test::hello"
-
-    - name: Dump steps context
-      env:
-        STEPS_CONTEXT: ${{ toJson(steps) }}
-      run: echo "$STEPS_CONTEXT"
+    # - name: Dump steps context
+    #   env:
+    #     STEPS_CONTEXT: ${{ toJson(steps) }}
+    #   run: echo "$STEPS_CONTEXT"
 
   update_release_draft:
     name: Update release draft
@@ -87,16 +80,14 @@ jobs:
 
     if: github.ref == 'refs/heads/master' # Running this job only for master branch
     steps:
-      - run: echo ${{needs.build.outputs.output1}}
-
-      - name: Dump job context
-        env:
-          JOB_CONTEXT: ${{ toJson(job) }}
-        run: echo "$JOB_CONTEXT"
-      - name: Dump needs context
-        env:
-          NEEDS_CONTEXT: ${{ toJson(needs) }}
-        run: echo "$NEEDS_CONTEXT"
+      # - name: Dump job context
+      #   env:
+      #     JOB_CONTEXT: ${{ toJson(job) }}
+      #   run: echo "$JOB_CONTEXT"
+      # - name: Dump needs context
+      #   env:
+      #     NEEDS_CONTEXT: ${{ toJson(needs) }}
+      #   run: echo "$NEEDS_CONTEXT"
 
       - uses: release-drafter/release-drafter@v5
         id: create_release

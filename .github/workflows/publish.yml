@@ -20,15 +20,10 @@ jobs:
       - name: Download Assets
         uses: i3h/download-release-asset@v1.2.0
         with:
-          # 
           owner: ${{ github.event.repository.owner.login }}
-          # 
-          repo: ${{ github.event.repository.owner.login }}
-          # 
+          repo: ${{ github.event.repository.name }}
           tag: ${{ github.event.release.tag_name }}
-          # 
           file: Gardiner.VsShowMissing.VS2019.vsix
-          # 
           token: ${{ secrets.GITHUB_TOKEN }}
       
       - run: dir -recurse
