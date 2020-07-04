@@ -48,6 +48,10 @@ jobs:
       run: |
         msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
 
+        dir env:
+        
+        echo "set-output name=GitAssemblyInformationalVersion::$($env:GitAssemblyInformationalVersion)"
+
         echo "::set-output name=GitAssemblyInformationalVersion::$($env:GitAssemblyInformationalVersion)"
         echo "::set-output name=GitBuildVersion::$($env:GitBuildVersion)"
         echo "::set-output name=GitBuildVersionSimple::$($env:GitBuildVersionSimple)"
