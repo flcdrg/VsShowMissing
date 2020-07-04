@@ -21,6 +21,7 @@ jobs:
       GitAssemblyInformationalVersion: ${{ steps.gitversion.outputs.GitAssemblyInformationalVersion }}
       GitBuildVersion: ${{ steps.gitversion.outputs.GitBuildVersion }}
       GitBuildVersionSimple: ${{ steps.gitversion.outputs.GitBuildVersionSimple }}
+      output1: ${{ steps.step1.outputs.test }}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -66,6 +67,9 @@ jobs:
         # A file, directory or wildcard pattern that describes what to upload
         path: 'vs2019/**/*.vsix'
 
+    - id: step1
+      run: echo "::set-output name=test::hello"
+
   update_release_draft:
     name: Update release draft
     runs-on: ubuntu-latest
@@ -77,6 +81,8 @@ jobs:
 
     if: github.ref == 'refs/heads/master' # Running this job only for master branch
     steps:
+      - run: echo ${{needs.build.outputs.output1}}
+
       - uses: release-drafter/release-drafter@v5
         id: create_release
         env:
