@@ -63,9 +63,9 @@
       },
       "SonarAnalyzer.CSharp": {
         "type": "Direct",
-        "requested": "[7.16.0.8981, )",
-        "resolved": "7.16.0.8981",
-        "contentHash": "pHYqMrX7yIbctn395NOz3oim+HhE6IPjholGDLNmUSGpA+uQhSp3grPCKtLWrH71r+8QPHPbVyRk+RFVkguYHA=="
+        "requested": "[8.9.0.19135, )",
+        "resolved": "8.9.0.19135",
+        "contentHash": "g72iJyllF0R/JXC9xX+XbDi22GijIPedBoliewyKdtXDMrvG93EvtMGN0lDBl/Qmxwn/hddrdj8t+8VAipca5g=="
       },
       "VSSDK.DTE.10": {
         "type": "Direct",

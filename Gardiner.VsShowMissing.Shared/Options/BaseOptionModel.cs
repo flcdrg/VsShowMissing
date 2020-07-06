@@ -7,10 +7,14 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading.Tasks;
 
+#pragma warning disable S1128 // Unused "using" should be removed
 using Microsoft; // Required by VS2019
+#pragma warning restore S1128 // Unused "using" should be removed
 using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell;
+#pragma warning disable S1128 // Unused "using" should be removed
 using Microsoft.VisualStudio.Shell.Interop; // Required by VS2019
+#pragma warning restore S1128 // Unused "using" should be removed
 using Microsoft.VisualStudio.Shell.Settings;
 using Microsoft.VisualStudio.Threading;
 using Task = System.Threading.Tasks.Task;
@@ -196,7 +200,9 @@ namespace Gardiner.VsShowMissing.Options
             using (var stream = new MemoryStream(b))
             {
                 var formatter = new BinaryFormatter();
+#pragma warning disable S5773 // Types allowed to be deserialized should be restricted
                 return formatter.Deserialize(stream);
+#pragma warning restore S5773 // Types allowed to be deserialized should be restricted
             }
         }
 

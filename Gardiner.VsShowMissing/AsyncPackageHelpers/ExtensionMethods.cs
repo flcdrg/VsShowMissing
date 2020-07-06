@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Shell.Interop;
 using System.Threading.Tasks;
+
 using JetBrains.Annotations;
+
 using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.VisualStudio.AsyncPackageHelpers
 {
