@@ -134,7 +134,7 @@
       <Version>3.0.0</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.SDK.EmbedInteropTypes">
-      <Version>15.0.30</Version>
+      <Version>15.0.32</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Shell.Interop.14.0.DesignTime">
       <Version>14.3.26929</Version>
