@@ -32,9 +32,9 @@ jobs:
     - uses: actions/cache@v2
       with:
         path: ${{ github.workspace }}/.nuget/packages
-        key: ${{ runner.os }}-nuget2-${{ hashFiles('**/packages.lock.json') }}
+        key: ${{ runner.os }}-nuget3-${{ hashFiles('**/packages.lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-nuget2-
+          ${{ runner.os }}-nuget3-
     
     - name: nuget restore
       run: nuget restore #-Verbosity quiet
