@@ -16,7 +16,6 @@ using Microsoft.VisualStudio.AsyncPackageHelpers;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
-
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
 using Task = System.Threading.Tasks.Task;
