@@ -2,6 +2,8 @@
 
 A Visual Studio 2013/2015/2017/2019 extension to generate warnings or errors for all missing files.
 
+![Example](example.png)
+
 Download the latest version from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=DavidGardiner.ShowMissingFiles)
 
 ![GitHub build status](https://github.com/flcdrg/VsShowMissing/workflows/CI/badge.svg)
