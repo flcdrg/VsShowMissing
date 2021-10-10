@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "dependencies": {
+    ".NETFramework,Version=v4.0": {
+      "Nerdbank.GitVersioning": {
+        "type": "Direct",
+        "requested": "[3.4.240, )",
+        "resolved": "3.4.240",
+        "contentHash": "OLVIcTEKZCyUbF7+h6Lm+gU9V7wT+PPpYZ7sGtz3GfjNoB84drKxRh5qLrbLV6tqD/YWvvXZH2DAbCSQilGSGA=="
+      }
+    },
+    ".NETFramework,Version=v4.0/win": {},
+    ".NETFramework,Version=v4.0/win-x64": {},
+    ".NETFramework,Version=v4.0/win-x86": {}
+  }
+}
