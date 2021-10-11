@@ -39,9 +39,9 @@
       },
       "Microsoft.VisualStudio.Threading.Analyzers": {
         "type": "Direct",
-        "requested": "[16.10.56, )",
-        "resolved": "16.10.56",
-        "contentHash": "uTvu9fbmHTtRFY5xUgG45waU+ARad0JxyG/2btOC9Su6RTo3PrGVXKU2vHDtVELqlJsnKImhMaPH3YR0XCVwDg=="
+        "requested": "[17.0.63, )",
+        "resolved": "17.0.63",
+        "contentHash": "awAw0YlX/0fzgQeL75S1OrTPLb8qOemFpAk6Vqh5DQ9p45mWGFFFiZzUB1UWltKk+ec+QmshYrm18iBGE1lvSQ=="
       },
       "Microsoft.VisualStudio.Validation": {
         "type": "Direct",
@@ -63,9 +63,9 @@
       },
       "SonarAnalyzer.CSharp": {
         "type": "Direct",
-        "requested": "[8.28.0.36354, )",
-        "resolved": "8.28.0.36354",
-        "contentHash": "8tlekGMg4z/pjNoEuiy69hnCO62fGRs53rPMdv3HpjpvTVme47ZxPc3wIinkbgea+9c9GLMw2q9zoIGXOCgHmQ=="
+        "requested": "[8.30.0.37606, )",
+        "resolved": "8.30.0.37606",
+        "contentHash": "tJSoL+yuVHNTDRa8yjuv48y6b0lYLh/o1/8LZM/1lzj0Q3UuZXAburFkk+HU5RnNW/LWX2/CnZte2RAQcSG6bQ=="
       },
       "VSSDK.DTE.10": {
         "type": "Direct",
