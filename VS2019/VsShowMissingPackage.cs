@@ -39,7 +39,7 @@ namespace Gardiner.VsShowMissing
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 	[ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
-    [Guid(PackageGuids.guidVsShowMissingPackageString)]
+    [Guid(PackageGuids.VS2022String)]
     [ProvideOptionPage(typeof(DialogPageProvider.General), "Show Missing", "General", 101, 100, true, new[] { "Show missing files" })]
     public sealed class VsShowMissingPackage : AsyncPackage, IVsSolutionEvents, IDisposable
     {

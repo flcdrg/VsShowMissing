@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<Extern href="stdidcmd.h"/>
+	<Extern href="vsshlids.h"/>
+	<Include href="KnownImageIds.vsct"/>
+	<Include href="VSGlobals.vsct"/>
+
+	<Commands package="VS2022">
+		<Groups>
+			<Group guid="VS2022" id="MyErrorListMenuGroup" priority="0x0601">
+				<Parent guid="VSMainMenu" id="IDM_VS_CTXT_ERRORLIST"/>
+			</Group>
+		</Groups>
+
+		<!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+		<Buttons>
+			<Button guid="VS2022" id="cmdidDeleteFileOnDisk" priority="0x0100" type="Button">
+				<Parent guid="VS2022" id="MyErrorListMenuGroup" />
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<Strings>
+					<ButtonText>Delete file on disk</ButtonText>
+				</Strings>
+			</Button>
+
+			<Button guid="VS2022" id="cmdidIncludeFileInProject" priority="0x0101" type="Button">
+				<Parent guid="VS2022" id="MyErrorListMenuGroup" />
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<Strings>
+					<ButtonText>Include file in project</ButtonText>
+				</Strings>
+			</Button>
+
+			<Button guid="VS2022" id="cmdidExcludeFileFromProject" priority="0x0102" type="Button">
+				<Parent guid="VS2022" id="MyErrorListMenuGroup" />
+				<CommandFlag>DynamicVisibility</CommandFlag>
+				<CommandFlag>DefaultInvisible</CommandFlag>
+				<Strings>
+					<ButtonText>Exclude missing file from project</ButtonText>
+				</Strings>
+			</Button>
+		</Buttons>
+	</Commands>
+
+	<Symbols>
+		<GuidSymbol name="VS2022" value="{c321819f-bf99-4323-b9fc-366754457ae9}">
+			<IDSymbol name="MyErrorListMenuGroup" value="0x0002" />
+			<IDSymbol name="cmdidDeleteFileOnDisk" value="0x0200"/>
+			<IDSymbol name="cmdidIncludeFileInProject" value="0x0201" />
+			<IDSymbol name="cmdidExcludeFileFromProject" value="0x0202" />
+		</GuidSymbol>
+	</Symbols>
+</CommandTable>

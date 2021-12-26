@@ -10,23 +10,21 @@ jobs:
     runs-on: windows-latest
  
     steps:
-      # - name: Dump GitHub context
-      #   env:
-      #     GITHUB_CONTEXT: ${{ toJson(github) }}
-      #   run: echo "$GITHUB_CONTEXT"
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
 
       - uses: actions/checkout@v2
 
       - name: Download Assets
-        uses: i3h/download-release-asset@v1.2.0
+        uses: i3h/download-release-asset@v1.3.2
         with:
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
           tag: ${{ github.event.release.tag_name }}
-          file: Gardiner.VsShowMissing.VS2019.vsix
+          file: /Gardiner\.VsShowMissing\.VS\d+.vsix/
           token: ${{ secrets.GITHUB_TOKEN }}
-      
-      # - run: dir -recurse
 
       - name: Script
         run: |
@@ -37,6 +35,7 @@ jobs:
           Write-Host $Path
           $VsixPublisher = Join-Path -Path $Path -ChildPath "VSSDK\VisualStudioIntegration\Tools\Bin\VsixPublisher.exe" -Resolve
 
-          & $VsixPublisher publish -payload ".\Gardiner.VsShowMissing.VS2019.vsix" -publishManifest ".\build\extension-manifest.json" -personalAccessToken $env:PersonalAccessToken -ignoreWarnings "VSIXValidatorWarning01,VSIXValidatorWarning02,VSIXValidatorWarning08"
+          & $VsixPublisher publish -payload ".\Gardiner.VsShowMissing.VS2022.vsix" -publishManifest ".\build\extension-manifest-2022.json" -personalAccessToken $env:PersonalAccessToken -ignoreWarnings "VSIXValidatorWarning01,VSIXValidatorWarning02,VSIXValidatorWarning08"
+          
         env:
           PersonalAccessToken: ${{ secrets.PersonalAccessToken }}        

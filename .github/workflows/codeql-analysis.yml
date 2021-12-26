@@ -1,13 +1,14 @@
 name: "CodeQL"
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    # The branches below must be a subset of the branches above
-    branches: [ master ]
-  schedule:
-    - cron: '33 5 * * 0'
+  workflow_dispatch:
+  # push:
+  #   branches: [ master ]
+  # pull_request:
+  #   # The branches below must be a subset of the branches above
+  #   branches: [ master ]
+  # schedule:
+  #   - cron: '33 5 * * 0'
 
 env:
   NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
@@ -15,7 +16,7 @@ env:
 jobs:
   analyze:
     name: Analyze
-    runs-on: windows-latest
+    runs-on: windows-2022
     permissions:
       actions: read
       contents: read
@@ -61,7 +62,7 @@ jobs:
     - name: Build
       id: build
       run: |
-        msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+        msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m /p:UseSharedCompilation=false
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1

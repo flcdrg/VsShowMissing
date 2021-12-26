@@ -1,0 +1,9 @@
+{
+  "solution": {
+    "path": "Gardiner.VsShowMissing.sln",
+    "projects": [
+      "Gardiner.VsShowMissing.Shared\\Gardiner.VsShowMissing.Shared.shproj",
+      "VS2019\\VS2019.csproj"
+    ]
+  }
+}

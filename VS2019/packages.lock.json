@@ -2,11 +2,22 @@
   "version": 1,
   "dependencies": {
     ".NETFramework,Version=v4.7.2": {
-      "JetBrains.Annotations": {
+      "Community.VisualStudio.Toolkit.16": {
         "type": "Direct",
-        "requested": "[2021.2.0, )",
-        "resolved": "2021.2.0",
-        "contentHash": "kKSyoVfndMriKHLfYGmr0uzQuI4jcc3TKGyww7buJFCYeHb/X0kodYBPL7n9454q7v6ASiRmDgpPGaDGerg/Hg=="
+        "requested": "[16.0.355, )",
+        "resolved": "16.0.355",
+        "contentHash": "+dCFLp5gRRIgDRYJKHfkMMTDUA7JYZq6J61MJHKrMWp82fYF+0kw0gCIstcjtnemKKcy01sedCfSdIrZsJp3uQ==",
+        "dependencies": {
+          "Community.VisualStudio.Toolkit.Analyzers": "1.0.355",
+          "Microsoft.VisualStudio.SDK": "16.0.206",
+          "Microsoft.VisualStudio.Shell.Interop.12.1.DesignTime": "12.1.30329"
+        }
+      },
+      "Community.VisualStudio.VSCT": {
+        "type": "Direct",
+        "requested": "[16.0.29.6, )",
+        "resolved": "16.0.29.6",
+        "contentHash": "4sOMn1BtfFYanKiA3zfT6ti+/HDOsKyeAPRuYrM+tjBEXusRgUFIqWxGytul5c30Fk4v0tV0AimeJKGg6mN/6Q=="
       },
       "MAB.DotIgnore": {
         "type": "Direct",
@@ -16,11 +27,11 @@
       },
       "Microsoft.Build": {
         "type": "Direct",
-        "requested": "[16.11.0, )",
-        "resolved": "16.11.0",
-        "contentHash": "azKjcFDIGgyVWRtSSYr/Zb42xV1F0iyQyjOzdpg34UEz7HFvGJl7av7HZrNSaQ2hCqqdgfU+e9gTzguJywBofA==",
+        "requested": "[16.10.0, 17.0.0)",
+        "resolved": "16.10.0",
+        "contentHash": "ugn2Mk+4Cw8l5MOqNW6xmj2NR/jMWsNdTdyFoOkkGqxR2zB5tJINlRzOydCJNL0HN7E1Y6ErKwdiT+Bn3tpbDQ==",
         "dependencies": {
-          "Microsoft.Build.Framework": "16.11.0",
+          "Microsoft.Build.Framework": "16.10.0",
           "Microsoft.NET.StringTools": "1.0.0",
           "Microsoft.VisualStudio.Setup.Configuration.Interop": "1.16.30",
           "System.Collections.Immutable": "5.0.0",
@@ -32,7 +43,7 @@
       },
       "Microsoft.VisualStudio.SDK": {
         "type": "Direct",
-        "requested": "[16.9.31025.194, )",
+        "requested": "[16.9.31025.194, 17.0.0)",
         "resolved": "16.9.31025.194",
         "contentHash": "my8KL+NcqBmXNDyJW4bhY8wcUq5Ad030Z5tbFgGTJmfm0ctEeg1z+mm793XXXViXKJ7N/QrZOXusldGlESoRFA==",
         "dependencies": {
@@ -96,18 +107,29 @@
       },
       "Microsoft.VSSDK.BuildTools": {
         "type": "Direct",
-        "requested": "[16.10.1053, )",
-        "resolved": "16.10.1053",
-        "contentHash": "/ucSM6vMCdtu4vEra+sbpYunMNDCrl8I/cQHBUH4fxM+0nA4bHaKajdGY6IT0KoucKqfWV0IPWlAY68IcTFN4A==",
+        "requested": "[16.11.35, 17.0.0)",
+        "resolved": "16.11.35",
+        "contentHash": "CwQvIcdwRhu4VD3LsmkKMjH2uyZcxD46y16zKfY83ez92FwnHJfRvMgOJa+mK/WpIEM/lbo9ZXkqD+FPPn2+cA==",
         "dependencies": {
           "Microsoft.VisualStudio.SDK.Analyzers": "15.8.33"
         }
       },
       "Nerdbank.GitVersioning": {
         "type": "Direct",
-        "requested": "[3.4.240, )",
-        "resolved": "3.4.240",
-        "contentHash": "OLVIcTEKZCyUbF7+h6Lm+gU9V7wT+PPpYZ7sGtz3GfjNoB84drKxRh5qLrbLV6tqD/YWvvXZH2DAbCSQilGSGA=="
+        "requested": "[3.4.244, )",
+        "resolved": "3.4.244",
+        "contentHash": "L+xHZiYgIvMEbHo1X49HxgfUhfh52/TWLOuUDsOP3OAY0QAn+W6SRNA5bvIRBQ4291SlTZUXPbCRPX8bn7H86Q=="
+      },
+      "Nullable": {
+        "type": "Direct",
+        "requested": "[1.3.0, )",
+        "resolved": "1.3.0",
+        "contentHash": "xHAviTdTY3n+t1nEPN4JPRQR5lI124qRKVw+U9H7dO5sDNPpzoWeo/MQy7dSUmv9eD3k/CJVKokz1tFK+JOzRw=="
+      },
+      "Community.VisualStudio.Toolkit.Analyzers": {
+        "type": "Transitive",
+        "resolved": "1.0.355",
+        "contentHash": "XwzxoOoDE96ekgfT/7yzOsQy35fIyCHLF9f7t/NQgr9t4FvHD2zDPMddmcWj6xwdOMw6JbIyiTiUiYGqOKDrew=="
       },
       "EnvDTE": {
         "type": "Transitive",
@@ -184,8 +206,8 @@
       },
       "Microsoft.Build.Framework": {
         "type": "Transitive",
-        "resolved": "16.11.0",
-        "contentHash": "ZBKk+0W/fstpsYg7j1nNvqUQ4vjl4xetKwRf7/CCp956lckEOKuCpNO9yj0yO/UlmUaNGU+8csF+oYWIdOZGPw=="
+        "resolved": "16.10.0",
+        "contentHash": "uD2GUw3AYlFSpU42c/80DouuJL6w1Kb06q4FEjQhW/9wjhBwukgx13T5MPIpSvQ8ssahKINanHfMUL89EVQHgQ=="
       },
       "Microsoft.CodeAnalysis.BannedApiAnalyzers": {
         "type": "Transitive",
