@@ -115,7 +115,7 @@ jobs:
       - name: Upload assets
         uses: xresloader/upload-to-github-release@v1
         with:
-          file: "./vsix/**/*.vsix;./build/*"
+          file: "./vsix/**/*.vsix;./build/*.json"
           overwrite: true
           release_id: ${{ steps.create_release.outputs.id }}
         env:
