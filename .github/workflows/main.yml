@@ -20,10 +20,10 @@ jobs:
         include: 
           - solution: VS2019.slnf
             os: windows-2019
-            artifact: vs2019
+            artifact: VS2019
           - solution: VS2022.slnf
             os: windows-2022
-            artifact: vs2022
+            artifact: VS2022
 
     # The type of runner that the job will run on
     runs-on: ${{ matrix.os }}
@@ -145,7 +145,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./vsix/VS2019/bin/Release/Gardiner.VsShowMissing.VS2019.vsix
+          asset_path: ./vsix/VS2019/VS2019/bin/Release/Gardiner.VsShowMissing.VS2019.vsix
           asset_name: Gardiner.VsShowMissing.VS2019.vsix
           asset_content_type: application/octet-stream
 
@@ -155,6 +155,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .vsix/VS2022/bin/Release/Gardiner.VsShowMissing.VS2022.vsix
+          asset_path: .vsix/VS2022/VS2022/bin/Release/Gardiner.VsShowMissing.VS2022.vsix
           asset_name: Gardiner.VsShowMissing.VS2022.vsix
           asset_content_type: application/octet-stream
