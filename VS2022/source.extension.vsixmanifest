@@ -8,7 +8,7 @@ Runs on Build. Missing files are listed in Error List window.</Description>
         <MoreInfo>https://github.com/flcdrg/VsShowMissing</MoreInfo>
         <License>LICENSE.txt</License>
         <ReleaseNotes>https://github.com/flcdrg/VsShowMissing/releases</ReleaseNotes>
-        <Icon>Resources\BrokenlinktoFile_431_24.ico</Icon>
+        <Icon>BrokenlinktoFile_431_24.ico</Icon>
         <PreviewImage>VS2015 Screenshot.png</PreviewImage>
         <Tags>Missing, Warnings</Tags>
         <Preview>true</Preview>
