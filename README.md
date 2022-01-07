@@ -10,7 +10,11 @@ Right-click on one or more similar items to get a context menu with options to f
 
 ![Example](https://raw.githubusercontent.com/flcdrg/VsShowMissing/master/example.png)
 
-Versions for specific versions of Visual Studio are published to the [Visual Studio Marketplace](https://marketplace.visualstudio.com/search?term=show%20missing&target=VS&category=Tools&vsVersion=&subCategory=All&sortBy=Relevance)
+Visual Studio version-specific releases are published to the Visual Studio Marketplace:
+
+- [Show Missing Files](https://marketplace.visualstudio.com/items?itemName=DavidGardiner.ShowMissingFiles) (Visual Studio 2013, 2015, 2017)
+- [Show Missing Files 2019](https://marketplace.visualstudio.com/items?itemName=DavidGardiner.ShowMissing2019) (Visual Studio 2019)
+- [Show Missing Files 2022](https://marketplace.visualstudio.com/items?itemName=DavidGardiner.ShowMissing2022) (Visual Studio 2022)
 
 ![GitHub build status](https://github.com/flcdrg/VsShowMissing/workflows/CI/badge.svg)
 [![Azure Pipelines build status](https://gardiner.visualstudio.com/Show%20Missing/_apis/build/status/flcdrg.VsShowMissing)](https://gardiner.visualstudio.com/Show%20Missing/_build/latest?definitionId=3)
