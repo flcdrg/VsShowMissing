@@ -155,6 +155,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: .vsix/VS2022/VS2022/bin/Release/Gardiner.VsShowMissing.VS2022.vsix
+          asset_path: ./vsix/VS2022/VS2022/bin/Release/Gardiner.VsShowMissing.VS2022.vsix
           asset_name: Gardiner.VsShowMissing.VS2022.vsix
           asset_content_type: application/octet-stream
