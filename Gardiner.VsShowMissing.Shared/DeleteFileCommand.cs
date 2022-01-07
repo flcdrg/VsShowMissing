@@ -26,7 +26,7 @@ namespace Gardiner.VsShowMissing
         {
             commandService = commandService ?? throw new ArgumentNullException(nameof(commandService));
 
-            var menuCommandID = new CommandID(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidDeleteFileOnDisk);
+            var menuCommandID = new CommandID(PackageGuids.VS2022, PackageIds.cmdidDeleteFileOnDisk);
             var menuItem = new OleMenuCommand(Execute, menuCommandID);
             menuItem.BeforeQueryStatus += MenuItemOnBeforeQueryStatus;
             commandService.AddCommand(menuItem);
@@ -47,7 +47,7 @@ namespace Gardiner.VsShowMissing
             Instance = new DeleteFileCommand(commandService, dte, errorListProvider);
         }
 
-#if VS2019
+#if VS2019 || VS2022
         /// <summary>
         /// Initializes the singleton instance of the command.
         /// </summary>
@@ -57,7 +57,7 @@ namespace Gardiner.VsShowMissing
         {
             // Switch to the main thread - the call to AddCommand in DeleteFileCommand's constructor requires
             // the UI thread.
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
+            await package.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
             OleMenuCommandService commandService = await package.GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             var dte = (DTE)await package.GetServiceAsync(typeof(DTE));
@@ -105,7 +105,7 @@ namespace Gardiner.VsShowMissing
 
             if (failedFiles.Count > 0)
             {
-                MessageBox.Show("Unable to delete these files:\n\n" + string.Join("\n", failedFiles), "Warning",
+                System.Windows.Forms.MessageBox.Show("Unable to delete these files:\n\n" + string.Join("\n", failedFiles), "Warning",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }

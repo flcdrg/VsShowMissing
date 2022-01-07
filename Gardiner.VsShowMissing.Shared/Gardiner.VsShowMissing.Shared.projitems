@@ -34,5 +34,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)RunWhen.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TaskProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UIHierarchyExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UserControl1.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)UserControl1.Designer.cs">
+      <DependentUpon>UserControl1.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)UserControl1.resx">
+      <DependentUpon>UserControl1.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

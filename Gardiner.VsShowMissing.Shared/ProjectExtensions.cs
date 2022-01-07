@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using EnvDTE;
 using EnvDTE80;
-using JetBrains.Annotations;
 using Microsoft.VisualStudio.Shell;
+
+using Project = EnvDTE.Project;
 
 namespace Gardiner.VsShowMissing
 {

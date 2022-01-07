@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28809.33
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{50E5A04C-D428-404C-BE02-7DFBCBFD9F4B}"
 	ProjectSection(SolutionItems) = preProject
@@ -10,31 +10,41 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gardiner.VsShowMissing", "Gardiner.VsShowMissing\Gardiner.VsShowMissing.csproj", "{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}"
-EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Gardiner.VsShowMissing.Shared", "Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.shproj", "{805D77B4-504C-4CD9-95C8-D472F2436A90}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS2019", "VS2019\VS2019.csproj", "{7E1F8371-3866-42D7-8902-DA01481F720F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS2022", "VS2022\VS2022.csproj", "{1BEE5ABC-BCE4-439F-A2CC-3A985F3AA50F}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.projitems*{1bee5abc-bce4-439f-a2cc-3a985f3aa50f}*SharedItemsImports = 4
 		Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.projitems*{7e1f8371-3866-42d7-8902-da01481f720f}*SharedItemsImports = 4
 		Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.projitems*{805d77b4-504c-4cd9-95c8-d472f2436a90}*SharedItemsImports = 13
-		Gardiner.VsShowMissing.Shared\Gardiner.VsShowMissing.Shared.projitems*{8db7f31d-73f0-47c0-b17b-61d85abaa0e3}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
 		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8DB7F31D-73F0-47C0-B17B-61D85ABAA0E3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7E1F8371-3866-42D7-8902-DA01481F720F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7E1F8371-3866-42D7-8902-DA01481F720F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7E1F8371-3866-42D7-8902-DA01481F720F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7E1F8371-3866-42D7-8902-DA01481F720F}.Debug|x86.Build.0 = Debug|Any CPU
 		{7E1F8371-3866-42D7-8902-DA01481F720F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E1F8371-3866-42D7-8902-DA01481F720F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7E1F8371-3866-42D7-8902-DA01481F720F}.Release|x86.ActiveCfg = Release|Any CPU
+		{7E1F8371-3866-42D7-8902-DA01481F720F}.Release|x86.Build.0 = Release|Any CPU
+		{1BEE5ABC-BCE4-439F-A2CC-3A985F3AA50F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BEE5ABC-BCE4-439F-A2CC-3A985F3AA50F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BEE5ABC-BCE4-439F-A2CC-3A985F3AA50F}.Debug|x86.ActiveCfg = Debug|x86
+		{1BEE5ABC-BCE4-439F-A2CC-3A985F3AA50F}.Debug|x86.Build.0 = Debug|x86
+		{1BEE5ABC-BCE4-439F-A2CC-3A985F3AA50F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BEE5ABC-BCE4-439F-A2CC-3A985F3AA50F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BEE5ABC-BCE4-439F-A2CC-3A985F3AA50F}.Release|x86.ActiveCfg = Release|x86
+		{1BEE5ABC-BCE4-439F-A2CC-3A985F3AA50F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

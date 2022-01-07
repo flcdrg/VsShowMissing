@@ -20,7 +20,7 @@ namespace Gardiner.VsShowMissing
                 throw new ArgumentNullException(nameof(commandService));
             }
 
-            var menuCommandID = new CommandID(PackageGuids.guidGardiner_ErrorListCmdSet, PackageIds.cmdidIncludeFileInProject);
+            var menuCommandID = new CommandID(PackageGuids.VS2022, PackageIds.cmdidIncludeFileInProject);
             var menuItem = new OleMenuCommand(Execute, menuCommandID);
             menuItem.BeforeQueryStatus += MenuItemOnBeforeQueryStatus;
             commandService.AddCommand(menuItem);
@@ -65,10 +65,10 @@ namespace Gardiner.VsShowMissing
             Instance = new IncludeFileCommand(commandService, dte, errorListProvider);
         }
 
-#if VS2019
+#if VS2019 || VS2022
         internal static async System.Threading.Tasks.Task InitializeAsync(AsyncPackage package, ErrorListProvider errorListProvider)
         {
-            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
+            await package.JoinableTaskFactory.SwitchToMainThreadAsync(package.DisposalToken);
 
             var commandService = (OleMenuCommandService)await package.GetServiceAsync(typeof(IMenuCommandService));
             var dte = (DTE)await package.GetServiceAsync(typeof(DTE));

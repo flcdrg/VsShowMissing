@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
+    <Metadata>
+        <Identity Id="VS2022.12af6940-b4ca-4cc5-852d-d0b06c9504e9" Version="|%CurrentProject%;GetBuildVersion|" Language="en-US" Publisher="David Gardiner" />
+        <DisplayName>Show Missing Files 2022</DisplayName>
+        <Description xml:space="preserve">Find files references in project files that don't exist on disk, and optionally files that do exist on disk that aren't included in a project. 
+Runs on Build. Missing files are listed in Error List window.</Description>
+        <MoreInfo>https://github.com/flcdrg/VsShowMissing</MoreInfo>
+        <License>LICENSE.txt</License>
+        <ReleaseNotes>https://github.com/flcdrg/VsShowMissing/releases</ReleaseNotes>
+        <Icon>Resources\BrokenlinktoFile_431_24.ico</Icon>
+        <PreviewImage>VS2015 Screenshot.png</PreviewImage>
+        <Tags>Missing, Warnings</Tags>
+        <Preview>true</Preview>
+    </Metadata>
+    <Installation>
+        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)">
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+    </Installation>
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+    </Assets>
+</PackageManifest>

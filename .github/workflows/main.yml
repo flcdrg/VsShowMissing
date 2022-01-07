@@ -15,8 +15,19 @@ env:
 jobs:
   # This workflow contains a single job called "build"
   build:
+    strategy:
+      matrix:
+        include: 
+          - solution: VS2019.slnf
+            os: windows-2019
+            artifact: vs2019
+          - solution: VS2022.slnf
+            os: windows-2022
+            artifact: vs2022
+
     # The type of runner that the job will run on
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
+
     outputs:
       GitAssemblyInformationalVersion: ${{ steps.gitversion.outputs.GitAssemblyInformationalVersion }}
       GitBuildVersion: ${{ steps.gitversion.outputs.GitBuildVersion }}
@@ -36,16 +47,16 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
     
+    - name: setup-msbuild
+      uses: microsoft/setup-msbuild@v1
+
     - name: nuget restore
       run: nuget restore -Verbosity quiet
 
-    - name: setup-msbuild
-      uses: microsoft/setup-msbuild@v1
-    
     - name: Build
       id: build
       run: |
-        msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m
+        msbuild /p:configuration=Release /p:DeployExtension=false /p:ZipPackageCompressionLevel=normal /v:m ${{ matrix.solution }}
 
     - name: gitversion
       id: gitversion
@@ -60,9 +71,9 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         # Artifact name
-        name: 'vsix'
+        name: ${{ matrix.artifact }}
         # A file, directory or wildcard pattern that describes what to upload
-        path: 'vs2019/**/*.vsix'
+        path: '**/Release/*.vsix'
 
     # - name: Dump steps context
     #   env:
@@ -98,20 +109,17 @@ jobs:
 
       - uses: actions/download-artifact@v2
         with:
-          name: vsix
+          path: vsix
           
       - name: Display structure of downloaded files
         run: ls -R
-
-      - name: Display environment
-        run: 'printenv | sort'
 
       - name: Dump steps context
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
 
-      - name: Remove existing release asset
+      - name: Remove existing release asset 2019
         uses: flcdrg/remove-release-asset-action@v1
         with:
           # The release id to remove asset from
@@ -121,13 +129,32 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Release Asset
-        id: upload-release-asset 
+      - name: Remove existing release asset 2022
+        uses: flcdrg/remove-release-asset-action@v1
+        with:
+          # The release id to remove asset from
+          release_id: ${{ steps.create_release.outputs.id }}
+          # The name of the asset you want to remove
+          asset_name: Gardiner.VsShowMissing.2022.vsix
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Asset 2019
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./bin/Release/Gardiner.VsShowMissing.VS2019.vsix
+          asset_path: ./vsix/VS2019/bin/Release/Gardiner.VsShowMissing.VS2019.vsix
           asset_name: Gardiner.VsShowMissing.VS2019.vsix
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset 2022
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: .vsix/VS2022/bin/Release/Gardiner.VsShowMissing.VS2022.vsix
+          asset_name: Gardiner.VsShowMissing.VS2022.vsix
           asset_content_type: application/octet-stream

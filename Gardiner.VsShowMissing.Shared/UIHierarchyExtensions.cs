@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
+using Project = EnvDTE.Project;
+using Solution = EnvDTE.Solution;
 
 namespace Gardiner.VsShowMissing
 {

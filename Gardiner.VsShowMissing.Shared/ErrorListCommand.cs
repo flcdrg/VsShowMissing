@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+
+using Community.VisualStudio.Toolkit;
+
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
+#if VS2019
+using TaskListItem = Microsoft.VisualStudio.Shell.Task;
+#else
+using TaskListItem = Microsoft.VisualStudio.Shell.TaskListItem;
+#endif
 namespace Gardiner.VsShowMissing
 {
     abstract class ErrorListCommand
@@ -28,6 +36,13 @@ namespace Gardiner.VsShowMissing
             var myErrorList = (IVsTaskList2)window.Object;
 
             myErrorList.EnumSelectedItems(out var itemEnumerator);
+
+            if (itemEnumerator == null)
+            {
+                // Probably too early or list is empty?
+                Debug.WriteLine("too early");
+                return;
+            }
 
             uint[] fetched = { 0 };
             IVsTaskItem[] items = { null };
@@ -53,15 +68,16 @@ namespace Gardiner.VsShowMissing
             return tasks;
         }
 
-        protected void RemoveTask(Microsoft.VisualStudio.Shell.Task task)
+        protected void RemoveTask(TaskListItem task)
         {
             _errorListProvider.Tasks.Remove(task);
         }
 
         protected void MenuItemOnBeforeQueryStatus(object sender, EventArgs e)
         {
-            Debug.WriteLine("MenuItemOnBeforeQueryStatus");
             var menuItem = (OleMenuCommand)sender;
+
+            Debug.WriteLine($"MenuItemOnBeforeQueryStatus {menuItem.Text}");
 
             ThreadHelper.ThrowIfNotOnUIThread();
             menuItem.Visible = CalculateVisible();
