@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json.schemastore.org/vsix-publish",
+    "categories": [
+        "build"
+    ],
+    "identity": {
+        "internalName": "ShowMissing2022",
+        "displayName": "Show Missing Files 2022",
+        "tags": [
+            "analyzer"
+        ]
+    },
+    "overview": "../Overview.md",
+    "priceCategory": "free",
+    "publisher": "DavidGardiner",
+    "private": false,
+    "qna": false,
+    "repo": "https://github.com/flcdrg/VsShowMissing"
+}
