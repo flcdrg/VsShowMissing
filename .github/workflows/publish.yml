@@ -4,6 +4,7 @@ on:
   release:
     types: # https://docs.github.com/en/developers/webhooks-and-events/webhook-events-and-payloads#release
       - released
+      - prereleased
 
 jobs:
   main:
@@ -15,16 +16,17 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - uses: actions/checkout@v2
-
       - name: Download Assets
         uses: i3h/download-release-asset@v1.3.2
         with:
           owner: ${{ github.event.repository.owner.login }}
           repo: ${{ github.event.repository.name }}
           tag: ${{ github.event.release.tag_name }}
-          file: /Gardiner\.VsShowMissing\.VS\d+.vsix/
+          file: /.+/
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List directory
+        run: Get-ChildItem -Recurse
 
       - name: Script
         run: |
@@ -35,7 +37,7 @@ jobs:
           Write-Host $Path
           $VsixPublisher = Join-Path -Path $Path -ChildPath "VSSDK\VisualStudioIntegration\Tools\Bin\VsixPublisher.exe" -Resolve
 
-          & $VsixPublisher publish -payload ".\Gardiner.VsShowMissing.VS2022.vsix" -publishManifest ".\build\extension-manifest-2022.json" -personalAccessToken $env:PersonalAccessToken -ignoreWarnings "VSIXValidatorWarning01,VSIXValidatorWarning02,VSIXValidatorWarning08"
+          & $VsixPublisher publish -payload ".\Gardiner.VsShowMissing.VS2022.vsix" -publishManifest ".\extension-manifest-2022.json" -personalAccessToken $env:PersonalAccessToken -ignoreWarnings "VSIXValidatorWarning01,VSIXValidatorWarning02,VSIXValidatorWarning08"
           
         env:
           PersonalAccessToken: ${{ secrets.PersonalAccessToken }}        

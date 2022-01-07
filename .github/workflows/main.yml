@@ -91,14 +91,7 @@ jobs:
 
     if: github.ref == 'refs/heads/master' # Running this job only for master branch
     steps:
-      # - name: Dump job context
-      #   env:
-      #     JOB_CONTEXT: ${{ toJson(job) }}
-      #   run: echo "$JOB_CONTEXT"
-      # - name: Dump needs context
-      #   env:
-      #     NEEDS_CONTEXT: ${{ toJson(needs) }}
-      #   run: echo "$NEEDS_CONTEXT"
+      - uses: actions/checkout@v2
 
       - uses: release-drafter/release-drafter@v5
         id: create_release
@@ -112,49 +105,20 @@ jobs:
           path: vsix
           
       - name: Display structure of downloaded files
-        run: ls -R
+        run: ls -R 
 
       - name: Dump steps context
         env:
           STEPS_CONTEXT: ${{ toJson(steps) }}
         run: echo "$STEPS_CONTEXT"
 
-      - name: Remove existing release asset 2019
-        uses: flcdrg/remove-release-asset-action@v1
+      - name: Upload assets
+        uses: xresloader/upload-to-github-release@v1
         with:
-          # The release id to remove asset from
+          file: "./vsix/**/*.vsix;./build/*"
+          overwrite: true
           release_id: ${{ steps.create_release.outputs.id }}
-          # The name of the asset you want to remove
-          asset_name: Gardiner.VsShowMissing.VS2019.vsix
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Remove existing release asset 2022
-        uses: flcdrg/remove-release-asset-action@v1
-        with:
-          # The release id to remove asset from
-          release_id: ${{ steps.create_release.outputs.id }}
-          # The name of the asset you want to remove
-          asset_name: Gardiner.VsShowMissing.2022.vsix
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload Release Asset 2019
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./vsix/VS2019/VS2019/bin/Release/Gardiner.VsShowMissing.VS2019.vsix
-          asset_name: Gardiner.VsShowMissing.VS2019.vsix
-          asset_content_type: application/octet-stream
-
-      - name: Upload Release Asset 2022
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./vsix/VS2022/VS2022/bin/Release/Gardiner.VsShowMissing.VS2022.vsix
-          asset_name: Gardiner.VsShowMissing.VS2022.vsix
-          asset_content_type: application/octet-stream
