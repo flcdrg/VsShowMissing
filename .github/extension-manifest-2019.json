@@ -10,7 +10,7 @@
             "analyzer"
         ]
     },
-    "overview": "../Overview.md",
+    "overview": "README.md",
     "priceCategory": "free",
     "publisher": "DavidGardiner",
     "private": false,
