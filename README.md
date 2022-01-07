@@ -14,4 +14,4 @@ Versions for specific versions of Visual Studio are published to the [Visual Stu
 
 ![GitHub build status](https://github.com/flcdrg/VsShowMissing/workflows/CI/badge.svg)
 [![Azure Pipelines build status](https://gardiner.visualstudio.com/Show%20Missing/_apis/build/status/flcdrg.VsShowMissing)](https://gardiner.visualstudio.com/Show%20Missing/_build/latest?definitionId=3)
-[![Coverity Scan status](https://scan.coverity.com/projects/5748/badge.svg)](https://scan.coverity.com/projects/5748)
+[![Coverity Scan status](https://img.shields.io/coverity/scan/5748)](https://scan.coverity.com/projects/5748)
