@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    "Any,Version=v0.0": {
+    ".NETFramework,Version=v4.6.1": {
       "Antlr": {
         "type": "Direct",
         "requested": "[3.4.1.9004, 3.4.1.9004]",
