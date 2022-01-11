@@ -36,7 +36,6 @@
     <DefineConstants>TRACE;DEBUG;VS2019</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>CVSTBLD002</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,7 +44,6 @@
     <DefineConstants>TRACE;VS2019</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>CVSTBLD002</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\Shared\VsCommandTable.cs">
@@ -108,9 +106,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime">
       <Version>[16.10.0, 17)</Version>
-      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="[16.9.31025.194, 17)" ExcludeAssets="runtime">
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="[16.11.35, 17)">
