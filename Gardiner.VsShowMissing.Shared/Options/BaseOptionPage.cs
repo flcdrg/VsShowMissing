@@ -1,10 +1,12 @@
 ﻿using Microsoft.VisualStudio.Shell;
+using System.Runtime.InteropServices;
 
 namespace Gardiner.VsShowMissing.Options
 {
     /// <summary>
     /// A base class for a DialogPage to show in Tools -> Options.
     /// </summary>
+    [ComVisible(true)]
     internal class BaseOptionPage<T> : DialogPage where T : BaseOptionModel<T>, new()
     {
         private readonly BaseOptionModel<T> _model;
