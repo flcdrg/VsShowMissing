@@ -4,11 +4,11 @@
     ".NETFramework,Version=v4.7.2": {
       "Community.VisualStudio.Toolkit.16": {
         "type": "Direct",
-        "requested": "[16.0.355, )",
-        "resolved": "16.0.355",
-        "contentHash": "+dCFLp5gRRIgDRYJKHfkMMTDUA7JYZq6J61MJHKrMWp82fYF+0kw0gCIstcjtnemKKcy01sedCfSdIrZsJp3uQ==",
+        "requested": "[16.0.430, )",
+        "resolved": "16.0.430",
+        "contentHash": "VqbfvBY9LXRGcQv0Ov/zfxd4pI1vF4uJDp3FS8yFMPVrTjiWbBqWgoTOAIRd3TvcOyV3OGKt99NHkgfVwBpZFQ==",
         "dependencies": {
-          "Community.VisualStudio.Toolkit.Analyzers": "1.0.355",
+          "Community.VisualStudio.Toolkit.Analyzers": "1.0.430",
           "Microsoft.VisualStudio.SDK": "16.0.206",
           "Microsoft.VisualStudio.Shell.Interop.12.1.DesignTime": "12.1.30329"
         }
@@ -64,8 +64,8 @@
       },
       "Community.VisualStudio.Toolkit.Analyzers": {
         "type": "Transitive",
-        "resolved": "1.0.355",
-        "contentHash": "XwzxoOoDE96ekgfT/7yzOsQy35fIyCHLF9f7t/NQgr9t4FvHD2zDPMddmcWj6xwdOMw6JbIyiTiUiYGqOKDrew=="
+        "resolved": "1.0.430",
+        "contentHash": "T34YABkVK5P3+gtxCq3n8wOfUR4yJBnlv6jYKu/3admm1P4E4kC+r0YH1KwTFemKTGjl8OEXZdL3xYfxNuot7Q=="
       },
       "EnvDTE": {
         "type": "Transitive",

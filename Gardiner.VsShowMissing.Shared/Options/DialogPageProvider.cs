@@ -1,12 +1,13 @@
-﻿namespace Gardiner.VsShowMissing.Options
-{
-#pragma warning disable CA1812
+﻿using System.Runtime.InteropServices;
 
+namespace Gardiner.VsShowMissing.Options
+{
     /// <summary>
-    /// A provider for custom <see cref="DialogPage" /> implementations.
+    /// A provider for custom <see cref="Microsoft.VisualStudio.Shell.DialogPage" /> implementations.
     /// </summary>
     internal class DialogPageProvider
     {
+        [ComVisible(true)]
         public class General : BaseOptionPage<GeneralOptions> { }
     }
 }
