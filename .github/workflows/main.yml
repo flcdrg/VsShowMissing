@@ -49,7 +49,7 @@ jobs:
           ${{ runner.os }}-nuget-
     
     - name: setup-msbuild
-      uses: microsoft/setup-msbuild@v1
+      uses: microsoft/setup-msbuild@v2
 
     - name: nuget restore
       run: nuget restore -Verbosity quiet
