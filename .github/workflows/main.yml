@@ -94,7 +94,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: release-drafter/release-drafter@v5
+      - uses: release-drafter/release-drafter@v6
         id: create_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
