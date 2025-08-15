@@ -20,7 +20,7 @@ jobs:
       matrix:
         include: 
           - solution: VS2019.slnf
-            os: windows-2019
+            os: windows-2022 # Windows-2019 image was retired
             artifact: VS2019
           - solution: VS2022.slnf
             os: windows-2022
