@@ -8,7 +8,7 @@ Missing files are listed in the Error List window. Double-click on an item in th
 
 Right-click on one or more similar items to get a context menu with options to fix the selected warnings.
 
-![Example](https://raw.githubusercontent.com/flcdrg/VsShowMissing/master/example.png)
+![Example](https://raw.githubusercontent.com/flcdrg/VsShowMissing/main/example.png)
 
 Visual Studio version-specific releases are published to the Visual Studio Marketplace:
 
