@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Community.VisualStudio.Toolkit.16">
-      <Version>16.0.507</Version>
+      <Version>16.0.533</Version>
     </PackageReference>
     <PackageReference Include="Community.VisualStudio.VSCT">
       <Version>16.0.29.6</Version>
@@ -105,10 +105,10 @@
       <Version>3.0.2</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Build" ExcludeAssets="runtime">
-      <Version>[16.10.0, 17)</Version>
+      <Version>16.11.6</Version>
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="[16.11.35, 17)">
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="16.11.69">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

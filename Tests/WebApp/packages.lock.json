@@ -1,7 +1,7 @@
 {
   "version": 1,
   "dependencies": {
-    ".NETFramework,Version=v4.6.1": {
+    ".NETFramework,Version=v4.8": {
       "Antlr": {
         "type": "Direct",
         "requested": "[3.4.1.9004, 3.4.1.9004]",
@@ -46,9 +46,9 @@
       },
       "Microsoft.AspNet.Identity.Owin": {
         "type": "Direct",
-        "requested": "[2.2.1, 2.2.1]",
-        "resolved": "2.2.1",
-        "contentHash": "Cz/dqC85+6bgPj9Mt1qGLJ+v8HdTqXTMe1ms4e8pzPXJjDJw3DK7XtimtDtWwiDs63vnIDgy195TByV9wxEwjA=="
+        "requested": "[2.2.4, 2.2.4]",
+        "resolved": "2.2.4",
+        "contentHash": "u3SmsjXT/43Xas/xJx4Mz9FImMxfxz9npmFLXRDc8j7Ni3vkoRNK9zryx3i60WVPIxnVlJsJcCe6PaBuPJJscw=="
       },
       "Microsoft.AspNet.Mvc": {
         "type": "Direct",
@@ -94,9 +94,9 @@
       },
       "Microsoft.Owin": {
         "type": "Direct",
-        "requested": "[3.0.1, 3.0.1]",
-        "resolved": "3.0.1",
-        "contentHash": "64yZsGN9uRnXNVAyAT4F6KWmdDUJ6yX4uqzxKTdGANKH1oMt0IKZ7THRRa3mXIOo8iSu4tq/DCBUycUY9pXZzw=="
+        "requested": "[4.2.2, 4.2.2]",
+        "resolved": "4.2.2",
+        "contentHash": "jt410l/8dvCIguRdU7dupYdm4kGLepVdD8EOTKU4nYZcLRrn6kQYqI6pbJOTJp7Vlm/T2WUF5bzyKK2z29xtjg=="
       },
       "Microsoft.Owin.Host.SystemWeb": {
         "type": "Direct",
@@ -112,9 +112,9 @@
       },
       "Microsoft.Owin.Security.Cookies": {
         "type": "Direct",
-        "requested": "[3.0.1, 3.0.1]",
-        "resolved": "3.0.1",
-        "contentHash": "l2GRNvO4oyxfpmWtfUYvN3fA4jWduE84UCNqWTj6yhYDSE76wI+W022qTTEMr0VoCDiJ0GGYdvAjQm3xbSsB9Q=="
+        "requested": "[4.2.2, 4.2.2]",
+        "resolved": "4.2.2",
+        "contentHash": "/YTwRJlmJrsOXFT2KrkrQi32X54iNAae5Ev5tB5YK1069d/6U2tXxtheXkEG8UEf/1O57igfEMF7bk3fuOI6qg=="
       },
       "Microsoft.Owin.Security.Facebook": {
         "type": "Direct",
@@ -160,9 +160,9 @@
       },
       "Newtonsoft.Json": {
         "type": "Direct",
-        "requested": "[6.0.4, 6.0.4]",
-        "resolved": "6.0.4",
-        "contentHash": "FyQLmEpjsCrEP+znauLDGAi+h6i9YnaMkITlfIoiM4RYyX3nki306bTHsr/0okiIvIc7BJhQTbOAIZVocccFUw=="
+        "requested": "[13.0.2, 13.0.2]",
+        "resolved": "13.0.2",
+        "contentHash": "R2pZ3B0UjeyHShm9vG+Tu0EBb2lC8b0dFzV9gVn50ofHXh9Smjk6kTn7A/FdAsC8B5cKib1OnGYOXxRBz5XQDg=="
       },
       "Owin": {
         "type": "Direct",
