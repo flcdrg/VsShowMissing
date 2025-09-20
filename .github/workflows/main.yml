@@ -63,10 +63,9 @@ jobs:
       id: gitversion
       run: |
         dir env:
-        
-        echo "::set-output name=GitAssemblyInformationalVersion::$($env:GitAssemblyInformationalVersion)"
-        echo "::set-output name=GitBuildVersion::$($env:GitBuildVersion)"
-        echo "::set-output name=GitBuildVersionSimple::$($env:GitBuildVersionSimple)"
+        echo "GitAssemblyInformationalVersion=$env:GitAssemblyInformationalVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+        echo "GitBuildVersion=$env:GitBuildVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+        echo "GitBuildVersionSimple=$env:GitBuildVersionSimple" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v4
