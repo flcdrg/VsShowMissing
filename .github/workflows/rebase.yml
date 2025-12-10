@@ -6,4 +6,4 @@ jobs:
   rebase:
     runs-on: ubuntu-latest
     steps:
-      - uses: peter-evans/rebase@v3
+      - uses: peter-evans/rebase@v4
