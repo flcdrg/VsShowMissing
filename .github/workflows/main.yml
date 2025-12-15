@@ -100,7 +100,7 @@ jobs:
         with:
           version: ${{ needs.build.outputs.GitBuildVersionSimple }}
 
-      - uses: actions/download-artifact@v6
+      - uses: actions/download-artifact@v7
         with:
           path: vsix
           
