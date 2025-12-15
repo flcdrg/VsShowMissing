@@ -68,7 +68,7 @@ jobs:
         echo "GitBuildVersionSimple=$env:GitBuildVersionSimple" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
 
     - name: Upload a Build Artifact
-      uses: actions/upload-artifact@v5
+      uses: actions/upload-artifact@v6
       with:
         # Artifact name
         name: ${{ matrix.artifact }}
