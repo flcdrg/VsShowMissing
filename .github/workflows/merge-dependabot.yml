@@ -29,7 +29,8 @@ jobs:
           contains(steps.metadata.outputs.dependency-names, 'xresloader/upload-to-github-release') ||
           contains(steps.metadata.outputs.dependency-names, 'i3h/download-release-asset') ||
           contains(steps.metadata.outputs.dependency-names, 'github/codeql-action') ||
-          contains(steps.metadata.outputs.dependency-names, 'microsoft/setup-msbuild')
+          contains(steps.metadata.outputs.dependency-names, 'microsoft/setup-msbuild') ||
+          contains(steps.metadata.outputs.dependency-names, 'dependabot/fetch-metadata')
           }}
         run: gh pr merge --auto --merge "$PR_URL"
         env:
