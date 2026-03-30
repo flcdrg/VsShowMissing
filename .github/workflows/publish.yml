@@ -9,7 +9,7 @@ on:
 jobs:
   main:
     runs-on: windows-latest
- 
+
     steps:
       - name: Dump GitHub context
         env:
@@ -38,6 +38,6 @@ jobs:
           $VsixPublisher = Join-Path -Path $Path -ChildPath "VSSDK\VisualStudioIntegration\Tools\Bin\VsixPublisher.exe" -Resolve
 
           & $VsixPublisher publish -payload ".\Gardiner.VsShowMissing.VS2022.vsix" -publishManifest ".\extension-manifest-2022.json" -personalAccessToken $env:PersonalAccessToken -ignoreWarnings "VSIXValidatorWarning01,VSIXValidatorWarning02,VSIXValidatorWarning08"
-          
+
         env:
-          PersonalAccessToken: ${{ secrets.PersonalAccessToken }}        
+          PersonalAccessToken: ${{ secrets.PersonalAccessToken }}
